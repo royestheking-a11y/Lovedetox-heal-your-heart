@@ -7,3 +7,11 @@ Error seeding data: MongooseError: Cannot call `users.findOne()` before initial 
     at async seedData (/Users/mdsunny/Downloads/Finalize LoveDetox Webapp /server/server.js:17:29)
 MongoDB Connected: ac-6efz5aq-shard-00-01.ihwfmw7.mongodb.net
 Server running on port 5001
+GET /api/admin/settings - Origin: http://localhost:3004
+GET /api/users/profile - Origin: http://localhost:3004
+GET /api/data/notifications - Origin: http://localhost:3004
+GET /api/data/tasks - Origin: http://localhost:3004
+GET /api/data/moods - Origin: http://localhost:3004
+GET /api/data/journal - Origin: http://localhost:3004
+GET /api/data/chat - Origin: http://localhost:3004
+GET /api/admin/settings - Origin: http://localhost:3004
