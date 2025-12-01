@@ -4,7 +4,7 @@ import { Heart, Menu, X } from 'lucide-react';
 import { useAuth } from './AuthContext';
 
 export function Navbar() {
-    const { user } = useAuth();
+    const { user, isAdmin } = useAuth();
     const navigate = useNavigate();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -39,8 +39,8 @@ export function Navbar() {
                     {/* CTA Buttons */}
                     <div className="hidden md:flex items-center gap-3">
                         {user ? (
-                            <Link to="/dashboard" className="btn-primary">
-                                Dashboard
+                            <Link to={isAdmin ? "/admin" : "/dashboard"} className="btn-primary">
+                                {isAdmin ? "Admin Panel" : "Dashboard"}
                             </Link>
                         ) : (
                             <>
@@ -72,7 +72,9 @@ export function Navbar() {
                         <Link to="/faq" onClick={() => setMobileMenuOpen(false)} className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">FAQ</Link>
                         <div className="pt-3 border-t border-gray-200 dark:border-gray-700 space-y-2">
                             {user ? (
-                                <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="block w-full btn-primary text-center">Dashboard</Link>
+                                <Link to={isAdmin ? "/admin" : "/dashboard"} onClick={() => setMobileMenuOpen(false)} className="block w-full btn-primary text-center">
+                                    {isAdmin ? "Admin Panel" : "Dashboard"}
+                                </Link>
                             ) : (
                                 <>
                                     <button onClick={() => { handleLogin(); setMobileMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-[#6366F1] dark:text-[#8B5CF6] hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">Sign In</button>
