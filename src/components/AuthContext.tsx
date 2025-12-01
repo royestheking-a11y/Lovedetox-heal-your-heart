@@ -31,12 +31,14 @@ interface AuthContextType {
 
   resetPassword: (email: string, newPassword: string) => Promise<boolean>;
   googleLogin: (accessToken: string) => Promise<boolean>;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const [otpState, setOtpState] = useState<{
     code: string;
     email: string;
@@ -68,7 +70,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .catch(err => {
           console.error('Failed to fetch fresh profile:', err);
           // If 401, maybe logout? For now just log error.
-        });
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
   }, []);
 
@@ -246,7 +251,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       sendOTP,
       verifyOTP,
       resetPassword,
-      googleLogin
+      googleLogin,
+      loading
     }}>
       {children}
     </AuthContext.Provider>
