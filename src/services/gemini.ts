@@ -63,13 +63,18 @@ export class GeminiService {
     private model: any;
 
     constructor() {
-        console.log('✨ Initializing Gemini Service with model: gemini-flash-latest');
         this.model = genAI.getGenerativeModel({ model: 'gemini-flash-latest', safetySettings });
     }
 
     async generateResponse(message: string, mode: string = 'comfort', history: { role: string; parts: string }[] = []) {
         try {
             const systemInstruction = MODE_PROMPTS[mode] || MODE_PROMPTS.comfort;
+
+            // Construct the chat history with the system instruction as the first part of the context
+            // Note: Gemini Pro doesn't support "system" role directly in chat history in the same way as some other models,
+            // so we often prepend it to the first message or maintain it as context.
+            // For simplicity and effectiveness, we'll start a chat and send the system prompt first if it's a new chat,
+            // or just rely on the context if we are continuing.
 
             const chat = this.model.startChat({
                 history: history.map(h => ({
@@ -81,19 +86,12 @@ export class GeminiService {
                 },
             });
 
+            // Prepend system instruction to the message for better context adherence in single-turn or simple multi-turn
             const fullMessage = `${systemInstruction}\n\nUser: ${message}`;
 
-            console.log('🤖 Sending to Gemini:', { mode, messageLength: message.length });
             const result = await chat.sendMessage(fullMessage);
             const response = await result.response;
-            const text = response.text();
-
-            if (!text) {
-                console.warn('⚠️ Gemini returned empty response. Finish reason:', result.response.candidates?.[0]?.finishReason);
-                return "I'm sorry, I couldn't generate a response. Please try again.";
-            }
-
-            return text;
+            return response.text();
         } catch (error) {
             console.error('Gemini API Error:', error);
             throw error;
