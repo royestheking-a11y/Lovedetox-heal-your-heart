@@ -63,7 +63,8 @@ export class GeminiService {
     private model: any;
 
     constructor() {
-        this.model = genAI.getGenerativeModel({ model: 'gemini-flash-latest', safetySettings });
+        // Use gemini-1.5-flash for better performance and reliability
+        this.model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash', safetySettings });
     }
 
     async generateResponse(message: string, mode: string = 'comfort', history: { role: string; parts: string }[] = []) {

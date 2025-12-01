@@ -28,6 +28,14 @@ export function GuestChatModal({ onClose, onSignup }: GuestChatModalProps) {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = 0;
     }
+
+    // Check for API Key
+    if (!import.meta.env.VITE_GEMINI_API_KEY) {
+      console.error('VITE_GEMINI_API_KEY is missing');
+      // We don't show a toast here to avoid spamming guests, but we log it.
+      // Or we could show a friendly message in the chat.
+      setMessages(prev => [...prev, { role: 'ai', content: "⚠️ System Note: AI service is currently unavailable (Missing Configuration). Please contact support." }]);
+    }
   }, []);
 
   const handleSend = async () => {
