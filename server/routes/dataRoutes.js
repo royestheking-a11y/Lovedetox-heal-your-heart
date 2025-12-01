@@ -98,16 +98,14 @@ router.get('/chat', protect, async (req, res) => {
 router.post('/chat', protect, async (req, res) => {
     try {
         const { role, content } = req.body;
-        console.log(`Saving chat message for user ${req.user._id}: ${role}`);
+        // console.log(`Saving chat message for user ${req.user._id}: ${role}`);
 
-        let chat = await Chat.findOne({ userId: req.user._id });
+        const chat = await Chat.findOneAndUpdate(
+            { userId: req.user._id },
+            { $push: { messages: { role, content } } },
+            { new: true, upsert: true, setDefaultsOnInsert: true }
+        );
 
-        if (!chat) {
-            chat = new Chat({ userId: req.user._id, messages: [] });
-        }
-
-        chat.messages.push({ role, content });
-        await chat.save();
         res.status(201).json(chat.messages);
     } catch (error) {
         console.error('Error in POST /chat:', error);
