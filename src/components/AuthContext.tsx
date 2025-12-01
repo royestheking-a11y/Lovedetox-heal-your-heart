@@ -208,30 +208,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const googleLogin = async (accessToken: string): Promise<boolean> => {
     try {
-      console.time('GoogleUserInfoFetch');
-      const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      const userInfo = await response.json();
-      console.timeEnd('GoogleUserInfoFetch');
-
-      const { email, name, picture, sub } = userInfo;
-
       console.time('BackendLoginCall');
-      const data = await authService.googleLogin({
-        email,
-        name,
-        googleId: sub,
-        picture
-      });
+      // Send access token directly to backend for verification
+      const data = await authService.googleLogin({ accessToken });
       console.timeEnd('BackendLoginCall');
 
       const user = { ...data, id: data._id };
       setUser(user);
-      // Run migration in background (next tick) to avoid blocking UI
+
+      // Run migration in background
       setTimeout(() => {
         migrateLocalData(user);
       }, 0);
+
       return true;
     } catch (error) {
       console.error('Google Login error:', error);

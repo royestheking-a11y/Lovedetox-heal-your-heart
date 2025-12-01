@@ -64,9 +64,23 @@ router.post('/register', async (req, res) => {
 
 // @desc    Google auth
 // @route   POST /api/auth/google
+// @desc    Google auth
+// @route   POST /api/auth/google
 router.post('/google', async (req, res) => {
     try {
-        const { email, name, googleId, picture } = req.body;
+        const { accessToken } = req.body;
+
+        if (!accessToken) {
+            return res.status(400).json({ message: 'Access token is required' });
+        }
+
+        // Verify token with Google
+        const axios = require('axios');
+        const googleResponse = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        });
+
+        const { email, name, sub: googleId, picture } = googleResponse.data;
 
         // Optimize: Use findOneAndUpdate to handle both create and update in one operation
         // This bypasses the 'save' hook (password hashing) which is unnecessary here
@@ -97,8 +111,8 @@ router.post('/google', async (req, res) => {
             token: generateToken(user._id),
         });
     } catch (error) {
-        console.error('Google Auth Error:', error);
-        res.status(500).json({ message: 'Server error during Google login' });
+        console.error('Google Auth Error:', error.response?.data || error.message);
+        res.status(401).json({ message: 'Invalid Google token' });
     }
 });
 
