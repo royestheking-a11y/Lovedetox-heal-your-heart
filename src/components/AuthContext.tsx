@@ -209,6 +209,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const googleLogin = async (accessToken: string): Promise<boolean> => {
     try {
       console.time('BackendLoginCall');
+      console.log('🚀 Starting optimized Google Login...');
       // Send access token directly to backend for verification
       const data = await authService.googleLogin({ accessToken });
       console.timeEnd('BackendLoginCall');

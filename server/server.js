@@ -78,9 +78,6 @@ app.use(express.json());
 // Request logger middleware
 app.use((req, res, next) => {
     console.log(`${req.method} ${req.url} - Origin: ${req.headers.origin}`);
-    // Add headers to fix Google Login popup delay
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
-    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
     next();
 });
 
