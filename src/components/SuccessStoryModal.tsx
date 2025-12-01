@@ -28,7 +28,7 @@ export function SuccessStoryModal({ onClose, userEmail }: SuccessStoryModalProps
 
     // Get existing stories
     const stories = JSON.parse(localStorage.getItem('successStories') || '[]');
-    
+
     // Add new story
     const newStory = {
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -131,7 +131,7 @@ export function SuccessStoryModal({ onClose, userEmail }: SuccessStoryModalProps
                   name="gender"
                   value="female"
                   checked={formData.gender === 'female'}
-                  onChange={(e) => setFormData({ ...formData, gender: 'female' })}
+                  onChange={() => setFormData({ ...formData, gender: 'female' })}
                   className="w-4 h-4 text-[#6366F1]"
                 />
                 <span className="text-gray-700 dark:text-gray-300">Female</span>
@@ -142,7 +142,7 @@ export function SuccessStoryModal({ onClose, userEmail }: SuccessStoryModalProps
                   name="gender"
                   value="male"
                   checked={formData.gender === 'male'}
-                  onChange={(e) => setFormData({ ...formData, gender: 'male' })}
+                  onChange={() => setFormData({ ...formData, gender: 'male' })}
                   className="w-4 h-4 text-[#6366F1]"
                 />
                 <span className="text-gray-700 dark:text-gray-300">Male</span>
@@ -164,11 +164,10 @@ export function SuccessStoryModal({ onClose, userEmail }: SuccessStoryModalProps
                   className="transition-transform hover:scale-110"
                 >
                   <Star
-                    className={`w-8 h-8 ${
-                      rating <= formData.rating
-                        ? 'fill-[#FB7185] text-[#FB7185]'
-                        : 'text-gray-300 dark:text-gray-600'
-                    }`}
+                    className={`w-8 h-8 ${rating <= formData.rating
+                      ? 'fill-[#FB7185] text-[#FB7185]'
+                      : 'text-gray-300 dark:text-gray-600'
+                      }`}
                   />
                 </button>
               ))}
@@ -196,7 +195,7 @@ export function SuccessStoryModal({ onClose, userEmail }: SuccessStoryModalProps
           {/* Privacy Notice */}
           <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4">
             <p className="text-sm text-blue-900 dark:text-blue-200">
-              <strong>Privacy:</strong> Your story will be reviewed by our team before being published. 
+              <strong>Privacy:</strong> Your story will be reviewed by our team before being published.
               We may edit for clarity while preserving your message. Personal details can be anonymized upon request.
             </p>
           </div>
