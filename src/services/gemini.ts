@@ -63,7 +63,7 @@ export class GeminiService {
     private model: any;
 
     constructor() {
-        this.model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash', safetySettings });
+        this.model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-001', safetySettings });
     }
 
     private async retryWithBackoff<T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promise<T> {
