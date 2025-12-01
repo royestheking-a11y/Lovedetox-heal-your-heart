@@ -59,6 +59,7 @@ function AppContent() {
 }
 
 export default function App() {
+  console.log('🚀 LoveDetox App v1.1.0 - Loaded');
   return (
     <DarkModeProvider>
       <AuthProvider>
