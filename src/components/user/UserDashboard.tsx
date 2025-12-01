@@ -115,12 +115,15 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
                 <Menu className="w-6 h-6 text-gray-700" />
               </button>
 
-              <div className="flex items-center gap-3">
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+              >
                 <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center shadow-lg">
                   <Heart className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-xl font-bold gradient-text hidden sm:block">LoveDetox</span>
-              </div>
+              </button>
             </div>
 
             {/* User Info */}

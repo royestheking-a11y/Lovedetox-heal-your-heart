@@ -185,12 +185,15 @@ export function Homepage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <div className="flex items-center gap-3">
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="flex items-center gap-3 hover:opacity-90 transition-opacity"
+            >
               <div className="w-12 h-12 rounded-2xl gradient-primary flex items-center justify-center shadow-lg icon-3d">
                 <Heart className="w-7 h-7 text-white" />
               </div>
               <span className="text-2xl font-bold gradient-text">LoveDetox</span>
-            </div>
+            </button>
 
             {/* Desktop Menu - Removed Stories & Admin */}
             <div className="hidden md:flex items-center gap-8">

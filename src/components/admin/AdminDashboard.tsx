@@ -97,7 +97,10 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
                 <Menu className="w-6 h-6 text-white" />
               </button>
 
-              <div className="flex items-center gap-3">
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className="flex items-center gap-3 hover:opacity-90 transition-opacity text-left"
+              >
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center shadow-lg">
                   <Shield className="w-6 h-6 text-white" />
                 </div>
@@ -108,7 +111,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   </div>
                   <p className="text-white/60 text-xs">System Control Panel</p>
                 </div>
-              </div>
+              </button>
             </div>
 
             {/* Admin Info & Logout */}

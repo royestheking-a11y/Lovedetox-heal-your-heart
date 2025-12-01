@@ -63,46 +63,38 @@ export class GeminiService {
     private model: any;
 
     constructor() {
-        this.model = genAI.getGenerativeModel({ model: 'gemini-pro', safetySettings });
-    }
-
-    private async retryWithBackoff<T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promise<T> {
-        try {
-            return await fn();
-        } catch (error: any) {
-            if (retries > 0 && (error.message?.includes('503') || error.message?.includes('overloaded') || error.message?.includes('429'))) {
-                console.log(`Gemini overloaded, retrying in ${delay}ms... (${retries} attempts left)`);
-                await new Promise(resolve => setTimeout(resolve, delay));
-                return this.retryWithBackoff(fn, retries - 1, delay * 2);
-            }
-            throw error;
-        }
+        this.model = genAI.getGenerativeModel({ model: 'gemini-flash-latest', safetySettings });
     }
 
     async generateResponse(message: string, mode: string = 'comfort', history: { role: string; parts: string }[] = []) {
         try {
-            return await this.retryWithBackoff(async () => {
-                const systemInstruction = MODE_PROMPTS[mode] || MODE_PROMPTS.comfort;
+            const systemInstruction = MODE_PROMPTS[mode] || MODE_PROMPTS.comfort;
 
-                const chat = this.model.startChat({
-                    history: history.map(h => ({
-                        role: h.role === 'ai' ? 'model' : 'user',
-                        parts: [{ text: h.parts }]
-                    })),
-                    generationConfig: {
-                        maxOutputTokens: 500,
-                    },
-                });
+            // Construct the chat history with the system instruction as the first part of the context
+            // Note: Gemini Pro doesn't support "system" role directly in chat history in the same way as some other models,
+            // so we often prepend it to the first message or maintain it as context.
+            // For simplicity and effectiveness, we'll start a chat and send the system prompt first if it's a new chat,
+            // or just rely on the context if we are continuing.
 
-                const fullMessage = `${systemInstruction}\n\nUser: ${message}`;
-                const result = await chat.sendMessage(fullMessage);
-                const response = await result.response;
-                return response.text();
+            const chat = this.model.startChat({
+                history: history.map(h => ({
+                    role: h.role === 'ai' ? 'model' : 'user',
+                    parts: [{ text: h.parts }]
+                })),
+                generationConfig: {
+                    maxOutputTokens: 500,
+                },
             });
+
+            // Prepend system instruction to the message for better context adherence in single-turn or simple multi-turn
+            const fullMessage = `${systemInstruction}\n\nUser: ${message}`;
+
+            const result = await chat.sendMessage(fullMessage);
+            const response = await result.response;
+            return response.text();
         } catch (error) {
             console.error('Gemini API Error:', error);
-            // Return user-friendly message instead of throwing
-            return "I'm sleeping now, wait a minute... 😴";
+            throw error;
         }
     }
 }
