@@ -1,13 +1,6 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-
-if (!API_KEY) {
-    console.error('Missing Gemini API Key');
-}
-
-const genAI = new GoogleGenerativeAI(API_KEY);
-
+// Safety settings for the model
 const safetySettings = [
     {
         category: HarmCategory.HARM_CATEGORY_HARASSMENT,
@@ -60,24 +53,61 @@ const MODE_PROMPTS: Record<string, string> = {
 };
 
 export class GeminiService {
-    private model: any;
+    private apiKeys: string[] = [];
 
     constructor() {
-        // Use gemini-1.5-flash for better performance and reliability
-        this.model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash', safetySettings });
+        this.loadApiKeys();
+    }
+
+    private loadApiKeys() {
+        const env = import.meta.env;
+
+        // 1. Add the main key
+        if (env.VITE_GEMINI_API_KEY) {
+            this.apiKeys.push(env.VITE_GEMINI_API_KEY);
+        }
+
+        // 2. Add numbered keys (VITE_GEMINI_API_KEY_1 to VITE_GEMINI_API_KEY_20)
+        // This allows the user to add up to 20 additional keys for load balancing
+        for (let i = 1; i <= 20; i++) {
+            const key = env[`VITE_GEMINI_API_KEY_${i}`];
+            if (key) {
+                this.apiKeys.push(key);
+            }
+        }
+
+        // Remove duplicates
+        this.apiKeys = [...new Set(this.apiKeys)];
+
+        if (this.apiKeys.length === 0) {
+            console.error('CRITICAL: No Gemini API Keys found! AI features will not work.');
+        } else {
+            console.log(`✅ Loaded ${this.apiKeys.length} Gemini API keys for load balancing.`);
+        }
+    }
+
+    private getRandomKey(): string {
+        if (this.apiKeys.length === 0) {
+            throw new Error('No API Keys configured');
+        }
+        const randomIndex = Math.floor(Math.random() * this.apiKeys.length);
+        return this.apiKeys[randomIndex];
     }
 
     async generateResponse(message: string, mode: string = 'comfort', history: { role: string; parts: string }[] = []) {
         try {
+            // Get a random key for this request to distribute load
+            const apiKey = this.getRandomKey();
+
+            // Initialize the client with the selected key
+            const genAI = new GoogleGenerativeAI(apiKey);
+
+            // Use gemini-1.5-flash for better performance and reliability
+            const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash', safetySettings });
+
             const systemInstruction = MODE_PROMPTS[mode] || MODE_PROMPTS.comfort;
 
-            // Construct the chat history with the system instruction as the first part of the context
-            // Note: Gemini Pro doesn't support "system" role directly in chat history in the same way as some other models,
-            // so we often prepend it to the first message or maintain it as context.
-            // For simplicity and effectiveness, we'll start a chat and send the system prompt first if it's a new chat,
-            // or just rely on the context if we are continuing.
-
-            const chat = this.model.startChat({
+            const chat = model.startChat({
                 history: history.map(h => ({
                     role: h.role === 'ai' ? 'model' : 'user',
                     parts: [{ text: h.parts }]
@@ -87,14 +117,21 @@ export class GeminiService {
                 },
             });
 
-            // Prepend system instruction to the message for better context adherence in single-turn or simple multi-turn
+            // Prepend system instruction to the message
             const fullMessage = `${systemInstruction}\n\nUser: ${message}`;
 
             const result = await chat.sendMessage(fullMessage);
             const response = await result.response;
             return response.text();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Gemini API Error:', error);
+
+            // If it's a rate limit error (429), we could potentially retry with another key here
+            // For now, we just throw, but the random key selection on next try helps.
+            if (error.message?.includes('429') || error.status === 429) {
+                console.warn('Rate limit hit. The next request will likely use a different key.');
+            }
+
             throw error;
         }
     }
