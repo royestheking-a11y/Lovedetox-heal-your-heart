@@ -5,7 +5,7 @@ const connectDB = require('./config/db');
 
 dotenv.config();
 
-connectDB();
+// connectDB(); // Moved to entry point for better control
 
 const User = require('./models/User');
 const Task = require('./models/Task');
@@ -93,8 +93,10 @@ app.use('/api/payments', require('./routes/paymentRoutes'));
 
 const PORT = process.env.PORT || 5001;
 if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
+    connectDB().then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
     });
 }
 
