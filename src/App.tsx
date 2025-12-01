@@ -15,7 +15,7 @@ import { DarkModeProvider } from './components/DarkModeContext';
 import { OnboardingTutorial } from './components/OnboardingTutorial';
 import { Toaster } from 'sonner';
 import { Navbar } from './components/Navbar';
-import { Footer } from './components/Footer';
+import { AppFooter } from './components/AppFooter';
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
   const { user, isAdmin, loading } = useAuth();
@@ -41,7 +41,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
     <>
       <Navbar />
       <main className="flex-grow">{children}</main>
-      <Footer />
+      <AppFooter />
     </>
   );
 }

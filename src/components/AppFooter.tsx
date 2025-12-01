@@ -5,7 +5,7 @@ import adminService from '../services/adminService';
 import { FooterModal } from './FooterModals';
 import { toast } from 'sonner';
 
-export function Footer() {
+export function AppFooter() {
     const [socialLinks, setSocialLinks] = useState({
         facebook: '',
         twitter: '',
