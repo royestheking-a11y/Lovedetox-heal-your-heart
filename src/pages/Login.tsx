@@ -4,14 +4,18 @@ import { useAuth } from '../components/AuthContext';
 import { AuthModal } from '../components/AuthModal';
 
 export function Login() {
-    const { user } = useAuth();
+    const { user, isAdmin } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
         if (user) {
-            navigate('/dashboard');
+            if (isAdmin) {
+                navigate('/admin');
+            } else {
+                navigate('/dashboard');
+            }
         }
-    }, [user, navigate]);
+    }, [user, isAdmin, navigate]);
 
     // We can reuse the AuthModal but force it to be open and in login mode
     // Or we can extract the form. For now, let's reuse the modal style but embedded.
