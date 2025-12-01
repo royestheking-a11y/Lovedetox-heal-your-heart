@@ -220,9 +220,9 @@ export function AIChat() {
   const currentMode = aiModes[selectedMode];
 
   return (
-    <div className="h-[calc(100dvh-6rem)] md:h-[calc(100vh-8rem)] flex flex-col">
+    <div className="h-[80vh] md:h-[calc(100vh-8rem)] flex flex-col">
       {/* Header */}
-      <div className="card-3d p-4 md:p-6 rounded-2xl mb-2 md:mb-4">
+      <div className="card-3d p-4 md:p-6 rounded-2xl mb-2 md:mb-4 shrink-0">
         <div className="flex items-center justify-between mb-2 md:mb-4">
           <div className="flex items-center gap-3 md:gap-4">
             <PremiumIcon Icon={Bot} size="md" variant="3d" gradient="from-[#6366F1] to-[#8B5CF6]" animate={true} />
@@ -291,7 +291,7 @@ export function AIChat() {
       </div>
 
       {/* Messages */}
-      <div ref={messagesContainerRef} className="flex-1 card-3d rounded-2xl p-4 md:p-6 overflow-y-auto space-y-4 mb-2 md:mb-4">
+      <div ref={messagesContainerRef} className="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm rounded-2xl p-4 md:p-6 overflow-y-auto space-y-4 mb-2 md:mb-4 min-h-0">
         {messages.length === 0 ? (
           <div className="h-full flex items-center justify-center">
             <div className="text-center max-w-md">
