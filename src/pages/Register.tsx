@@ -4,18 +4,14 @@ import { useAuth } from '../components/AuthContext';
 import { AuthModal } from '../components/AuthModal';
 
 export function Register() {
-    const { user, isAdmin } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
         if (user) {
-            if (isAdmin) {
-                navigate('/admin');
-            } else {
-                navigate('/dashboard');
-            }
+            navigate('/dashboard');
         }
-    }, [user, isAdmin, navigate]);
+    }, [user, navigate]);
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
