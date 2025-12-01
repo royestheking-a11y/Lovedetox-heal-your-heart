@@ -223,7 +223,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const user = { ...data, id: data._id };
       setUser(user);
-      await migrateLocalData(user);
+      // Run migration in background to speed up login
+      migrateLocalData(user);
       return true;
     } catch (error) {
       console.error('Google Login error:', error);
