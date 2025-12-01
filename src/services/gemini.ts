@@ -63,6 +63,7 @@ export class GeminiService {
     private model: any;
 
     constructor() {
+        console.log('✨ Initializing Gemini Service with model: gemini-pro');
         this.model = genAI.getGenerativeModel({ model: 'gemini-pro', safetySettings });
     }
 
