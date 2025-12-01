@@ -96,6 +96,13 @@ export function AIChat() {
 
   useEffect(() => {
     if (!user) return;
+
+    // Check for API Key
+    if (!import.meta.env.VITE_GEMINI_API_KEY) {
+      toast.error('Gemini API Key is missing! Please check Vercel settings and redeploy.');
+      console.error('VITE_GEMINI_API_KEY is missing');
+    }
+
     loadMessages();
     setSoundEnabled(SoundEffects.isEnabled());
     const storedMode = localStorage.getItem(`aiMode_${user.id}`);
