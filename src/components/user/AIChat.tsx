@@ -220,7 +220,7 @@ export function AIChat() {
   const currentMode = aiModes[selectedMode];
 
   return (
-    <div className="h-[80vh] md:h-[calc(100vh-8rem)] flex flex-col">
+    <div className="h-[80vh] md:h-[calc(100vh-8rem)] flex flex-col relative">
       {/* Header */}
       <div className="card-3d p-4 md:p-6 rounded-2xl mb-2 md:mb-4 shrink-0">
         <div className="flex items-center justify-between mb-2 md:mb-4">
@@ -291,7 +291,7 @@ export function AIChat() {
       </div>
 
       {/* Messages */}
-      <div ref={messagesContainerRef} className="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm rounded-2xl p-4 md:p-6 overflow-y-auto space-y-4 mb-2 md:mb-4 min-h-0">
+      <div ref={messagesContainerRef} className="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm rounded-2xl p-4 md:p-6 overflow-y-auto space-y-4 mb-2 md:mb-4 min-h-0 pb-24 md:pb-6">
         {messages.length === 0 ? (
           <div className="h-full flex items-center justify-center">
             <div className="text-center max-w-md">
@@ -395,8 +395,8 @@ export function AIChat() {
       </div>
 
       {/* Input */}
-      <div className="card-3d p-3 md:p-4 rounded-2xl">
-        <div className="flex gap-2 md:gap-3">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 md:static md:bg-transparent md:border-0 md:p-0 md:card-3d md:rounded-2xl z-50">
+        <div className="flex gap-2 md:gap-3 max-w-7xl mx-auto">
           <input
             type="text"
             value={input}
