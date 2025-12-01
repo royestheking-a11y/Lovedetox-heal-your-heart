@@ -63,14 +63,14 @@ export class GeminiService {
     private model: any;
 
     constructor() {
-        this.model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-001', safetySettings });
+        this.model = genAI.getGenerativeModel({ model: 'gemini-pro', safetySettings });
     }
 
     private async retryWithBackoff<T>(fn: () => Promise<T>, retries = 3, delay = 1000): Promise<T> {
         try {
             return await fn();
         } catch (error: any) {
-            if (retries > 0 && (error.message?.includes('503') || error.message?.includes('overloaded'))) {
+            if (retries > 0 && (error.message?.includes('503') || error.message?.includes('overloaded') || error.message?.includes('429'))) {
                 console.log(`Gemini overloaded, retrying in ${delay}ms... (${retries} attempts left)`);
                 await new Promise(resolve => setTimeout(resolve, delay));
                 return this.retryWithBackoff(fn, retries - 1, delay * 2);
@@ -80,8 +80,8 @@ export class GeminiService {
     }
 
     async generateResponse(message: string, mode: string = 'comfort', history: { role: string; parts: string }[] = []) {
-        return this.retryWithBackoff(async () => {
-            try {
+        try {
+            return await this.retryWithBackoff(async () => {
                 const systemInstruction = MODE_PROMPTS[mode] || MODE_PROMPTS.comfort;
 
                 const chat = this.model.startChat({
@@ -98,11 +98,12 @@ export class GeminiService {
                 const result = await chat.sendMessage(fullMessage);
                 const response = await result.response;
                 return response.text();
-            } catch (error) {
-                console.error('Gemini API Error:', error);
-                throw error;
-            }
-        });
+            });
+        } catch (error) {
+            console.error('Gemini API Error:', error);
+            // Return user-friendly message instead of throwing
+            return "I'm sleeping now, wait a minute... 😴";
+        }
     }
 }
 
