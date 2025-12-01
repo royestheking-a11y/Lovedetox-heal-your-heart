@@ -215,7 +215,7 @@ export function AIChat() {
   const currentMode = aiModes[selectedMode];
 
   return (
-    <div className="h-[calc(100dvh-8rem)] md:h-[calc(100vh-8rem)] flex flex-col relative">
+    <div className="h-[calc(100dvh-6rem)] md:h-[calc(100vh-8rem)] flex flex-col relative">
       {/* Header */}
       <div className="card-3d p-4 md:p-6 rounded-2xl mb-2 md:mb-4 shrink-0">
         <div className="flex items-center justify-between mb-2 md:mb-4">
@@ -286,7 +286,7 @@ export function AIChat() {
       </div>
 
       {/* Messages */}
-      <div ref={messagesContainerRef} className="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm rounded-2xl p-4 md:p-6 overflow-y-auto space-y-4 mb-2 md:mb-4 min-h-0 pb-24 md:pb-6">
+      <div ref={messagesContainerRef} className="flex-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm rounded-2xl p-4 md:p-6 overflow-y-auto space-y-4 mb-2 md:mb-4 min-h-0">
         {messages.length === 0 ? (
           <div className="h-full flex items-center justify-center">
             <div className="text-center max-w-md">
@@ -390,25 +390,23 @@ export function AIChat() {
       </div>
 
       {/* Input */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 z-50 md:static md:bg-transparent md:border-0 md:p-0 md:z-auto">
-        <div className="max-w-7xl mx-auto md:card-3d md:p-4 md:rounded-2xl">
-          <div className="flex gap-2 md:gap-3">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Type your message..."
-              className="flex-1 px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-[#8B5CF6] focus:outline-none transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-            />
-            <button
-              onClick={handleSend}
-              disabled={!input.trim() || isTyping}
-              className="btn-primary px-4 md:px-6 py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Send className="w-5 h-5" />
-            </button>
-          </div>
+      <div className="card-3d p-3 md:p-4 rounded-2xl shrink-0">
+        <div className="flex gap-2 md:gap-3">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+            placeholder="Type your message..."
+            className="flex-1 px-4 py-3 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-[#8B5CF6] focus:outline-none transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+          />
+          <button
+            onClick={handleSend}
+            disabled={!input.trim() || isTyping}
+            className="btn-primary px-4 md:px-6 py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Send className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </div>
