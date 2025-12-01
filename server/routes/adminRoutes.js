@@ -303,34 +303,52 @@ router.put('/settings', protect, admin, async (req, res) => {
     }
 });
 
-// @desc    Get high-risk users based on mood analysis
+// @desc    Get all users with mood data and risk analysis
 // @route   GET /api/admin/mood-risks
 router.get('/mood-risks', protect, admin, async (req, res) => {
     const users = await User.find({ isAdmin: false });
-    const risks = [];
+    const userMoods = [];
 
     for (const user of users) {
         const moods = await Mood.find({ userId: user._id }).sort({ createdAt: -1 }).limit(5);
 
         if (moods.length === 0) continue;
 
-        // Check for consistently sad or high intensity negative emotions
-        const highRisk = moods.filter(m =>
-            ['Sad', 'Anxious', 'Angry', 'Lonely'].includes(m.emotion) && m.intensity >= 8
-        ).length >= 3;
+        // Calculate Risk Level
+        let riskLevel = 'low';
 
-        if (highRisk) {
-            risks.push({
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                riskLevel: 'high',
-                recentMood: moods[0]
-            });
+        // Count negative emotions with high intensity
+        const highRiskCount = moods.filter(m =>
+            ['Sad', 'Anxious', 'Angry', 'Lonely'].includes(m.emotion) && m.intensity >= 8
+        ).length;
+
+        const moderateRiskCount = moods.filter(m =>
+            ['Sad', 'Anxious', 'Angry', 'Lonely'].includes(m.emotion) && m.intensity >= 5
+        ).length;
+
+        if (highRiskCount >= 3) {
+            riskLevel = 'high';
+        } else if (moderateRiskCount >= 3 || highRiskCount >= 1) {
+            riskLevel = 'moderate';
         }
+
+        userMoods.push({
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            riskLevel,
+            recentMood: moods[0],
+            moodHistory: moods // Optional: send last 5 moods for detail view
+        });
     }
 
-    res.json(risks);
+    // Sort by risk level: High > Moderate > Low
+    userMoods.sort((a, b) => {
+        const riskOrder = { high: 3, moderate: 2, low: 1 };
+        return riskOrder[b.riskLevel] - riskOrder[a.riskLevel];
+    });
+
+    res.json(userMoods);
 });
 
 // @desc    Get all no-contact messages
