@@ -16,11 +16,13 @@ const connectDB = async () => {
             bufferCommands: false,
         };
 
-        if (!process.env.MONGO_URI) {
-            throw new Error('MONGO_URI environment variable is not defined. Please check Vercel settings.');
+        const uri = process.env.MONGO_URI || process.env.MONGODB_URI;
+
+        if (!uri) {
+            throw new Error('Database connection string is missing. Please set "MONGO_URI" in Vercel Environment Variables.');
         }
 
-        cached.promise = mongoose.connect(process.env.MONGO_URI, opts).then((mongoose) => {
+        cached.promise = mongoose.connect(uri, opts).then((mongoose) => {
             return mongoose;
         });
     }
