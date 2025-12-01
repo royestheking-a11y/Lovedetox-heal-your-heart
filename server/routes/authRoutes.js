@@ -65,18 +65,30 @@ router.post('/register', async (req, res) => {
 // @desc    Google auth
 // @route   POST /api/auth/google
 router.post('/google', async (req, res) => {
-    const { email, name, googleId, picture } = req.body;
+    try {
+        const { email, name, googleId, picture } = req.body;
 
-    let user = await User.findOne({ email });
+        // Optimize: Use findOneAndUpdate to handle both create and update in one operation
+        // This bypasses the 'save' hook (password hashing) which is unnecessary here
+        const user = await User.findOneAndUpdate(
+            { email },
+            {
+                $set: {
+                    name,
+                    email,
+                    googleId,
+                    profileImage: picture,
+                },
+                $setOnInsert: {
+                    isAdmin: false,
+                    isPro: false,
+                    password: '' // No password for Google users
+                }
+            },
+            { new: true, upsert: true, setDefaultsOnInsert: true }
+        );
 
-    if (user) {
-        // Update existing user with Google info if needed
-        if (!user.googleId) {
-            user.googleId = googleId;
-            if (!user.profileImage) user.profileImage = picture;
-            await user.save();
-        }
-        res.json({
+        res.status(200).json({
             _id: user._id,
             name: user.name,
             email: user.email,
@@ -84,28 +96,9 @@ router.post('/google', async (req, res) => {
             isPro: user.isPro,
             token: generateToken(user._id),
         });
-    } else {
-        // Create new user
-        user = await User.create({
-            name,
-            email,
-            googleId,
-            profileImage: picture,
-            password: '' // No password for Google users
-        });
-
-        if (user) {
-            res.status(201).json({
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                isAdmin: user.isAdmin,
-                isPro: user.isPro,
-                token: generateToken(user._id),
-            });
-        } else {
-            res.status(400).json({ message: 'Invalid user data' });
-        }
+    } catch (error) {
+        console.error('Google Auth Error:', error);
+        res.status(500).json({ message: 'Server error during Google login' });
     }
 });
 

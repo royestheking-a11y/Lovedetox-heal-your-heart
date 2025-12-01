@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { LayoutDashboard, Users, CheckSquare, MessageCircle, Heart, AlertTriangle, DollarSign, Bell, Mail, Settings, LogOut, Lock, Shield, Menu, X, Sparkles, Trophy } from 'lucide-react';
 import { AdminHome } from './AdminHome';
 import { UserManagement } from './UserManagement';
@@ -98,7 +97,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
                 <Menu className="w-6 h-6 text-white" />
               </button>
 
-              <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
+              <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center shadow-lg">
                   <Shield className="w-6 h-6 text-white" />
                 </div>
@@ -109,15 +108,11 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   </div>
                   <p className="text-white/60 text-xs">System Control Panel</p>
                 </div>
-              </Link>
+              </div>
             </div>
 
             {/* Admin Info & Logout */}
             <div className="flex items-center gap-2 sm:gap-4">
-              <Link to="/" className="hidden md:flex items-center gap-2 px-3 py-1.5 text-white/80 hover:text-white transition-colors">
-                <span className="text-sm font-medium">Back to Website</span>
-              </Link>
-
               <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full">
                 <Lock className="w-4 h-4 text-white" />
                 <span className="text-sm text-white font-medium">Secure Access</span>

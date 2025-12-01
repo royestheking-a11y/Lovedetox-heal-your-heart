@@ -31,14 +31,12 @@ interface AuthContextType {
 
   resetPassword: (email: string, newPassword: string) => Promise<boolean>;
   googleLogin: (accessToken: string) => Promise<boolean>;
-  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
   const [otpState, setOtpState] = useState<{
     code: string;
     email: string;
@@ -70,10 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .catch(err => {
           console.error('Failed to fetch fresh profile:', err);
           // If 401, maybe logout? For now just log error.
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
+        });
     }
   }, []);
 
@@ -203,7 +198,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return true;
   };
 
-  const resetPassword = async (email: string, newPassword: string): Promise<boolean> => {
+  const resetPassword = async (_email: string, _newPassword: string): Promise<boolean> => {
     // For now, we'll just update the user if they are logged in or if we can find them via API
     // Since we don't have a reset password endpoint yet, we'll skip this or implement it later.
     // But to keep the interface satisfied:
@@ -213,18 +208,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const googleLogin = async (accessToken: string): Promise<boolean> => {
     try {
+      console.time('GoogleUserInfoFetch');
       const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       const userInfo = await response.json();
+      console.timeEnd('GoogleUserInfoFetch');
+
       const { email, name, picture, sub } = userInfo;
 
+      console.time('BackendLoginCall');
       const data = await authService.googleLogin({
         email,
         name,
         googleId: sub,
         picture
       });
+      console.timeEnd('BackendLoginCall');
 
       const user = { ...data, id: data._id };
       setUser(user);
@@ -251,8 +251,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       sendOTP,
       verifyOTP,
       resetPassword,
-      googleLogin,
-      loading
+      googleLogin
     }}>
       {children}
     </AuthContext.Provider>

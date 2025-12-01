@@ -1,107 +1,60 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Home } from './pages/Home';
-import { Features } from './pages/Features';
-import { Pricing } from './pages/Pricing';
-import { FAQ } from './pages/FAQ';
-import { HowItWorks } from './pages/HowItWorks';
-import { Contact } from './pages/Contact';
-import { Login } from './pages/Login';
-import { Register } from './pages/Register';
+import { useState, useEffect } from 'react';
+import { Homepage } from './components/Homepage';
 import { UserDashboard } from './components/user/UserDashboard';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AuthProvider, useAuth } from './components/AuthContext';
 import { DarkModeProvider } from './components/DarkModeContext';
 import { OnboardingTutorial } from './components/OnboardingTutorial';
 import { Toaster } from 'sonner';
-import { Navbar } from './components/Navbar';
-import { AppFooter } from './components/AppFooter';
 
-function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
-  const { user, isAdmin, loading } = useAuth();
-
-  if (loading) return <div>Loading...</div>;
-
-  if (!user) {
-    return <Navigate to="/login" />;
-  }
-
-  if (requireAdmin && !isAdmin) {
-    return <Navigate to="/dashboard" />;
-  }
-
-  return <>{children}</>;
-}
-
-// Wait, the above structure is a bit messy with multiple Routes. 
-// Let's create a Layout component for public pages.
-
-function PublicLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <Navbar />
-      <main className="flex-grow">{children}</main>
-      <AppFooter />
-    </>
-  );
-}
-
-function AppRoutes() {
-  const { user } = useAuth();
+function AppContent() {
+  const { user, isAdmin } = useAuth();
+  const [currentPage, setCurrentPage] = useState<'home' | 'user' | 'admin'>('home');
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    if (user) {
+    console.log('📄 Page check - User:', user?.email, 'isAdmin:', isAdmin);
+
+    if (user && isAdmin) {
+      console.log('🔑 Redirecting to ADMIN panel');
+      setCurrentPage('admin');
+    } else if (user) {
+      console.log('👤 Redirecting to USER dashboard');
+      setCurrentPage('user');
+      // Show onboarding for new users
       const hasSeenOnboarding = localStorage.getItem(`hasSeenOnboarding_${user.id}`);
       if (!hasSeenOnboarding) {
         setShowOnboarding(true);
       }
+    } else {
+      console.log('🏠 Showing HOMEPAGE');
+      setCurrentPage('home');
     }
-  }, [user]);
+  }, [user, isAdmin]);
+
+  const renderPage = () => {
+    if (currentPage === 'admin' && isAdmin) {
+      return <AdminDashboard onLogout={() => setCurrentPage('home')} />;
+    }
+    if (currentPage === 'user' && user) {
+      return <UserDashboard onLogout={() => setCurrentPage('home')} />;
+    }
+    return <Homepage />;
+  };
 
   return (
-    <Router>
-      <div className="min-h-screen bg-[#FAFAFA] transition-colors duration-300 flex flex-col">
-        <Routes>
-          {/* Public Routes with Layout */}
-          <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
-          <Route path="/features" element={<PublicLayout><Features /></PublicLayout>} />
-          <Route path="/pricing" element={<PublicLayout><Pricing /></PublicLayout>} />
-          <Route path="/how-it-works" element={<PublicLayout><HowItWorks /></PublicLayout>} />
-          <Route path="/faq" element={<PublicLayout><FAQ /></PublicLayout>} />
-          <Route path="/contact" element={<PublicLayout><Contact /></PublicLayout>} />
-
-          {/* Auth Pages (No Navbar/Footer or maybe yes?) Let's keep them clean or with layout */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-
-          {/* Protected Routes */}
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <UserDashboard onLogout={() => window.location.href = '/'} />
-            </ProtectedRoute>
-          } />
-          <Route path="/admin" element={
-            <ProtectedRoute requireAdmin={true}>
-              <AdminDashboard onLogout={() => window.location.href = '/'} />
-            </ProtectedRoute>
-          } />
-
-          {/* Catch all */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-
-        {showOnboarding && user && (
-          <OnboardingTutorial
-            onComplete={() => {
-              localStorage.setItem(`hasSeenOnboarding_${user.id}`, 'true');
-              setShowOnboarding(false);
-            }}
-          />
-        )}
-        <Toaster position="top-center" richColors />
-      </div>
-    </Router>
+    <div className="min-h-screen bg-[#FAFAFA] transition-colors duration-300">
+      {renderPage()}
+      {showOnboarding && user && (
+        <OnboardingTutorial
+          onComplete={() => {
+            localStorage.setItem(`hasSeenOnboarding_${user.id}`, 'true');
+            setShowOnboarding(false);
+          }}
+        />
+      )}
+      <Toaster position="top-center" richColors />
+    </div>
   );
 }
 
@@ -109,7 +62,7 @@ export default function App() {
   return (
     <DarkModeProvider>
       <AuthProvider>
-        <AppRoutes />
+        <AppContent />
       </AuthProvider>
     </DarkModeProvider>
   );
