@@ -154,7 +154,7 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
 
       <div className="flex">
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:block w-72 min-h-[calc(100vh-4rem)] sticky top-16 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors duration-300">
+        <aside className="hidden lg:block w-72 h-[calc(100vh-4rem)] sticky top-16 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors duration-300 overflow-y-auto custom-scrollbar">
           <nav className="p-6 space-y-2">
             <div className="mb-6">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Navigation</p>
@@ -216,7 +216,7 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
         {/* Mobile Sidebar */}
         {sidebarOpen && (
           <div className="lg:hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)}>
-            <aside className="w-72 h-full bg-white dark:bg-gray-800 shadow-2xl transition-colors duration-300" onClick={(e) => e.stopPropagation()}>
+            <aside className="w-72 h-full bg-white dark:bg-gray-800 shadow-2xl transition-colors duration-300 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
@@ -230,7 +230,7 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
                   </button>
                 </div>
 
-                <nav className="space-y-2">
+                <nav className="space-y-2 pb-20"> {/* Added padding bottom for mobile safe area */}
                   {navigation.map((item) => (
                     <button
                       key={item.id}
