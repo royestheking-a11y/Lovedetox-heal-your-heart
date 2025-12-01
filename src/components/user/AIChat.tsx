@@ -220,21 +220,21 @@ export function AIChat() {
   const currentMode = aiModes[selectedMode];
 
   return (
-    <div className="h-[calc(100vh-12rem)] flex flex-col">
+    <div className="h-[calc(100dvh-6rem)] md:h-[calc(100vh-8rem)] flex flex-col">
       {/* Header */}
-      <div className="card-3d p-6 rounded-2xl mb-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
+      <div className="card-3d p-4 md:p-6 rounded-2xl mb-2 md:mb-4">
+        <div className="flex items-center justify-between mb-2 md:mb-4">
+          <div className="flex items-center gap-3 md:gap-4">
             <PremiumIcon Icon={Bot} size="md" variant="3d" gradient="from-[#6366F1] to-[#8B5CF6]" animate={true} />
             <div>
-              <h3 className="gradient-text text-xl">AI Support Companion</h3>
+              <h3 className="gradient-text text-lg md:text-xl">AI Support Companion</h3>
               <div className="flex items-center gap-2 mt-1">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <p className="text-sm text-gray-600 dark:text-gray-400">Online & Ready to Help</p>
+                <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">Online & Ready to Help</p>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <button
               onClick={toggleSound}
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -247,7 +247,7 @@ export function AIChat() {
               )}
             </button>
             {!user?.isPro && (
-              <div className="px-3 py-1.5 bg-gradient-to-r from-[#6366F1]/10 to-[#8B5CF6]/10 rounded-full">
+              <div className="hidden sm:block px-3 py-1.5 bg-gradient-to-r from-[#6366F1]/10 to-[#8B5CF6]/10 rounded-full">
                 <p className="text-xs font-medium text-[#6366F1] dark:text-[#8B5CF6]">
                   {remainingMessages} messages left
                 </p>
@@ -257,7 +257,7 @@ export function AIChat() {
         </div>
 
         {/* AI Mode Selector */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+        <div className="grid grid-cols-5 gap-1 md:gap-2">
           {(Object.keys(aiModes) as AiMode[]).map((mode) => {
             const modeData = aiModes[mode];
             const ModeIcon = modeData.icon;
@@ -267,14 +267,14 @@ export function AIChat() {
               <button
                 key={mode}
                 onClick={() => handleModeChange(mode)}
-                className={`p-3 rounded-xl transition-all duration-300 ${isSelected
+                className={`p-2 md:p-3 rounded-xl transition-all duration-300 ${isSelected
                   ? 'bg-gradient-to-br ' + modeData.color + ' shadow-lg scale-105'
                   : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
               >
-                <ModeIcon className={`w-5 h-5 mx-auto mb-1 ${isSelected ? 'text-white' : 'text-gray-600 dark:text-gray-400'
+                <ModeIcon className={`w-4 h-4 md:w-5 md:h-5 mx-auto mb-1 ${isSelected ? 'text-white' : 'text-gray-600 dark:text-gray-400'
                   }`} />
-                <p className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-gray-700 dark:text-gray-300'
+                <p className={`text-[10px] md:text-xs font-medium truncate ${isSelected ? 'text-white' : 'text-gray-700 dark:text-gray-300'
                   }`}>
                   {modeData.name}
                 </p>
@@ -283,7 +283,7 @@ export function AIChat() {
           })}
         </div>
 
-        <div className="mt-3 text-center">
+        <div className="mt-2 md:mt-3 text-center hidden sm:block">
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <span className="font-medium text-gray-700 dark:text-gray-300">{currentMode.name} Mode:</span> {currentMode.description}
           </p>
@@ -291,7 +291,7 @@ export function AIChat() {
       </div>
 
       {/* Messages */}
-      <div ref={messagesContainerRef} className="flex-1 card-3d rounded-2xl p-6 overflow-y-auto space-y-4 mb-4">
+      <div ref={messagesContainerRef} className="flex-1 card-3d rounded-2xl p-4 md:p-6 overflow-y-auto space-y-4 mb-2 md:mb-4">
         {messages.length === 0 ? (
           <div className="h-full flex items-center justify-center">
             <div className="text-center max-w-md">
@@ -336,9 +336,9 @@ export function AIChat() {
                 className={`flex gap-3 ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}
               >
                 {message.sender === 'ai' && (
-                  <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${currentMode.color} flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-white dark:ring-gray-800 relative`}>
+                  <div className={`w-8 h-8 md:w-11 md:h-11 rounded-full bg-gradient-to-br ${currentMode.color} flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-white dark:ring-gray-800 relative`}>
                     {/* Cute Robot Face */}
-                    <div className="relative">
+                    <div className="relative transform scale-75 md:scale-100">
                       <Bot className="w-6 h-6 text-white" />
                       {/* Robot antenna */}
                       <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0.5 h-2 bg-white/50 rounded-full" />
@@ -347,14 +347,14 @@ export function AIChat() {
                   </div>
                 )}
                 <div
-                  className={`max-w-[70%] p-4 rounded-2xl shadow-md backdrop-blur-sm ${message.sender === 'user'
+                  className={`max-w-[85%] md:max-w-[70%] p-3 md:p-4 rounded-2xl shadow-md backdrop-blur-sm ${message.sender === 'user'
                     ? 'bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] shadow-purple-500/20'
                     : 'bg-white/80 dark:bg-gray-700/80 shadow-gray-200/50 dark:shadow-gray-900/50'
                     }`}
                 >
                   <p className={`text-sm leading-relaxed ${message.sender === 'user' ? 'text-white' : 'text-gray-900 dark:text-white'
                     }`} style={message.sender === 'user' ? { color: '#ffffff !important' } : {}}>{message.text}</p>
-                  <p className={`text-xs mt-2 ${message.sender === 'user' ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
+                  <p className={`text-[10px] md:text-xs mt-1 md:mt-2 ${message.sender === 'user' ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
                     }`}>
                     {new Date(message.timestamp).toLocaleTimeString([], {
                       hour: '2-digit',
@@ -363,17 +363,17 @@ export function AIChat() {
                   </p>
                 </div>
                 {message.sender === 'user' && (
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-white dark:ring-gray-800">
-                    <User className="w-6 h-6 text-white" />
+                  <div className="w-8 h-8 md:w-11 md:h-11 rounded-full bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-white dark:ring-gray-800">
+                    <User className="w-4 h-4 md:w-6 md:h-6 text-white" />
                   </div>
                 )}
               </div>
             ))}
             {isTyping && (
               <div className="flex gap-3 justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${currentMode.color} flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-white dark:ring-gray-800 relative`}>
+                <div className={`w-8 h-8 md:w-11 md:h-11 rounded-full bg-gradient-to-br ${currentMode.color} flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-white dark:ring-gray-800 relative`}>
                   {/* Cute Robot Face */}
-                  <div className="relative">
+                  <div className="relative transform scale-75 md:scale-100">
                     <Bot className="w-6 h-6 text-white animate-pulse" />
                     {/* Robot antenna */}
                     <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0.5 h-2 bg-white/50 rounded-full" />
@@ -395,8 +395,8 @@ export function AIChat() {
       </div>
 
       {/* Input */}
-      <div className="card-3d p-4 rounded-2xl">
-        <div className="flex gap-3">
+      <div className="card-3d p-3 md:p-4 rounded-2xl">
+        <div className="flex gap-2 md:gap-3">
           <input
             type="text"
             value={input}
@@ -408,7 +408,7 @@ export function AIChat() {
           <button
             onClick={handleSend}
             disabled={!input.trim() || isTyping}
-            className="btn-primary px-6 py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary px-4 md:px-6 py-3 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Send className="w-5 h-5" />
           </button>
