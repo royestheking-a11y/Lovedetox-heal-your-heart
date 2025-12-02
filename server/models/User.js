@@ -27,7 +27,7 @@ const userSchema = mongoose.Schema({
         transactionId: String,
         method: String, // 'bkash', 'nagad', 'rocket'
         amount: Number,
-        type: String, // 'subscription', 'refund'
+        type: { type: String }, // 'subscription', 'refund' - Fixed Mongoose type conflict
         planType: { type: String, enum: ['PRO_MONTHLY', 'PRO_LIFETIME'] }, // Added planType
         status: { type: String, enum: ['pending', 'approved', 'rejected', 'refunded'], default: 'pending' },
         date: { type: Date, default: Date.now },
