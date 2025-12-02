@@ -81,11 +81,11 @@ export function AdminHome({ onNavigate }: { onNavigate: (tab: any) => void }) {
             </div>
             <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">MRR</span>
           </div>
-          <div className="text-3xl font-bold gradient-text mb-1">${stats.revenueToday}</div>
+          <div className="text-3xl font-bold gradient-text mb-1">৳{stats.revenueToday}</div>
           <p className="text-sm text-gray-500 dark:text-gray-400">Monthly Revenue</p>
           <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              ${stats.revenueToday * 12}/year projected
+              ৳{stats.revenueToday * 12}/year projected
             </p>
           </div>
         </div>

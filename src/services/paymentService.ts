@@ -36,6 +36,21 @@ const confirmRefund = async (data: { userId: string; paymentId: string }) => {
     return response.data;
 };
 
+const getPaymentHistory = async () => {
+    const response = await api.get('/admin/payments');
+    return response.data;
+};
+
+const deletePayment = async (id: string) => {
+    const response = await api.delete(`/admin/payments/${id}`);
+    return response.data;
+};
+
+const clearAllPayments = async () => {
+    const response = await api.delete('/admin/payments/all');
+    return response.data;
+};
+
 const paymentService = {
     startTrial,
     submitPayment,
@@ -43,7 +58,10 @@ const paymentService = {
     getPaymentRequests,
     approvePayment,
     rejectPayment,
-    confirmRefund
+    confirmRefund,
+    getPaymentHistory,
+    deletePayment,
+    clearAllPayments
 };
 
 export default paymentService;

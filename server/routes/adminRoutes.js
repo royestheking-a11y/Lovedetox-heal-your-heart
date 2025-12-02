@@ -62,6 +62,33 @@ router.get('/stats', protect, admin, async (req, res) => {
     });
 });
 
+// --- PAYMENTS ---
+// @desc    Get all payments (history)
+// @route   GET /api/admin/payments
+router.get('/payments', protect, admin, async (req, res) => {
+    const payments = await Payment.find({}).sort({ date: -1 });
+    res.json(payments);
+});
+
+// @desc    Delete all payments
+// @route   DELETE /api/admin/payments/all
+router.delete('/payments/all', protect, admin, async (req, res) => {
+    await Payment.deleteMany({});
+    res.json({ message: 'All payment history cleared' });
+});
+
+// @desc    Delete single payment
+// @route   DELETE /api/admin/payments/:id
+router.delete('/payments/:id', protect, admin, async (req, res) => {
+    const payment = await Payment.findById(req.params.id);
+    if (payment) {
+        await payment.deleteOne();
+        res.json({ message: 'Payment removed' });
+    } else {
+        res.status(404).json({ message: 'Payment not found' });
+    }
+});
+
 // --- USERS ---
 // @desc    Get all users
 // @route   GET /api/admin/users
