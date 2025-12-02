@@ -17,6 +17,7 @@ export function MindCanvas() {
     const [emotion, setEmotion] = useState('');
     const [selectedStyle, setSelectedStyle] = useState('Cinematic');
     const [isGenerating, setIsGenerating] = useState(false);
+    const [imageLoading, setImageLoading] = useState(false);
     const [currentImage, setCurrentImage] = useState<GeneratedImage | null>(null);
     const [gallery, setGallery] = useState<GeneratedImage[]>([]);
     const [loadingQuote, setLoadingQuote] = useState('');
@@ -56,6 +57,7 @@ export function MindCanvas() {
         }
 
         setIsGenerating(true);
+        setImageLoading(true);
         setLoadingQuote(quotes[Math.floor(Math.random() * quotes.length)]);
 
         try {
@@ -195,28 +197,47 @@ export function MindCanvas() {
                         </div>
                     ) : currentImage ? (
                         <div className="relative w-full h-full flex flex-col items-center">
+                            {imageLoading && (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center space-y-6 bg-white dark:bg-gray-800 z-10">
+                                    <div className="relative">
+                                        <div className="absolute inset-0 bg-purple-500 blur-xl opacity-20 animate-pulse rounded-full"></div>
+                                        <Loader2 className="w-16 h-16 text-purple-600 animate-spin relative z-10" />
+                                    </div>
+                                    <div className="text-center space-y-2">
+                                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Finishing touches...</h3>
+                                        <p className="text-gray-500 dark:text-gray-400 animate-pulse">
+                                            Almost ready...
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
                             <img
                                 src={currentImage.image_url}
                                 alt="Generated Art"
-                                className="w-full h-auto max-h-[400px] object-cover rounded-2xl shadow-2xl mb-6 transform transition-transform duration-700 hover:scale-[1.02]"
+                                onLoad={() => setImageLoading(false)}
+                                className={`w-full h-auto max-h-[400px] object-cover rounded-2xl shadow-2xl mb-6 transform transition-transform duration-700 hover:scale-[1.02] ${imageLoading ? 'opacity-0' : 'opacity-100'}`}
                             />
-                            <div className="flex gap-4 w-full justify-center">
-                                <button
-                                    onClick={() => downloadImage(currentImage.image_url, 'mind-canvas')}
-                                    className="flex items-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-700 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                                >
-                                    <Download className="w-5 h-5" />
-                                    Download
-                                </button>
-                                <button
-                                    onClick={() => toast.success('Saved to your gallery!')}
-                                    className="flex items-center gap-2 px-6 py-3 bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 rounded-xl font-medium hover:bg-pink-100 dark:hover:bg-pink-900/40 transition-colors"
-                                >
-                                    <Heart className="w-5 h-5" />
-                                    Save
-                                </button>
-                            </div>
-                            <p className="mt-4 text-sm text-gray-500 italic">"{currentImage.text_note}"</p>
+                            {!imageLoading && (
+                                <>
+                                    <div className="flex gap-4 w-full justify-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+                                        <button
+                                            onClick={() => downloadImage(currentImage.image_url, 'mind-canvas')}
+                                            className="flex items-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-700 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                                        >
+                                            <Download className="w-5 h-5" />
+                                            Download
+                                        </button>
+                                        <button
+                                            onClick={() => toast.success('Saved to your gallery!')}
+                                            className="flex items-center gap-2 px-6 py-3 bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 rounded-xl font-medium hover:bg-pink-100 dark:hover:bg-pink-900/40 transition-colors"
+                                        >
+                                            <Heart className="w-5 h-5" />
+                                            Save
+                                        </button>
+                                    </div>
+                                    <p className="mt-4 text-sm text-gray-500 italic animate-in fade-in duration-1000">"{currentImage.text_note}"</p>
+                                </>
+                            )}
                         </div>
                     ) : (
                         <div className="text-center text-gray-400">
@@ -228,6 +249,6 @@ export function MindCanvas() {
             </div>
 
             {/* Gallery Section Removed as per user request */}
-        </div>
+        </div >
     );
 }
