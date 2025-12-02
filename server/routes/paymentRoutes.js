@@ -45,20 +45,35 @@ router.post('/start-trial', protect, async (req, res) => {
 router.post('/submit', protect, async (req, res) => {
     const { transactionId, method, amount, planType } = req.body; // planType: 'PRO_MONTHLY' or 'PRO_LIFETIME'
 
+    const Payment = require('../models/Payment'); // Import Payment model
+
+    // ... (inside route)
     try {
         const user = await User.findById(req.user._id);
 
-        const payment = {
+        // Create Payment Document
+        const payment = await Payment.create({
+            userId: user._id,
+            userName: user.name,
+            userEmail: user.email,
+            transactionId,
+            method,
+            amount,
+            planType,
+            status: 'pending',
+            date: new Date()
+        });
+
+        // Also save to user history (optional, but good for redundancy)
+        user.paymentHistory.push({
             transactionId,
             method,
             amount,
             type: 'subscription',
-            planType, // Save planType
+            planType,
             status: 'pending',
             date: new Date()
-        };
-
-        user.paymentHistory.push(payment);
+        });
         await user.save();
 
         res.json({ message: 'Payment submitted for review. Admin will approve shortly.' });

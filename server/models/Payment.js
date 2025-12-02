@@ -8,9 +8,12 @@ const paymentSchema = mongoose.Schema({
     },
     userName: { type: String, required: true },
     userEmail: { type: String, required: true },
+    transactionId: { type: String, required: true },
+    method: { type: String, required: true },
     amount: { type: Number, required: true },
-    status: { type: String, enum: ['completed', 'failed', 'refunded'], default: 'completed' },
+    status: { type: String, enum: ['pending', 'completed', 'failed', 'refunded'], default: 'pending' },
     plan: { type: String, default: 'Pro' },
+    planType: { type: String }, // 'PRO_MONTHLY' or 'PRO_LIFETIME'
     date: { type: Date, default: Date.now }
 }, {
     timestamps: true
