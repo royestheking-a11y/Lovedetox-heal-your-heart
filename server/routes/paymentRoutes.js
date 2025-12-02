@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const Payment = require('../models/Payment');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 // @desc    Start 30-Day Pro Trial
