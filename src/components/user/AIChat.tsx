@@ -347,10 +347,10 @@ export function AIChat() {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex gap - 3 ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate -in fade -in slide -in -from - bottom - 2 duration - 300`}
+                className={`flex gap-3 ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}
               >
                 {message.sender === 'ai' && (
-                  <div className={`w - 8 h - 8 md: w - 11 md: h - 11 rounded - full bg - gradient - to - br ${currentMode.color} flex items - center justify - center flex - shrink - 0 shadow - lg ring - 2 ring - white dark: ring - gray - 800 relative`}>
+                  <div className={`w-8 h-8 md:w-11 md:h-11 rounded-full bg-gradient-to-br ${currentMode.color} flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-white dark:ring-gray-800 relative`}>
                     {/* Cute Robot Face */}
                     <div className="relative transform scale-75 md:scale-100">
                       <Bot className="w-6 h-6 text-white" />
@@ -361,15 +361,15 @@ export function AIChat() {
                   </div>
                 )}
                 <div
-                  className={`max - w - [85 %] md: max - w - [70 %] p - 3 md: p - 4 rounded - 2xl shadow - md backdrop - blur - sm ${message.sender === 'user'
+                  className={`max-w-[85%] md:max-w-[70%] p-3 md:p-4 rounded-2xl shadow-md backdrop-blur-sm ${message.sender === 'user'
                     ? 'bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] shadow-purple-500/20'
                     : 'bg-white/80 dark:bg-gray-700/80 shadow-gray-200/50 dark:shadow-gray-900/50'
-                    } `}
+                    }`}
                 >
-                  <p className={`text - sm leading - relaxed ${message.sender === 'user' ? 'text-white' : 'text-gray-900 dark:text-white'
-                    } `} style={message.sender === 'user' ? { color: '#ffffff !important' } : {}}>{message.text}</p>
-                  <p className={`text - [10px] md: text - xs mt - 1 md: mt - 2 ${message.sender === 'user' ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
-                    } `}>
+                  <p className={`text-sm leading-relaxed ${message.sender === 'user' ? 'text-white' : 'text-gray-900 dark:text-white'
+                    }`} style={message.sender === 'user' ? { color: '#ffffff !important' } : {}}>{message.text}</p>
+                  <p className={`text-[10px] md:text-xs mt-1 md:mt-2 ${message.sender === 'user' ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
+                    }`}>
                     {new Date(message.timestamp).toLocaleTimeString([], {
                       hour: '2-digit',
                       minute: '2-digit'
@@ -385,7 +385,7 @@ export function AIChat() {
             ))}
             {isTyping && (
               <div className="flex gap-3 justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <div className={`w - 8 h - 8 md: w - 11 md: h - 11 rounded - full bg - gradient - to - br ${currentMode.color} flex items - center justify - center flex - shrink - 0 shadow - lg ring - 2 ring - white dark: ring - gray - 800 relative`}>
+                <div className={`w-8 h-8 md:w-11 md:h-11 rounded-full bg-gradient-to-br ${currentMode.color} flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-white dark:ring-gray-800 relative`}>
                   {/* Cute Robot Face */}
                   <div className="relative transform scale-75 md:scale-100">
                     <Bot className="w-6 h-6 text-white animate-pulse" />
