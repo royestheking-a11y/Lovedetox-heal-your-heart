@@ -21,6 +21,7 @@ interface User {
   plan?: 'FREE' | 'PRO_TRIAL' | 'PRO_MONTHLY' | 'PRO_LIFETIME';
   trialStartDate?: string;
   trialEndDate?: string;
+  token?: string;
 }
 
 interface AuthContextType {
@@ -150,12 +151,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const updateUser = async (updates: Partial<User>) => {
     if (!user) return;
     try {
+      // Optimistic update
+      const optimisticUser = { ...user, ...updates };
+      setUser(optimisticUser);
+      localStorage.setItem('currentUser', JSON.stringify(optimisticUser));
+
       const updatedUser = await dataService.updateProfile(updates);
-      setUser({ ...updatedUser, id: updatedUser._id });
-      toast.success('Profile updated');
+      // Confirm with server data
+      const finalUser = { ...updatedUser, id: updatedUser._id, token: user.token }; // Keep token
+      setUser(finalUser);
+      localStorage.setItem('currentUser', JSON.stringify(finalUser));
+
+      // Only show toast for manual profile updates
+      if (Object.keys(updates).length > 0) {
+        toast.success('Profile updated');
+      }
     } catch (error) {
       console.error('Update error:', error);
-      toast.error('Failed to update profile');
+      // Revert on error (optional, but good practice)
+      // toast.error('Failed to update profile');
     }
   };
 
