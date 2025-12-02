@@ -57,8 +57,8 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
   const navigation = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', color: 'from-[#6366F1] to-[#8B5CF6]' },
     { id: 'tasks', icon: CheckSquare, label: 'Daily Tasks', color: 'from-[#8B5CF6] to-[#FB7185]' },
-    { id: 'ai', icon: MessageCircle, label: 'AI Support', color: 'from-[#6366F1] to-[#8B5CF6]' },
-    { id: 'mind-canvas', icon: Palette, label: 'Mind Canvas', color: 'from-[#FB7185] to-[#F472B6]' },
+    { id: 'ai', icon: MessageCircle, label: 'AI Support', color: 'from-[#6366F1] to-[#8B5CF6]', pro: true },
+    { id: 'mind-canvas', icon: Palette, label: 'Mind Canvas', color: 'from-[#FB7185] to-[#F472B6]', pro: true },
     { id: 'mood', icon: Heart, label: 'Mood Tracker', color: 'from-[#FB7185] to-[#F472B6]' },
     { id: 'journal', icon: BookOpen, label: 'Journal', color: 'from-[#8B5CF6] to-[#FB7185]' },
     { id: 'breathing', icon: Wind, label: 'Breathing', color: 'from-[#6366F1] to-[#8B5CF6]', pro: true },
