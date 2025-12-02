@@ -174,6 +174,17 @@ const dataService = {
     deleteCommunityPost: async (id: string) => {
         const response = await api.delete(`/data/community/${id}`);
         return response.data;
+    },
+
+    // Mind Canvas
+    generateMindCanvasImage: async (data: any) => {
+        const response = await api.post('/mind-canvas/generate', data);
+        return response.data;
+    },
+
+    getMindCanvasGallery: async (userId: string) => {
+        const response = await api.get(`/mind-canvas/my-art/${userId}`);
+        return response.data;
     }
 };
 

@@ -1,8 +1,8 @@
+
 import { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { User, Lock, Bell, Download, Trash2, Crown, Palette } from 'lucide-react';
 import { toast } from 'sonner';
-import axios from 'axios';
 
 export function Profile() {
   const { user, updateUser, logout } = useAuth();
@@ -24,9 +24,11 @@ export function Profile() {
   }, [user]);
 
   const fetchGallery = async () => {
+    if (!user) return;
     try {
-      const response = await axios.get(`http://localhost:5001/api/mind-canvas/my-art/${user?.id}`);
-      setGallery(response.data);
+      const dataService = (await import('../../services/dataService')).default;
+      const galleryData = await dataService.getMindCanvasGallery(user.id);
+      setGallery(galleryData);
     } catch (error) {
       console.error('Error fetching gallery:', error);
     }

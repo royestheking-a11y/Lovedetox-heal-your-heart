@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Sparkles, Download, Heart, Palette, Loader2, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../AuthContext';
-import axios from 'axios';
+import dataService from '../../services/dataService';
 
 interface GeneratedImage {
     _id: string;
@@ -19,7 +19,6 @@ export function MindCanvas() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [imageLoading, setImageLoading] = useState(false);
     const [currentImage, setCurrentImage] = useState<GeneratedImage | null>(null);
-    const [gallery, setGallery] = useState<GeneratedImage[]>([]);
     const [loadingQuote, setLoadingQuote] = useState('');
 
 
@@ -36,19 +35,7 @@ export function MindCanvas() {
         "Healing through art..."
     ];
 
-    useEffect(() => {
-        fetchGallery();
-    }, []);
 
-    const fetchGallery = async () => {
-        if (!user) return;
-        try {
-            const response = await axios.get(`http://localhost:5001/api/mind-canvas/my-art/${user.id}`);
-            setGallery(response.data);
-        } catch (error) {
-            console.error('Error fetching gallery:', error);
-        }
-    };
 
     const handleGenerate = async () => {
         if (!emotion.trim()) {
@@ -61,23 +48,23 @@ export function MindCanvas() {
         setLoadingQuote(quotes[Math.floor(Math.random() * quotes.length)]);
 
         try {
-            const response = await axios.post('http://localhost:5001/api/mind-canvas/generate', {
+            const response = await dataService.generateMindCanvasImage({
                 user_id: user?.id,
                 prompt: emotion,
                 style: selectedStyle,
                 is_pro: user?.isPro
             });
 
-            if (response.data.success) {
-                const newImage = {
-                    _id: response.data.imageId,
-                    image_url: response.data.imageUrl,
+            if (response.success) {
+                const newImage: GeneratedImage = {
+                    _id: response.imageId,
+                    image_url: response.imageUrl,
                     text_note: emotion,
                     style: selectedStyle,
                     date: new Date().toISOString()
                 };
+
                 setCurrentImage(newImage);
-                setGallery([newImage, ...gallery]);
                 toast.success('Masterpiece created! 🎨');
             }
         } catch (error: any) {
