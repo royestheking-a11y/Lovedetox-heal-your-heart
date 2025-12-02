@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
-import { Award, Share2, Heart, Calendar, User as UserIcon, Mail, MessageSquare, Check } from 'lucide-react';
+import { Award, Share2, Heart, Calendar, User as UserIcon, MessageSquare, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { SoundEffects } from '../SoundEffects';
 import dataService from '../../services/dataService';

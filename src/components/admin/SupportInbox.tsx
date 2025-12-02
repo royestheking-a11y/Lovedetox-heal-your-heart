@@ -5,7 +5,6 @@ import adminService from '../../services/adminService';
 
 export function SupportInbox() {
   const [messages, setMessages] = useState<any[]>([]);
-  const [selectedMessage, setSelectedMessage] = useState<any>(null);
 
   useEffect(() => {
     loadMessages();
@@ -28,7 +27,6 @@ export function SupportInbox() {
       await adminService.resolveSupportMessage(messageId);
       loadMessages();
       toast.success('Message marked as resolved');
-      setSelectedMessage(null);
     } catch (error) {
       console.error('Error resolving message:', error);
       toast.error('Failed to resolve message');
@@ -40,7 +38,6 @@ export function SupportInbox() {
       await adminService.deleteSupportMessage(messageId);
       loadMessages();
       toast.success('Message deleted');
-      setSelectedMessage(null);
     } catch (error) {
       console.error('Error deleting message:', error);
       toast.error('Failed to delete message');
@@ -70,8 +67,8 @@ export function SupportInbox() {
                     <p className="text-sm text-gray-500">{message.email}</p>
                   </div>
                   <span className={`px-2 py-1 text-xs rounded-full ${message.status === 'resolved'
-                      ? 'bg-green-100 text-green-600'
-                      : 'bg-yellow-100 text-yellow-600'
+                    ? 'bg-green-100 text-green-600'
+                    : 'bg-yellow-100 text-yellow-600'
                     }`}>
                     {message.status || 'new'}
                   </span>

@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { Wind, Play, Pause, RotateCcw, Volume2, VolumeX, Heart } from 'lucide-react';
+import { Wind, Play, Pause, RotateCcw, Volume2, VolumeX, Heart, Lock, ArrowRight } from 'lucide-react';
 import { SoundEffects } from '../SoundEffects';
 import { toast } from 'sonner';
+import { useAuth } from '../AuthContext';
+import { UpgradeModal } from './UpgradeModal';
 
 const exercises = [
   {
@@ -43,6 +45,7 @@ const exercises = [
 ];
 
 export function BreathingExercise() {
+  const { user } = useAuth();
   const [selectedExercise, setSelectedExercise] = useState(exercises[0]);
   const [isActive, setIsActive] = useState(false);
   const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
@@ -50,16 +53,20 @@ export function BreathingExercise() {
   const [completedCycles, setCompletedCycles] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [scale, setScale] = useState(1);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const currentPhase = selectedExercise.pattern[currentPhaseIndex];
+
+  // Check if user is Pro or in Trial
+  const isPro = user?.isPro || (user?.plan === 'PRO_TRIAL' && user.trialEndDate && new Date(user.trialEndDate) > new Date());
 
   useEffect(() => {
     if (isActive) {
       // Animate breathing circle
       const isInhale = currentPhase.phase === 'Breathe In';
       const isExhale = currentPhase.phase === 'Breathe Out';
-      
+
       if (isInhale) {
         setScale(1.8);
       } else if (isExhale) {
@@ -74,13 +81,13 @@ export function BreathingExercise() {
             // Move to next phase
             setCurrentPhaseIndex((prevIndex) => {
               const nextIndex = (prevIndex + 1) % selectedExercise.pattern.length;
-              
+
               // Completed full cycle
               if (nextIndex === 0) {
                 setCompletedCycles((prev) => prev + 1);
                 if (soundEnabled) SoundEffects.play('success');
               }
-              
+
               return nextIndex;
             });
             return selectedExercise.pattern[(currentPhaseIndex + 1) % selectedExercise.pattern.length].duration;
@@ -94,6 +101,45 @@ export function BreathingExercise() {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [isActive, currentPhaseIndex, selectedExercise, soundEnabled, currentPhase.phase]);
+
+  if (!isPro) {
+    return (
+      <div className="relative min-h-[600px] flex items-center justify-center rounded-3xl overflow-hidden bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-10 blur-sm" />
+
+        <div className="relative z-10 text-center p-8 max-w-md mx-auto">
+          <div className="w-20 h-20 bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl transform rotate-3">
+            <Lock className="w-10 h-10 text-white" />
+          </div>
+
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Unlock Breathing Exercises
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-8 text-lg">
+            Calm your mind and reduce anxiety with guided breathing techniques. This premium feature is available exclusively for Pro members.
+          </p>
+
+          <button
+            onClick={() => setShowUpgradeModal(true)}
+            className="w-full py-4 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+          >
+            Upgrade to Unlock
+            <ArrowRight className="w-5 h-5" />
+          </button>
+
+          <p className="mt-4 text-sm text-gray-500">
+            Start your 30-day free trial today.
+          </p>
+        </div>
+
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          type="trial"
+        />
+      </div>
+    );
+  }
 
   const handleStart = () => {
     setIsActive(true);
@@ -165,20 +211,17 @@ export function BreathingExercise() {
                   <button
                     key={exercise.id}
                     onClick={() => handleExerciseChange(exercise)}
-                    className={`w-full p-4 rounded-xl text-left transition-all ${
-                      selectedExercise.id === exercise.id
+                    className={`w-full p-4 rounded-xl text-left transition-all ${selectedExercise.id === exercise.id
                         ? `bg-gradient-to-r ${exercise.gradient} text-white shadow-lg`
                         : 'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
+                      }`}
                   >
-                    <div className={`font-semibold mb-1 ${
-                      selectedExercise.id === exercise.id ? 'text-white' : 'text-gray-900 dark:text-white'
-                    }`}>
+                    <div className={`font-semibold mb-1 ${selectedExercise.id === exercise.id ? 'text-white' : 'text-gray-900 dark:text-white'
+                      }`}>
                       {exercise.name}
                     </div>
-                    <div className={`text-sm ${
-                      selectedExercise.id === exercise.id ? 'text-white/90' : 'text-gray-600 dark:text-gray-400'
-                    }`}>
+                    <div className={`text-sm ${selectedExercise.id === exercise.id ? 'text-white/90' : 'text-gray-600 dark:text-gray-400'
+                      }`}>
                       {exercise.description}
                     </div>
                   </button>

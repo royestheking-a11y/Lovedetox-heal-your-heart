@@ -18,6 +18,9 @@ interface User {
   streak: number;
   recoveryProgress: number;
   hasSeenTutorial?: boolean;
+  plan?: 'FREE' | 'PRO_TRIAL' | 'PRO_MONTHLY' | 'PRO_LIFETIME';
+  trialStartDate?: string;
+  trialEndDate?: string;
 }
 
 interface AuthContextType {

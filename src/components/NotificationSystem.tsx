@@ -234,7 +234,7 @@ export function NotificationSystem() {
 
 // Helper function to add a notification
 // Helper function to add a notification
-export async function addNotification(userId: string, notification: Omit<Notification, 'id' | 'userId' | 'timestamp' | 'read'>) {
+export async function addNotification(_userId: string, notification: Omit<Notification, 'id' | 'userId' | 'timestamp' | 'read'>) {
   const newNotificationData = {
     ...notification,
     timestamp: new Date().toISOString()

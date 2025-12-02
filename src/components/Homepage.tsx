@@ -105,7 +105,7 @@ export function Homepage() {
     instagram: '',
     linkedin: ''
   });
-  const [proPrice, setProPrice] = useState(19);
+
 
   useEffect(() => {
     loadSettings();
@@ -118,9 +118,7 @@ export function Homepage() {
         if (settings.socialLinks) {
           setSocialLinks(settings.socialLinks);
         }
-        if (settings.proPrice) {
-          setProPrice(settings.proPrice);
-        }
+
       }
     } catch (error) {
       console.error('Error loading settings:', error);
@@ -544,106 +542,111 @@ export function Homepage() {
       </section>
 
       {/* PRICING */}
-      <section id="pricing" className="py-24 bg-white dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <span className="text-[#6366F1] dark:text-[#8B5CF6] font-semibold mb-2 block">SIMPLE PRICING</span>
-            <h2 className="gradient-text mb-4">Start Healing Today</h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Choose the plan that works for you. Cancel anytime.
-            </p>
-          </div>
+      {(!user || (!user.isPro && (user.plan !== 'PRO_TRIAL' || (user.trialStartDate && Math.floor((new Date().getTime() - new Date(user.trialStartDate).getTime()) / (1000 * 60 * 60 * 24)) >= 23)))) && (
+        <section id="pricing" className="py-24 bg-white dark:bg-gray-900">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center mb-16">
+              <span className="text-[#6366F1] dark:text-[#8B5CF6] font-semibold mb-2 block">SIMPLE PRICING</span>
+              <h2 className="gradient-text mb-4">Start Healing Today</h2>
+              <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                Less than the cost of one coffee — for your peace of mind.
+              </p>
+            </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {[
-              {
-                name: 'Free',
-                price: '$0',
-                period: 'forever',
-                desc: 'Try before you commit',
-                features: [
-                  '3 AI chat messages/day',
-                  'Basic mood tracking',
-                  'Limited community access',
-                  '5 journal entries'
-                ],
-                cta: 'Start Free',
-                popular: false
-              },
-              {
-                name: 'Pro',
-                price: `$${proPrice}`,
-                period: 'per month',
-                desc: 'Full healing toolkit',
-                features: [
-                  'Unlimited AI support',
-                  'All recovery programs',
-                  'Advanced mood analytics',
-                  'Full community access',
-                  'Unlimited journaling',
-                  'Priority support'
-                ],
-                cta: 'Start 7-Day Free Trial',
-                popular: true
-              },
-              {
-                name: 'Lifetime',
-                price: '$199',
-                period: 'one-time',
-                desc: 'Lifetime access',
-                features: [
-                  'Everything in Pro',
-                  'Lifetime updates',
-                  'Exclusive workshops',
-                  'Personal coach sessions',
-                  'Early feature access'
-                ],
-                cta: 'Get Lifetime Access',
-                popular: false
-              }
-            ].map((plan, i) => (
-              <div key={i} className={`relative card-3d rounded-3xl p-8 ${plan.popular ? 'scale-105 shadow-2xl' : ''}`}>
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="inline-block px-4 py-1 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white text-sm font-semibold rounded-full shadow-lg">
-                      Most Popular
-                    </span>
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              {[
+                {
+                  name: 'Free Trial',
+                  price: 'Free',
+                  period: '30 days',
+                  desc: 'Experience full healing power',
+                  features: [
+                    'Unlimited AI support',
+                    'All recovery programs',
+                    'Advanced mood analytics',
+                    'Full community access',
+                    'Unlimited journaling'
+                  ],
+                  cta: 'Start 30-Day Free Trial',
+                  popular: true,
+                  action: handleStartFree
+                },
+                {
+                  name: 'Monthly',
+                  price: '৳199',
+                  period: 'per month',
+                  desc: 'Continue your journey',
+                  features: [
+                    'Everything in Free Trial',
+                    'Cancel anytime',
+                    'Priority support',
+                    'New features access',
+                    'Secure payment'
+                  ],
+                  cta: 'Get Monthly Access',
+                  popular: false,
+                  action: handleStartFree
+                },
+                {
+                  name: 'Lifetime',
+                  price: '৳10,000',
+                  period: 'one-time',
+                  desc: 'Commit to your growth',
+                  features: [
+                    'Everything in Monthly',
+                    'Lifetime updates',
+                    'Exclusive workshops',
+                    'Personal coach sessions',
+                    'VIP Community Badge'
+                  ],
+                  cta: 'Get Lifetime Access',
+                  popular: false,
+                  action: handleStartFree
+                }
+              ].map((plan, i) => (
+                <div key={i} className={`relative card-3d rounded-3xl p-8 ${plan.popular ? 'scale-105 shadow-2xl border-2 border-[#6366F1]' : ''}`}>
+                  {plan.popular && (
+                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                      <span className="inline-block px-4 py-1 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white text-sm font-semibold rounded-full shadow-lg">
+                        Most Popular
+                      </span>
+                    </div>
+                  )}
+
+
+                  <div className="text-center mb-6">
+                    <h4 className="text-gray-900 dark:text-white mb-2">{plan.name}</h4>
+                    <div className="mb-2">
+                      <span className="text-4xl font-bold text-gray-900 dark:text-white">{plan.price}</span>
+                      <span className="text-gray-500 dark:text-gray-400 ml-2">/{plan.period}</span>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{plan.desc}</p>
                   </div>
-                )}
 
+                  <ul className="space-y-3 mb-8">
+                    {plan.features.map((feature, j) => (
+                      <li key={j} className="flex items-start gap-3">
+                        <Check className="w-5 h-5 text-[#6366F1] flex-shrink-0 mt-0.5" />
+                        <span className="text-sm text-gray-600 dark:text-gray-400">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
 
-                <div className="text-center mb-6">
-                  <h4 className="text-gray-900 dark:text-white mb-2">{plan.name}</h4>
-                  <div className="mb-2">
-                    <span className="text-4xl font-bold text-gray-900 dark:text-white">{plan.price}</span>
-                    <span className="text-gray-500 dark:text-gray-400 ml-2">/{plan.period}</span>
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{plan.desc}</p>
+                  <button
+                    onClick={plan.action}
+                    className={`w-full py-3 rounded-full font-semibold transition-all ${plan.popular
+                      ? 'bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white hover:shadow-lg hover:scale-105'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700'
+                      }`}
+                  >
+                    {plan.cta}
+                  </button>
                 </div>
-
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((feature, j) => (
-                    <li key={j} className="flex items-start gap-3">
-                      <Check className="w-5 h-5 text-[#6366F1] flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-gray-600 dark:text-gray-400">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <button
-                  onClick={handleStartFree}
-                  className={`w-full py-3 rounded-full font-semibold transition-all ${plan.popular
-                    ? 'bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white hover:shadow-lg hover:scale-105'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700'
-                    }`}
-                >
-                  {plan.cta}
-                </button>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* FAQ */}
       <section id="faq" className="py-24 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">

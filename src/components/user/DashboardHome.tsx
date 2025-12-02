@@ -1,10 +1,11 @@
 import { useAuth } from '../AuthContext';
-import { TrendingUp, Flame, Target, Calendar, MessageCircle, CheckCircle, Sparkles, Award, Heart, ArrowRight, Zap, BookOpen, Check } from 'lucide-react';
+import { TrendingUp, Flame, Target, Calendar, MessageCircle, CheckCircle, Sparkles, Award, Heart, ArrowRight, Zap, BookOpen, Check, Clock, AlertTriangle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { PremiumIcon } from '../PremiumIcon';
 import { MindCanvasWidget } from './MindCanvasWidget';
 import { SoundEffects } from '../SoundEffects';
 import { addNotification } from '../NotificationSystem';
+import { UpgradeModal } from './UpgradeModal';
 
 interface DashboardHomeProps {
   onNavigate?: (tab: string) => void;
@@ -21,6 +22,8 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
     totalJournals: 0,
     aiMessages: 0
   });
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [modalType, setModalType] = useState<'trial' | 'payment'>('trial');
 
   useEffect(() => {
     if (!user) return;
@@ -94,6 +97,17 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
     }
   };
 
+  const getTrialDaysLeft = () => {
+    if (!user?.trialEndDate) return 0;
+    const end = new Date(user.trialEndDate);
+    const now = new Date();
+    const diff = end.getTime() - now.getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  };
+
+  const trialDaysLeft = getTrialDaysLeft();
+  const isTrialActive = user?.plan === 'PRO_TRIAL' && trialDaysLeft > 0;
+
   return (
     <div>
       {/* Welcome Section */}
@@ -103,11 +117,37 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
           {user?.isPro && (
             <div className="flex items-center gap-1 px-3 py-1 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] rounded-full shadow-lg">
               <Sparkles className="w-4 h-4 text-white" />
-              <span className="text-sm text-white font-medium">Pro</span>
+              <span className="text-sm text-white font-medium">
+                {user.plan === 'PRO_TRIAL' ? 'Pro Trial' : 'Pro'}
+              </span>
             </div>
           )}
         </div>
-        <p className="text-gray-600 dark:text-gray-400">Here's your healing journey progress for today.</p>
+
+        {/* Trial Progress / Warning */}
+        {isTrialActive && (
+          <div className="mt-2">
+            <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+              <Clock className="w-4 h-4 text-[#6366F1]" />
+              Pro Trial: Day {30 - trialDaysLeft + 1} of 30
+            </p>
+            {trialDaysLeft <= 7 && (
+              <div className={`mt-2 p-3 rounded-lg flex items-center gap-2 text-sm ${trialDaysLeft <= 3
+                  ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300'
+                  : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300'
+                }`}>
+                <AlertTriangle className="w-4 h-4" />
+                {trialDaysLeft <= 3
+                  ? '⚠️ Trial ending soon. Don’t lose your progress.'
+                  : '⏳ Your Pro trial ends in 7 days. Continue without interruption.'}
+              </div>
+            )}
+          </div>
+        )}
+
+        {!isTrialActive && !user?.isPro && (
+          <p className="text-gray-600 dark:text-gray-400">Here's your healing journey progress for today.</p>
+        )}
       </div>
 
       {/* Stats Grid with Functional Cards */}
@@ -426,13 +466,25 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
                 </li>
               </ul>
             </div>
-            <button className="btn-primary bg-white text-[#6366F1] hover:scale-105 px-8 py-4 shadow-2xl flex items-center gap-2">
-              Upgrade to Pro
+            <button
+              onClick={() => {
+                setModalType('trial');
+                setShowUpgradeModal(true);
+              }}
+              className="btn-primary bg-white text-[#6366F1] hover:scale-105 px-8 py-4 shadow-2xl flex items-center gap-2"
+            >
+              Start 30-Day Free Trial
               <ArrowRight className="w-5 h-5" />
             </button>
           </div>
         </div>
       )}
+
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        type={modalType}
+      />
     </div>
   );
 }

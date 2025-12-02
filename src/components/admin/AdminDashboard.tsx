@@ -7,7 +7,7 @@ import { AIControl } from './AIControl';
 import { MindCanvasControl } from './MindCanvasControl';
 import { MoodMonitor } from './MoodMonitor';
 import { CommunityModeration } from './CommunityModeration';
-import { PaymentsSubscriptions } from './PaymentsSubscriptions';
+import { PaymentManagement } from './PaymentManagement';
 import { NotificationManagement } from './NotificationManagement';
 import { SupportInbox } from './SupportInbox';
 import { SystemSettings } from './SystemSettings';
@@ -68,7 +68,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
       case 'community':
         return <CommunityModeration />;
       case 'payments':
-        return <PaymentsSubscriptions />;
+        return <PaymentManagement />;
       case 'notifications':
         return <NotificationManagement />;
       case 'support':

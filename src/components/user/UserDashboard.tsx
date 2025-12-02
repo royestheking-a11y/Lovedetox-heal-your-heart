@@ -14,9 +14,10 @@ import { LetterTherapy } from './LetterTherapy';
 import { Achievements } from './Achievements';
 import { SuccessStories } from './SuccessStories';
 import { MindCanvas } from './MindCanvas';
+import { UpgradeModal } from './UpgradeModal';
 
 import { NotificationSystem } from '../NotificationSystem';
-import { toast } from 'sonner';
+
 
 interface UserDashboardProps {
   onLogout: () => void;
@@ -26,24 +27,22 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'tasks' | 'ai' | 'mood' | 'journal' | 'guard' | 'community' | 'profile' | 'breathing' | 'letters' | 'achievements' | 'stories' | 'mind-canvas'>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logout, updateUser } = useAuth();
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [modalType, setModalType] = useState<'trial' | 'payment' | 'expired'>('trial');
 
-  const handleUpgrade = async () => {
-    if (!user) return;
-    try {
-      // Create payment record
-      await import('../../services/dataService').then(m => m.default.createPayment({
-        amount: 19,
-        plan: 'Pro',
-        status: 'completed'
-      }));
-
-      updateUser({ isPro: true });
-      toast.success('Upgraded to Pro! Enjoy unlimited features. 🎉');
-    } catch (error) {
-      console.error('Upgrade failed:', error);
-      toast.error('Upgrade failed. Please try again.');
+  // Check for trial expiration
+  useEffect(() => {
+    if (user?.plan === 'PRO_TRIAL' && user.trialEndDate) {
+      const end = new Date(user.trialEndDate);
+      const now = new Date();
+      if (now > end) {
+        // Trial expired
+        updateUser({ isPro: false, plan: 'FREE' });
+        setModalType('expired');
+        setShowUpgradeModal(true);
+      }
     }
-  };
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -135,7 +134,9 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
               {user?.isPro && (
                 <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] rounded-full">
                   <Sparkles className="w-4 h-4 text-white" />
-                  <span className="text-sm text-white font-medium">Pro</span>
+                  <span className="text-sm text-white font-medium">
+                    {user.plan === 'PRO_TRIAL' ? 'Pro Trial' : 'Pro'}
+                  </span>
                 </div>
               )}
 
@@ -210,10 +211,13 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
                   Unlock all features and accelerate your healing journey.
                 </p>
                 <button
-                  onClick={handleUpgrade}
+                  onClick={() => {
+                    setModalType('trial');
+                    setShowUpgradeModal(true);
+                  }}
                   className="w-full btn-primary text-sm py-2"
                 >
-                  Upgrade Now
+                  Start Free Trial
                 </button>
               </div>
             )}
@@ -279,6 +283,12 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
           </div>
         </main>
       </div>
+
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        type={modalType}
+      />
     </div>
   );
 }

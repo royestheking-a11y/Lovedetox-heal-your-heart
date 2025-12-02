@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Sparkles, Check, X, Eye, Trash2, Edit } from 'lucide-react';
+import { Sparkles, Check, X, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import adminService from '../../services/adminService';
 import { UserAvatar } from '../UserAvatar';
@@ -21,7 +21,6 @@ interface SuccessStory {
 export function SuccessStoryManagement() {
   const [stories, setStories] = useState<SuccessStory[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
-  const [selectedStory, setSelectedStory] = useState<SuccessStory | null>(null);
 
   useEffect(() => {
     loadStories();
@@ -127,8 +126,8 @@ export function SuccessStoryManagement() {
             key={f}
             onClick={() => setFilter(f)}
             className={`px-4 py-2 rounded-lg font-semibold transition-colors ${filter === f
-                ? 'bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              ? 'bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -166,8 +165,8 @@ export function SuccessStoryManagement() {
                       </div>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${story.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                        story.status === 'approved' ? 'bg-green-100 text-green-700' :
-                          'bg-red-100 text-red-700'
+                      story.status === 'approved' ? 'bg-green-100 text-green-700' :
+                        'bg-red-100 text-red-700'
                       }`}>
                       {story.status}
                     </span>

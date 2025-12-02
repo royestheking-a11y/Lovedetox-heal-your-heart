@@ -1,11 +1,13 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../AuthContext';
-import { Send, Bot, User, Sparkles, Volume2, VolumeX, Heart, Brain, Target, Zap } from 'lucide-react';
+import { Send, Bot, User, Sparkles, Heart, Brain, Target, Zap, Volume2, VolumeX } from 'lucide-react';
 import { toast } from 'sonner';
 import { PremiumIcon } from '../PremiumIcon';
 import { geminiService } from '../../services/gemini';
 import { SoundEffects } from '../SoundEffects';
 import dataService from '../../services/dataService';
+import { UpgradeModal } from './UpgradeModal';
 
 interface Message {
   id: string;
@@ -91,9 +93,13 @@ export function AIChat() {
   const [isTyping, setIsTyping] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [selectedMode, setSelectedMode] = useState<AiMode>('comfort');
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const chatLimit = user?.isPro ? Infinity : 3;
+  const chatLimit = 3;
+
+  // Check if user is Pro or in Trial
+  const isPro = user?.isPro || (user?.plan === 'PRO_TRIAL' && user.trialEndDate && new Date(user.trialEndDate) > new Date());
 
   useEffect(() => {
     if (!user) return;
@@ -106,7 +112,7 @@ export function AIChat() {
 
     loadMessages(selectedMode);
     setSoundEnabled(SoundEffects.isEnabled());
-    const storedMode = localStorage.getItem(`aiMode_${user.id}`);
+    const storedMode = localStorage.getItem(`aiMode_${user.id} `);
     if (storedMode) {
       setSelectedMode(storedMode as AiMode);
       // If stored mode is different from default, load messages for it
@@ -150,17 +156,17 @@ export function AIChat() {
     loadMessages(mode); // Load new history
 
     if (user) {
-      localStorage.setItem(`aiMode_${user.id}`, mode);
+      localStorage.setItem(`aiMode_${user.id} `, mode);
     }
-    toast.success(`AI mode switched to ${aiModes[mode].name}`);
+    toast.success(`AI mode switched to ${aiModes[mode].name} `);
   };
 
   const handleSend = async () => {
     if (!input.trim() || !user) return;
 
     const userMessageCount = messages.filter(m => m.sender === 'user').length;
-    if (!user.isPro && userMessageCount >= chatLimit) {
-      toast.error('Upgrade to Pro for unlimited AI chat!');
+    if (!isPro && userMessageCount >= chatLimit) {
+      setShowUpgradeModal(true);
       return;
     }
 
@@ -223,7 +229,7 @@ export function AIChat() {
   };
 
   const userMessageCount = messages.filter(m => m.sender === 'user').length;
-  const remainingMessages = user?.isPro ? Infinity : Math.max(0, chatLimit - userMessageCount);
+  const remainingMessages = isPro ? Infinity : Math.max(0, chatLimit - userMessageCount);
 
   const currentMode = aiModes[selectedMode];
 
@@ -254,7 +260,7 @@ export function AIChat() {
                 <VolumeX className="w-5 h-5 text-gray-400" />
               )}
             </button>
-            {!user?.isPro && (
+            {!isPro && (
               <div className="hidden sm:block px-3 py-1.5 bg-gradient-to-r from-[#6366F1]/10 to-[#8B5CF6]/10 rounded-full">
                 <p className="text-xs font-medium text-[#6366F1] dark:text-[#8B5CF6]">
                   {remainingMessages} messages left
@@ -275,15 +281,15 @@ export function AIChat() {
               <button
                 key={mode}
                 onClick={() => handleModeChange(mode)}
-                className={`p-2 md:p-3 rounded-xl transition-all duration-300 ${isSelected
+                className={`p - 2 md: p - 3 rounded - xl transition - all duration - 300 ${isSelected
                   ? 'bg-gradient-to-br ' + modeData.color + ' shadow-lg scale-105'
                   : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
+                  } `}
               >
-                <ModeIcon className={`w-4 h-4 md:w-5 md:h-5 mx-auto mb-1 ${isSelected ? 'text-white' : 'text-gray-600 dark:text-gray-400'
-                  }`} />
-                <p className={`text-[10px] md:text-xs font-medium truncate ${isSelected ? 'text-white' : 'text-gray-700 dark:text-gray-300'
-                  }`}>
+                <ModeIcon className={`w - 4 h - 4 md: w - 5 md: h - 5 mx - auto mb - 1 ${isSelected ? 'text-white' : 'text-gray-600 dark:text-gray-400'
+                  } `} />
+                <p className={`text - [10px] md: text - xs font - medium truncate ${isSelected ? 'text-white' : 'text-gray-700 dark:text-gray-300'
+                  } `}>
                   {modeData.name}
                 </p>
               </button>
@@ -341,10 +347,10 @@ export function AIChat() {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex gap-3 ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}
+                className={`flex gap - 3 ${message.sender === 'user' ? 'justify-end' : 'justify-start'} animate -in fade -in slide -in -from - bottom - 2 duration - 300`}
               >
                 {message.sender === 'ai' && (
-                  <div className={`w-8 h-8 md:w-11 md:h-11 rounded-full bg-gradient-to-br ${currentMode.color} flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-white dark:ring-gray-800 relative`}>
+                  <div className={`w - 8 h - 8 md: w - 11 md: h - 11 rounded - full bg - gradient - to - br ${currentMode.color} flex items - center justify - center flex - shrink - 0 shadow - lg ring - 2 ring - white dark: ring - gray - 800 relative`}>
                     {/* Cute Robot Face */}
                     <div className="relative transform scale-75 md:scale-100">
                       <Bot className="w-6 h-6 text-white" />
@@ -355,15 +361,15 @@ export function AIChat() {
                   </div>
                 )}
                 <div
-                  className={`max-w-[85%] md:max-w-[70%] p-3 md:p-4 rounded-2xl shadow-md backdrop-blur-sm ${message.sender === 'user'
+                  className={`max - w - [85 %] md: max - w - [70 %] p - 3 md: p - 4 rounded - 2xl shadow - md backdrop - blur - sm ${message.sender === 'user'
                     ? 'bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] shadow-purple-500/20'
                     : 'bg-white/80 dark:bg-gray-700/80 shadow-gray-200/50 dark:shadow-gray-900/50'
-                    }`}
+                    } `}
                 >
-                  <p className={`text-sm leading-relaxed ${message.sender === 'user' ? 'text-white' : 'text-gray-900 dark:text-white'
-                    }`} style={message.sender === 'user' ? { color: '#ffffff !important' } : {}}>{message.text}</p>
-                  <p className={`text-[10px] md:text-xs mt-1 md:mt-2 ${message.sender === 'user' ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
-                    }`}>
+                  <p className={`text - sm leading - relaxed ${message.sender === 'user' ? 'text-white' : 'text-gray-900 dark:text-white'
+                    } `} style={message.sender === 'user' ? { color: '#ffffff !important' } : {}}>{message.text}</p>
+                  <p className={`text - [10px] md: text - xs mt - 1 md: mt - 2 ${message.sender === 'user' ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
+                    } `}>
                     {new Date(message.timestamp).toLocaleTimeString([], {
                       hour: '2-digit',
                       minute: '2-digit'
@@ -379,7 +385,7 @@ export function AIChat() {
             ))}
             {isTyping && (
               <div className="flex gap-3 justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
-                <div className={`w-8 h-8 md:w-11 md:h-11 rounded-full bg-gradient-to-br ${currentMode.color} flex items-center justify-center flex-shrink-0 shadow-lg ring-2 ring-white dark:ring-gray-800 relative`}>
+                <div className={`w - 8 h - 8 md: w - 11 md: h - 11 rounded - full bg - gradient - to - br ${currentMode.color} flex items - center justify - center flex - shrink - 0 shadow - lg ring - 2 ring - white dark: ring - gray - 800 relative`}>
                   {/* Cute Robot Face */}
                   <div className="relative transform scale-75 md:scale-100">
                     <Bot className="w-6 h-6 text-white animate-pulse" />
@@ -422,6 +428,12 @@ export function AIChat() {
           </button>
         </div>
       </div>
+
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        type="trial"
+      />
     </div>
   );
 }
