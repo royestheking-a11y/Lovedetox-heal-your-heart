@@ -173,6 +173,14 @@ router.post('/admin/approve', protect, admin, async (req, res) => {
         }
 
         await user.save();
+
+        // Sync with Payment collection
+        const paymentDoc = await Payment.findOne({ transactionId: payment.transactionId });
+        if (paymentDoc) {
+            paymentDoc.status = 'completed';
+            await paymentDoc.save();
+        }
+
         res.json({ message: 'Payment approved and user upgraded.' });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
@@ -195,6 +203,13 @@ router.post('/admin/reject', protect, admin, async (req, res) => {
 
         payment.status = 'rejected';
         await user.save();
+
+        // Sync with Payment collection
+        const paymentDoc = await Payment.findOne({ transactionId: payment.transactionId });
+        if (paymentDoc) {
+            paymentDoc.status = 'failed';
+            await paymentDoc.save();
+        }
 
         res.json({ message: 'Payment rejected.' });
     } catch (error) {
@@ -223,6 +238,17 @@ router.post('/admin/refund', protect, admin, async (req, res) => {
         user.plan = 'FREE';
 
         await user.save();
+
+        // Sync with Payment collection
+        // For refunds, we might be refunding a specific transaction or a refund request
+        // If it's a refund request, it might have a transactionId or refundNumber
+        const identifier = payment.transactionId || payment.refundNumber;
+        const paymentDoc = await Payment.findOne({ transactionId: identifier });
+        if (paymentDoc) {
+            paymentDoc.status = 'refunded';
+            await paymentDoc.save();
+        }
+
         res.json({ message: 'Refund confirmed and user downgraded.' });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
