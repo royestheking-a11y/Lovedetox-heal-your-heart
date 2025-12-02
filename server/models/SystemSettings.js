@@ -6,6 +6,8 @@ const systemSettingsSchema = mongoose.Schema({
     freeMessageLimit: { type: Number, default: 10 },
     proPrice: { type: Number, default: 19 },
     mindCanvasDailyLimit: { type: Number, default: 5 },
+    stylesEnabled: { type: Boolean, default: true },
+    unsafePromptsDisabled: { type: Boolean, default: true },
     maintenanceMode: { type: Boolean, default: false },
     allowRegistration: { type: Boolean, default: true },
     socialLinks: {

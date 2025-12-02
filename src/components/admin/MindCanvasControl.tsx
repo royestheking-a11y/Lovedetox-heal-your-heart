@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Palette, Save, BarChart3, Shield, Check, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
-import axios from 'axios';
+import api from '../../services/api';
 
 export function MindCanvasControl() {
     const [stats, setStats] = useState({
@@ -24,7 +24,7 @@ export function MindCanvasControl() {
 
     const fetchStats = async () => {
         try {
-            const response = await axios.get('http://localhost:5001/api/mind-canvas/admin/stats');
+            const response = await api.get('/mind-canvas/admin/stats');
             setStats(response.data);
         } catch (error) {
             console.error('Error fetching stats:', error);
@@ -35,7 +35,7 @@ export function MindCanvasControl() {
     const handleSaveSettings = async () => {
         setLoading(true);
         try {
-            await axios.post('http://localhost:5001/api/mind-canvas/admin/settings', {
+            await api.post('/mind-canvas/admin/settings', {
                 dailyLimit: settings.dailyLimit,
                 stylesEnabled: settings.stylesEnabled,
                 unsafePromptsDisabled: settings.unsafePromptsDisabled

@@ -133,8 +133,8 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
             </p>
             {trialDaysLeft <= 7 && (
               <div className={`mt-2 p-3 rounded-lg flex items-center gap-2 text-sm ${trialDaysLeft <= 3
-                  ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300'
-                  : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300'
+                ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300'
+                : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300'
                 }`}>
                 <AlertTriangle className="w-4 h-4" />
                 {trialDaysLeft <= 3
@@ -155,6 +155,32 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
         <div className="sm:col-span-2 lg:col-span-2">
           <MindCanvasWidget onNavigate={handleNavigation as any} />
         </div>
+
+        {/* Trial Status Card */}
+        {isTrialActive && (
+          <button
+            onClick={() => setShowUpgradeModal(true)}
+            className="card-3d p-6 rounded-2xl text-left group cursor-pointer relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 p-2 opacity-10">
+              <Clock className="w-24 h-24" />
+            </div>
+            <div className="flex items-start justify-between mb-4 relative z-10">
+              <PremiumIcon Icon={Clock} size="sm" variant="3d" gradient="from-[#F59E0B] to-[#D97706]" />
+              <span className={`text-xs px-2 py-1 rounded-full font-medium ${trialDaysLeft <= 3 ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                {trialDaysLeft} Days Left
+              </span>
+            </div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1 relative z-10">Free Trial</div>
+            <p className="text-sm text-gray-500 dark:text-gray-400 relative z-10">
+              {trialDaysLeft <= 3 ? 'Upgrade to keep Pro features' : 'Enjoying Pro features?'}
+            </p>
+            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between relative z-10">
+              <span className="text-xs text-[#F59E0B] font-medium">Upgrade Now</span>
+              <ArrowRight className="w-4 h-4 text-[#F59E0B] group-hover:translate-x-1 transition-transform" />
+            </div>
+          </button>
+        )}
         <button
           onClick={() => handleNavigation('guard')}
           className="card-3d p-6 rounded-2xl text-left group cursor-pointer"
