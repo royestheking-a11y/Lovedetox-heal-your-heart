@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
-import { BookOpen, Plus, Trash2, Edit, Lock, Heart, Calendar, Search } from 'lucide-react';
+import { BookOpen, Plus, Trash2, Edit, Lock, Calendar, Search, Palette } from 'lucide-react';
 import { toast } from 'sonner';
 import { PremiumIcon } from '../PremiumIcon';
 import { SoundEffects } from '../SoundEffects';
@@ -15,7 +15,11 @@ interface JournalEntry {
   mood?: string;
 }
 
-export function Journal() {
+interface JournalProps {
+  onNavigate?: (tab: 'mind-canvas') => void;
+}
+
+export function Journal({ onNavigate }: JournalProps) {
   const { user } = useAuth();
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [showEditor, setShowEditor] = useState(false);
@@ -321,6 +325,21 @@ export function Journal() {
                 </button>
               </div>
             </div>
+
+            {onNavigate && (
+              <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-4">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Palette className="w-4 h-4 text-purple-500" />
+                  <span>Want to visualize this emotion?</span>
+                </div>
+                <button
+                  onClick={() => onNavigate('mind-canvas')}
+                  className="text-sm font-medium text-purple-600 hover:text-purple-700 hover:underline"
+                >
+                  Create AI Art from this entry
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

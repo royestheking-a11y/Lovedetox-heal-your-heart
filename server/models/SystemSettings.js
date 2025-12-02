@@ -5,6 +5,7 @@ const systemSettingsSchema = mongoose.Schema({
     supportEmail: { type: String, default: 'support@lovedetox.com' },
     freeMessageLimit: { type: Number, default: 10 },
     proPrice: { type: Number, default: 19 },
+    mindCanvasDailyLimit: { type: Number, default: 5 },
     maintenanceMode: { type: Boolean, default: false },
     allowRegistration: { type: Boolean, default: true },
     socialLinks: {

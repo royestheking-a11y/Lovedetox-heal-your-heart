@@ -91,17 +91,18 @@ router.delete('/journal/:id', protect, async (req, res) => {
 
 // --- CHAT ---
 router.get('/chat', protect, async (req, res) => {
-    const chat = await Chat.findOne({ userId: req.user._id });
+    const mode = req.query.mode || 'comfort';
+    const chat = await Chat.findOne({ userId: req.user._id, mode });
     res.json(chat ? chat.messages : []);
 });
 
 router.post('/chat', protect, async (req, res) => {
     try {
-        const { role, content } = req.body;
-        // console.log(`Saving chat message for user ${req.user._id}: ${role}`);
+        const { role, content, mode } = req.body;
+        // console.log(`Saving chat message for user ${req.user._id}: ${role} in mode ${mode}`);
 
         const chat = await Chat.findOneAndUpdate(
-            { userId: req.user._id },
+            { userId: req.user._id, mode: mode || 'comfort' },
             { $push: { messages: { role, content } } },
             { new: true, upsert: true, setDefaultsOnInsert: true }
         );

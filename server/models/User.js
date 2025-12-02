@@ -13,6 +13,7 @@ const userSchema = mongoose.Schema({
     noContactDays: { type: Number, default: 0 },
     streak: { type: Number, default: 0 },
     recoveryProgress: { type: Number, default: 0 },
+    hasSeenTutorial: { type: Boolean, default: false },
     googleId: { type: String },
 }, {
     timestamps: true

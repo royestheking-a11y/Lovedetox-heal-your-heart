@@ -65,7 +65,7 @@ const seedData = async () => {
     }
 };
 
-seedData();
+// seedData(); // Moved to after DB connection
 
 const app = express();
 
@@ -90,10 +90,12 @@ app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/data', require('./routes/dataRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
+app.use('/api/mind-canvas', require('./routes/mindCanvasRoutes'));
 
 const PORT = process.env.PORT || 5001;
 if (require.main === module) {
-    connectDB().then(() => {
+    connectDB().then(async () => {
+        await seedData();
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
         });

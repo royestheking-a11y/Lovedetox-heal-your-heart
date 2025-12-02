@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
-import { TrendingUp, Calendar, Heart, Smile, Plus, BarChart3 } from 'lucide-react';
+import { TrendingUp, Calendar, Heart, Smile, BarChart3, Palette, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { PremiumIcon } from '../PremiumIcon';
 import { addNotification } from '../NotificationSystem';
@@ -12,6 +12,10 @@ interface Mood {
   intensity: number;
   note: string;
   date: string;
+}
+
+interface MoodTrackerProps {
+  onNavigate?: (tab: 'mind-canvas') => void;
 }
 
 const emotions = [
@@ -47,7 +51,7 @@ const checkConsecutiveDays = (moods: Mood[]) => {
   return consecutive;
 };
 
-export function MoodTracker() {
+export function MoodTracker({ onNavigate }: MoodTrackerProps) {
   const { user } = useAuth();
   const [moods, setMoods] = useState<Mood[]>([]);
   const [selectedEmotion, setSelectedEmotion] = useState('');
@@ -192,8 +196,8 @@ export function MoodTracker() {
                     type="button"
                     onClick={() => setSelectedEmotion(emotion.name)}
                     className={`p-4 rounded-2xl border-2 transition-all ${selectedEmotion === emotion.name
-                        ? `bg-gradient-to-br ${emotion.gradient} border-transparent text-white shadow-lg scale-105`
-                        : 'border-gray-200 hover:border-gray-300 hover:scale-105 bg-white'
+                      ? `bg-gradient-to-br ${emotion.gradient} border-transparent text-white shadow-lg scale-105`
+                      : 'border-gray-200 hover:border-gray-300 hover:scale-105 bg-white'
                       }`}
                   >
                     <div className="text-3xl mb-2">{emotion.emoji}</div>
@@ -267,6 +271,27 @@ export function MoodTracker() {
               Log Again
             </button>
           </div>
+
+          {onNavigate && (
+            <div className="mt-6 pt-6 border-t border-gray-100">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h5 className="font-semibold text-gray-900 flex items-center gap-2">
+                    <Palette className="w-4 h-4 text-purple-500" />
+                    Turn this feeling into art?
+                  </h5>
+                  <p className="text-sm text-gray-500">Visualize your emotion with AI</p>
+                </div>
+                <button
+                  onClick={() => onNavigate('mind-canvas')}
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-medium shadow-md hover:shadow-lg transition-all"
+                >
+                  Generate Art
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

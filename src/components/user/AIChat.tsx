@@ -104,20 +104,26 @@ export function AIChat() {
       console.error('VITE_GEMINI_API_KEY is missing');
     }
 
-    loadMessages();
+    loadMessages(selectedMode);
     setSoundEnabled(SoundEffects.isEnabled());
     const storedMode = localStorage.getItem(`aiMode_${user.id}`);
-    if (storedMode) setSelectedMode(storedMode as AiMode);
+    if (storedMode) {
+      setSelectedMode(storedMode as AiMode);
+      // If stored mode is different from default, load messages for it
+      if (storedMode !== 'comfort') {
+        loadMessages(storedMode as AiMode);
+      }
+    }
   }, [user]);
 
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  const loadMessages = async () => {
+  const loadMessages = async (mode: AiMode) => {
     if (!user) return;
     try {
-      const fetchedMessages = await dataService.getChatHistory();
+      const fetchedMessages = await dataService.getChatHistory(mode);
       // Map backend messages to frontend format
       const mappedMessages = fetchedMessages.map((m: any) => ({
         id: m._id,
@@ -137,7 +143,12 @@ export function AIChat() {
   };
 
   const handleModeChange = (mode: AiMode) => {
+    if (mode === selectedMode) return;
+
     setSelectedMode(mode);
+    setMessages([]); // Clear messages immediately to avoid showing wrong history
+    loadMessages(mode); // Load new history
+
     if (user) {
       localStorage.setItem(`aiMode_${user.id}`, mode);
     }
@@ -170,7 +181,8 @@ export function AIChat() {
       // Save user message to backend
       await dataService.sendMessage({
         role: 'user',
-        content: tempUserMessage.text
+        content: tempUserMessage.text,
+        mode: selectedMode
       });
 
       const history = messages.map(m => ({
@@ -192,7 +204,8 @@ export function AIChat() {
       // Save AI message to backend
       await dataService.sendMessage({
         role: 'assistant',
-        content: responseText
+        content: responseText,
+        mode: selectedMode
       });
 
       if (soundEnabled) SoundEffects.play('success');

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const chatSchema = mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    mode: { type: String, default: 'comfort' },
     messages: [{
         role: { type: String, enum: ['user', 'assistant'], required: true },
         content: { type: String, required: true },

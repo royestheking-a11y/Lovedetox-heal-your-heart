@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, Users, CheckSquare, MessageCircle, Heart, AlertTriangle, DollarSign, Bell, Mail, Settings, LogOut, Lock, Shield, Menu, X, Sparkles, Trophy } from 'lucide-react';
+import { LayoutDashboard, Users, CheckSquare, MessageCircle, Heart, AlertTriangle, DollarSign, Bell, Mail, Settings, LogOut, Lock, Shield, Menu, X, Sparkles, Trophy, Palette } from 'lucide-react';
 import { AdminHome } from './AdminHome';
 import { UserManagement } from './UserManagement';
 import { TaskManagement } from './TaskManagement';
 import { AIControl } from './AIControl';
+import { MindCanvasControl } from './MindCanvasControl';
 import { MoodMonitor } from './MoodMonitor';
 import { CommunityModeration } from './CommunityModeration';
 import { PaymentsSubscriptions } from './PaymentsSubscriptions';
@@ -19,7 +20,7 @@ interface AdminDashboardProps {
 }
 
 export function AdminDashboard({ onLogout }: AdminDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'tasks' | 'ai' | 'mood' | 'community' | 'payments' | 'notifications' | 'support' | 'settings' | 'stories' | 'nocontact' | 'achievements'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'tasks' | 'ai' | 'mood' | 'community' | 'payments' | 'notifications' | 'support' | 'settings' | 'stories' | 'nocontact' | 'achievements' | 'mind-canvas'>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Initialize admin user if doesn't exist
@@ -38,6 +39,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
     { id: 'users', icon: Users, label: 'User Management', color: 'from-[#8B5CF6] to-[#FB7185]' },
     { id: 'tasks', icon: CheckSquare, label: 'Task Management', color: 'from-[#6366F1] to-[#8B5CF6]' },
     { id: 'ai', icon: MessageCircle, label: 'AI Control', color: 'from-[#FB7185] to-[#F472B6]' },
+    { id: 'mind-canvas', icon: Palette, label: 'Mind Canvas', color: 'from-[#6366F1] to-[#8B5CF6]' },
     { id: 'mood', icon: Heart, label: 'Mood Monitor', color: 'from-[#8B5CF6] to-[#FB7185]' },
     { id: 'community', icon: AlertTriangle, label: 'Moderation', color: 'from-[#6366F1] to-[#8B5CF6]' },
     { id: 'payments', icon: DollarSign, label: 'Payments', color: 'from-[#FB7185] to-[#F472B6]' },
@@ -59,6 +61,8 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
         return <TaskManagement />;
       case 'ai':
         return <AIControl />;
+      case 'mind-canvas':
+        return <MindCanvasControl />;
       case 'mood':
         return <MoodMonitor />;
       case 'community':

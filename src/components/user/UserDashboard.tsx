@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, CheckSquare, MessageCircle, Heart, BookOpen, Shield, Users, User, LogOut, Sparkles, Menu, X, Wind, Mail, Trophy, Award } from 'lucide-react';
+import { LayoutDashboard, CheckSquare, MessageCircle, Heart, BookOpen, Shield, Users, User, LogOut, Sparkles, Menu, X, Wind, Mail, Trophy, Award, Palette } from 'lucide-react';
 import { useAuth } from '../AuthContext';
 import { DashboardHome } from './DashboardHome';
 import { DailyTasks } from './DailyTasks';
@@ -13,6 +13,7 @@ import { BreathingExercise } from './BreathingExercise';
 import { LetterTherapy } from './LetterTherapy';
 import { Achievements } from './Achievements';
 import { SuccessStories } from './SuccessStories';
+import { MindCanvas } from './MindCanvas';
 
 import { NotificationSystem } from '../NotificationSystem';
 import { toast } from 'sonner';
@@ -22,7 +23,7 @@ interface UserDashboardProps {
 }
 
 export function UserDashboard({ onLogout }: UserDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'tasks' | 'ai' | 'mood' | 'journal' | 'guard' | 'community' | 'profile' | 'breathing' | 'letters' | 'achievements' | 'stories'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'tasks' | 'ai' | 'mood' | 'journal' | 'guard' | 'community' | 'profile' | 'breathing' | 'letters' | 'achievements' | 'stories' | 'mind-canvas'>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logout, updateUser } = useAuth();
 
@@ -58,6 +59,7 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', color: 'from-[#6366F1] to-[#8B5CF6]' },
     { id: 'tasks', icon: CheckSquare, label: 'Daily Tasks', color: 'from-[#8B5CF6] to-[#FB7185]' },
     { id: 'ai', icon: MessageCircle, label: 'AI Support', color: 'from-[#6366F1] to-[#8B5CF6]' },
+    { id: 'mind-canvas', icon: Palette, label: 'Mind Canvas', color: 'from-[#FB7185] to-[#F472B6]' },
     { id: 'mood', icon: Heart, label: 'Mood Tracker', color: 'from-[#FB7185] to-[#F472B6]' },
     { id: 'journal', icon: BookOpen, label: 'Journal', color: 'from-[#8B5CF6] to-[#FB7185]' },
     { id: 'breathing', icon: Wind, label: 'Breathing', color: 'from-[#6366F1] to-[#8B5CF6]', pro: true },
@@ -78,9 +80,11 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
       case 'ai':
         return <AIChat />;
       case 'mood':
-        return <MoodTracker />;
+        return <MoodTracker onNavigate={(tab) => setActiveTab(tab)} />;
       case 'journal':
-        return <Journal />;
+        return <Journal onNavigate={(tab) => setActiveTab(tab)} />;
+      case 'mind-canvas':
+        return <MindCanvas />;
       case 'breathing':
         return <BreathingExercise />;
       case 'letters':

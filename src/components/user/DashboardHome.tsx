@@ -1,7 +1,8 @@
 import { useAuth } from '../AuthContext';
-import { TrendingUp, Flame, Target, Calendar, MessageCircle, CheckCircle, Sparkles, Award, Heart, ArrowRight, Zap, BookOpen, Shield, Check } from 'lucide-react';
+import { TrendingUp, Flame, Target, Calendar, MessageCircle, CheckCircle, Sparkles, Award, Heart, ArrowRight, Zap, BookOpen, Check } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { PremiumIcon } from '../PremiumIcon';
+import { MindCanvasWidget } from './MindCanvasWidget';
 import { SoundEffects } from '../SoundEffects';
 import { addNotification } from '../NotificationSystem';
 
@@ -111,6 +112,9 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
 
       {/* Stats Grid with Functional Cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="sm:col-span-2 lg:col-span-2">
+          <MindCanvasWidget onNavigate={handleNavigation as any} />
+        </div>
         <button
           onClick={() => handleNavigation('guard')}
           className="card-3d p-6 rounded-2xl text-left group cursor-pointer"

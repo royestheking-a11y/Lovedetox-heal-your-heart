@@ -19,6 +19,7 @@ router.get('/profile', protect, async (req, res) => {
             noContactDays: user.noContactDays,
             streak: user.streak,
             recoveryProgress: user.recoveryProgress,
+            hasSeenTutorial: user.hasSeenTutorial,
             profileImage: user.profileImage,
         });
     } else {
@@ -43,6 +44,7 @@ router.put('/profile', protect, async (req, res) => {
         user.streak = req.body.streak !== undefined ? req.body.streak : user.streak;
         user.recoveryProgress = req.body.recoveryProgress !== undefined ? req.body.recoveryProgress : user.recoveryProgress;
         user.isPro = req.body.isPro !== undefined ? req.body.isPro : user.isPro;
+        user.hasSeenTutorial = req.body.hasSeenTutorial !== undefined ? req.body.hasSeenTutorial : user.hasSeenTutorial;
 
         const updatedUser = await user.save();
 
@@ -56,6 +58,7 @@ router.put('/profile', protect, async (req, res) => {
             noContactDays: updatedUser.noContactDays,
             streak: updatedUser.streak,
             recoveryProgress: updatedUser.recoveryProgress,
+            hasSeenTutorial: updatedUser.hasSeenTutorial,
             profileImage: updatedUser.profileImage,
             token: req.headers.authorization.split(' ')[1], // Return existing token
         });

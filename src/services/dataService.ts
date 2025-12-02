@@ -44,8 +44,8 @@ const deleteJournalEntry = async (id: string) => {
 };
 
 // Chat
-const getChatHistory = async () => {
-    const response = await api.get('/data/chat');
+const getChatHistory = async (mode: string = 'comfort') => {
+    const response = await api.get(`/data/chat?mode=${mode}`);
     return response.data;
 };
 

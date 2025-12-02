@@ -17,6 +17,7 @@ interface User {
   noContactDays: number;
   streak: number;
   recoveryProgress: number;
+  hasSeenTutorial?: boolean;
 }
 
 interface AuthContextType {

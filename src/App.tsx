@@ -8,7 +8,7 @@ import { OnboardingTutorial } from './components/OnboardingTutorial';
 import { Toaster } from 'sonner';
 
 function AppContent() {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, updateUser } = useAuth();
   const [currentPage, setCurrentPage] = useState<'home' | 'user' | 'admin'>('home');
   const [showOnboarding, setShowOnboarding] = useState(false);
 
@@ -21,9 +21,8 @@ function AppContent() {
     } else if (user) {
       console.log('👤 Redirecting to USER dashboard');
       setCurrentPage('user');
-      // Show onboarding for new users
-      const hasSeenOnboarding = localStorage.getItem(`hasSeenOnboarding_${user.id}`);
-      if (!hasSeenOnboarding) {
+      // Show onboarding for new users if they haven't seen it
+      if (user.hasSeenTutorial === false) {
         setShowOnboarding(true);
       }
     } else {
@@ -48,7 +47,7 @@ function AppContent() {
       {showOnboarding && user && (
         <OnboardingTutorial
           onComplete={() => {
-            localStorage.setItem(`hasSeenOnboarding_${user.id}`, 'true');
+            updateUser({ hasSeenTutorial: true });
             setShowOnboarding(false);
           }}
         />

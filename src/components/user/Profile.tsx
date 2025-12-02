@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
-import { User, Lock, Bell, Download, Trash2, Crown } from 'lucide-react';
+import { User, Lock, Bell, Download, Trash2, Crown, Palette } from 'lucide-react';
 import { toast } from 'sonner';
+import axios from 'axios';
 
 export function Profile() {
   const { user, updateUser, logout } = useAuth();
@@ -14,6 +15,22 @@ export function Profile() {
     push: false,
     dailyReminders: true
   });
+  const [gallery, setGallery] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      fetchGallery();
+    }
+  }, [user]);
+
+  const fetchGallery = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5001/api/mind-canvas/my-art/${user?.id}`);
+      setGallery(response.data);
+    } catch (error) {
+      console.error('Error fetching gallery:', error);
+    }
+  };
 
   const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,6 +129,22 @@ export function Profile() {
     }
   };
 
+  const downloadImage = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `lovedetox-${filename}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Download failed:', error);
+      toast.error('Download failed');
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
@@ -149,6 +182,44 @@ export function Profile() {
           <span className="text-sm">Unlimited Access</span>
         </div>
       )}
+
+      {/* My Art Gallery */}
+      <div className="bg-white p-6 rounded-2xl border-2 border-gray-100 mb-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Palette className="w-6 h-6 text-[#4B0082]" />
+          <h4 className="text-[#4B0082]">My Art Gallery</h4>
+        </div>
+
+        {gallery.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {gallery.map((img) => (
+              <div key={img._id} className="relative aspect-square rounded-xl overflow-hidden group">
+                <img
+                  src={img.image_url}
+                  alt={img.text_note}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4">
+                  <p className="text-white text-xs text-center px-2 line-clamp-2 mb-3">"{img.text_note}"</p>
+                  <button
+                    onClick={() => downloadImage(img.image_url, img._id)}
+                    className="p-2 bg-white/20 hover:bg-white/40 rounded-full backdrop-blur-sm transition-colors"
+                    title="Download"
+                  >
+                    <Download className="w-4 h-4 text-white" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 bg-gray-50 rounded-xl">
+            <Palette className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <p className="text-gray-500">No art created yet.</p>
+            <p className="text-sm text-gray-400">Visit Mind Canvas to start creating.</p>
+          </div>
+        )}
+      </div>
 
       {/* Profile Information */}
       <div className="bg-white p-6 rounded-2xl border-2 border-gray-100 mb-6">
