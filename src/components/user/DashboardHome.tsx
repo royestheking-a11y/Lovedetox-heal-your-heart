@@ -106,7 +106,8 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
   };
 
   const trialDaysLeft = getTrialDaysLeft();
-  const isTrialActive = user?.plan === 'PRO_TRIAL' && trialDaysLeft > 0;
+  // Show trial card if there is a valid trial end date in the future, regardless of plan name
+  const isTrialActive = user?.isPro && trialDaysLeft > 0 && !!user?.trialEndDate;
 
   return (
     <div>
