@@ -23,7 +23,7 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
     aiMessages: 0
   });
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-  const [modalType, setModalType] = useState<'trial' | 'payment'>('trial');
+  const [modalType, setModalType] = useState<'trial' | 'payment' | 'expired' | 'upgrade_info'>('trial');
 
   useEffect(() => {
     if (!user) return;
@@ -160,7 +160,10 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
         {/* Trial Status Card */}
         {isTrialActive && (
           <button
-            onClick={() => setShowUpgradeModal(true)}
+            onClick={() => {
+              setModalType('upgrade_info');
+              setShowUpgradeModal(true);
+            }}
             className="card-3d p-6 rounded-2xl text-left group cursor-pointer relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 p-2 opacity-10">

@@ -8,7 +8,7 @@ import { SoundEffects } from '../SoundEffects';
 interface UpgradeModalProps {
     isOpen: boolean;
     onClose: () => void;
-    type: 'trial' | 'payment' | 'expired';
+    type: 'trial' | 'payment' | 'expired' | 'upgrade_info';
 }
 
 export function UpgradeModal({ isOpen, onClose, type }: UpgradeModalProps) {
@@ -17,8 +17,24 @@ export function UpgradeModal({ isOpen, onClose, type }: UpgradeModalProps) {
     const [paymentMethod, setPaymentMethod] = useState<'bkash' | 'nagad' | 'rocket'>('bkash');
     const [transactionId, setTransactionId] = useState('');
     const [planType, setPlanType] = useState<'PRO_MONTHLY' | 'PRO_LIFETIME'>('PRO_MONTHLY');
+    const [view, setView] = useState(type);
 
-    if (!isOpen) return null;
+    // Sync view with type prop when it opens
+    if (view !== type && !isOpen) {
+        setView(type);
+    }
+    // Better: use useEffect
+    // But since this is a functional component, let's just use a state that defaults to type, 
+    // and update it if type changes? No, type might not change.
+    // Let's just use 'view' state and initialize it in useEffect.
+
+    // Actually, simpler: 
+    // If type is upgrade_info, show that view. 
+    // If user clicks button, change local state to override type?
+    // Let's use a local state `internalMode` which can override `type`.
+    const [internalMode, setInternalMode] = useState<string | null>(null);
+
+    const currentMode = internalMode || type;
 
     const handleStartTrial = async () => {
         setLoading(true);
@@ -65,6 +81,8 @@ export function UpgradeModal({ isOpen, onClose, type }: UpgradeModalProps) {
         }
     };
 
+    if (!isOpen) return null;
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
             <div className="bg-white dark:bg-gray-800 rounded-3xl max-w-md w-full overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
@@ -72,7 +90,10 @@ export function UpgradeModal({ isOpen, onClose, type }: UpgradeModalProps) {
                 {/* Header */}
                 <div className="relative h-32 bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] flex items-center justify-center">
                     <button
-                        onClick={onClose}
+                        onClick={() => {
+                            setInternalMode(null);
+                            onClose();
+                        }}
                         className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-full text-white transition-colors"
                     >
                         <X className="w-5 h-5" />
@@ -82,17 +103,19 @@ export function UpgradeModal({ isOpen, onClose, type }: UpgradeModalProps) {
                             <Sparkles className="w-6 h-6 text-white" />
                         </div>
                         <h3 className="text-xl font-bold">
-                            {type === 'trial' ? 'Start Your Healing Journey' : 'Continue Without Limits'}
+                            {currentMode === 'trial' || currentMode === 'upgrade_info' ? 'Start Your Healing Journey' : 'Continue Without Limits'}
                         </h3>
                     </div>
                 </div>
 
                 <div className="p-6">
-                    {type === 'trial' ? (
+                    {currentMode === 'trial' || currentMode === 'upgrade_info' ? (
                         <div className="space-y-6">
                             <div className="text-center">
                                 <p className="text-gray-600 dark:text-gray-300 mb-4">
-                                    You now have full access to all premium healing tools — completely free for 30 days.
+                                    {currentMode === 'upgrade_info'
+                                        ? "You now have full access to all premium healing tools - completely for 30 days or lifetime."
+                                        : "You now have full access to all premium healing tools — completely free for 30 days."}
                                 </p>
                                 <div className="space-y-3 text-left bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl">
                                     <div className="flex items-center gap-3">
@@ -115,7 +138,13 @@ export function UpgradeModal({ isOpen, onClose, type }: UpgradeModalProps) {
                             </div>
 
                             <button
-                                onClick={handleStartTrial}
+                                onClick={() => {
+                                    if (currentMode === 'upgrade_info') {
+                                        setInternalMode('payment');
+                                    } else {
+                                        handleStartTrial();
+                                    }
+                                }}
                                 disabled={loading}
                                 className="w-full py-3 px-4 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
