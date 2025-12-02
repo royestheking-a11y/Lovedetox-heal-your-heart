@@ -49,7 +49,13 @@ router.post('/submit', protect, async (req, res) => {
 
     // ... (inside route)
     try {
+        console.log('Payment Submit Request:', req.body); // Log request body
         const user = await User.findById(req.user._id);
+
+        if (!user) {
+            console.error('User not found for payment submission');
+            return res.status(404).json({ message: 'User not found' });
+        }
 
         // Create Payment Document
         const payment = await Payment.create({
@@ -78,7 +84,8 @@ router.post('/submit', protect, async (req, res) => {
 
         res.json({ message: 'Payment submitted for review. Admin will approve shortly.' });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('Payment Submission Error:', error); // Log full error
+        res.status(500).json({ message: 'Server error', error: error.message, stack: error.stack });
     }
 });
 
