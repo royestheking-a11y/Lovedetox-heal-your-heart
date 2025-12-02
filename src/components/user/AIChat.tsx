@@ -281,19 +281,20 @@ export function AIChat() {
               <button
                 key={mode}
                 onClick={() => handleModeChange(mode)}
-                className={`p - 2 md: p - 3 rounded - xl transition - all duration - 300 ${isSelected
+                className={`p-2 md:p-3 rounded-xl transition-all duration-300 ${isSelected
                   ? 'bg-gradient-to-br ' + modeData.color + ' shadow-lg scale-105'
                   : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  } `}
+                  }`}
               >
-                <ModeIcon className={`w - 4 h - 4 md: w - 5 md: h - 5 mx - auto mb - 1 ${isSelected ? 'text-white' : 'text-gray-600 dark:text-gray-400'
-                  } `} />
-                <p className={`text - [10px] md: text - xs font - medium truncate ${isSelected ? 'text-white' : 'text-gray-700 dark:text-gray-300'
-                  } `}>
+                <ModeIcon className={`w-4 h-4 md:w-5 md:h-5 mx-auto mb-1 ${isSelected ? 'text-white' : 'text-gray-600 dark:text-gray-400'
+                  }`} />
+                <p className={`text-[10px] md:text-xs font-medium truncate ${isSelected ? 'text-white' : 'text-gray-700 dark:text-gray-300'
+                  }`}>
                   {modeData.name}
                 </p>
               </button>
             );
+
           })}
         </div>
 

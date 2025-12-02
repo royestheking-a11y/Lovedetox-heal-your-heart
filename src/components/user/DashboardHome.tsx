@@ -110,6 +110,10 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
 
   return (
     <div>
+      {/* DEBUG INFO - REMOVE LATER */}
+      {/* <div className="bg-red-100 p-2 text-xs mb-2">
+        Plan: {user?.plan}, TrialEnd: {user?.trialEndDate ? new Date(user.trialEndDate).toISOString() : 'None'}, DaysLeft: {trialDaysLeft}, IsActive: {isTrialActive ? 'Yes' : 'No'}
+      </div> */}
       {/* Welcome Section */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
