@@ -23,6 +23,9 @@ router.post('/login', async (req, res) => {
             email: user.email,
             isAdmin: user.isAdmin,
             isPro: user.isPro,
+            plan: user.plan,
+            trialStartDate: user.trialStartDate,
+            trialEndDate: user.trialEndDate,
             token: generateToken(user._id),
         });
     } else {
