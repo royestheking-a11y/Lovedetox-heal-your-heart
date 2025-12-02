@@ -153,7 +153,7 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
       {/* Stats Grid with Functional Cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="sm:col-span-2 lg:col-span-2">
-          <MindCanvasWidget onNavigate={handleNavigation as any} isPro={isPro} />
+          <MindCanvasWidget onNavigate={handleNavigation as any} isPro={user?.isPro} />
         </div>
 
         {/* Trial Status Card */}
