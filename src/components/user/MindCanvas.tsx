@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Sparkles, Download, Heart, Palette, Loader2, Image as ImageIcon, Lock, ArrowRight } from 'lucide-react';
+import { Sparkles, Download, Heart, Palette, Loader2, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../AuthContext';
 import dataService from '../../services/dataService';
@@ -40,46 +40,14 @@ export function MindCanvas() {
     // Check if user is Pro or in Trial
     const isPro = user?.isPro || (user?.plan === 'PRO_TRIAL' && user.trialEndDate && new Date(user.trialEndDate) > new Date());
 
-    if (!isPro) {
-        return (
-            <div className="relative min-h-[600px] flex items-center justify-center rounded-3xl overflow-hidden bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-10 blur-sm" />
 
-                <div className="relative z-10 text-center p-8 max-w-md mx-auto">
-                    <div className="w-20 h-20 bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl transform rotate-3">
-                        <Lock className="w-10 h-10 text-white" />
-                    </div>
-
-                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                        Unlock Mind Canvas
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-400 mb-8 text-lg">
-                        Visualize your healing journey with AI-generated art. This premium feature is available exclusively for Pro members.
-                    </p>
-
-                    <button
-                        onClick={() => setShowUpgradeModal(true)}
-                        className="w-full py-4 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
-                    >
-                        Upgrade to Unlock
-                        <ArrowRight className="w-5 h-5" />
-                    </button>
-
-                    <p className="mt-4 text-sm text-gray-500">
-                        Start your 30-day free trial today.
-                    </p>
-                </div>
-
-                <UpgradeModal
-                    isOpen={showUpgradeModal}
-                    onClose={() => setShowUpgradeModal(false)}
-                    type="trial"
-                />
-            </div>
-        );
-    }
 
     const handleGenerate = async () => {
+        if (!isPro) {
+            setShowUpgradeModal(true);
+            return;
+        }
+
         if (!emotion.trim()) {
             toast.error('Please describe your feeling first');
             return;
@@ -278,6 +246,12 @@ export function MindCanvas() {
             </div>
 
             {/* Gallery Section Removed as per user request */}
+            {/* Upgrade Modal */}
+            <UpgradeModal
+                isOpen={showUpgradeModal}
+                onClose={() => setShowUpgradeModal(false)}
+                type="trial"
+            />
         </div >
     );
 }

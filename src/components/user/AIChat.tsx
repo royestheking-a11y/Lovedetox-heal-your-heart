@@ -100,45 +100,7 @@ export function AIChat() {
   // Check if user is Pro or in Trial
   const isPro = user?.isPro || (user?.plan === 'PRO_TRIAL' && user.trialEndDate && new Date(user.trialEndDate) > new Date());
 
-  if (!isPro) {
-    return (
-      <div className="relative min-h-[600px] flex items-center justify-center rounded-3xl overflow-hidden bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1674027444485-cec3da58eef4?q=80&w=2832&auto=format&fit=crop')] bg-cover bg-center opacity-10 blur-sm" />
-
-        <div className="relative z-10 text-center p-8 max-w-md mx-auto">
-          <div className="w-20 h-20 bg-gradient-to-br from-[#6366F1] to-[#8B5CF6] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl transform rotate-3">
-            <Bot className="w-10 h-10 text-white" />
-          </div>
-
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            AI Healing Companion
-          </h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-8 text-lg">
-            Unlock 24/7 emotional support with our advanced AI companion. Get personalized guidance, tough love, or a gentle friend whenever you need it.
-          </p>
-
-          <div className="space-y-4">
-            <button
-              onClick={() => setShowUpgradeModal(true)}
-              className="w-full py-4 px-8 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
-            >
-              <Sparkles className="w-5 h-5" />
-              Unlock AI Support
-            </button>
-            <p className="text-sm text-gray-500">
-              Included in Pro Plan • Cancel anytime
-            </p>
-          </div>
-        </div>
-
-        <UpgradeModal
-          isOpen={showUpgradeModal}
-          onClose={() => setShowUpgradeModal(false)}
-          type="trial"
-        />
-      </div>
-    );
-  }
+  const chatLimit = 3;
 
   useEffect(() => {
     if (!user) return;
@@ -202,6 +164,12 @@ export function AIChat() {
 
   const handleSend = async () => {
     if (!input.trim() || !user) return;
+
+    const userMessageCount = messages.filter(m => m.sender === 'user').length;
+    if (!isPro && userMessageCount >= chatLimit) {
+      setShowUpgradeModal(true);
+      return;
+    }
 
     const tempUserMessage: Message = {
       id: Date.now().toString(),
