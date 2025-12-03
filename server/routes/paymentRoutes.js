@@ -292,4 +292,104 @@ router.post('/admin/refund', protect, admin, async (req, res) => {
     }
 });
 
+// @desc    Submit Cancellation Request
+// @route   POST /api/payments/cancel-request
+// @access  Private
+router.post('/cancel-request', protect, async (req, res) => {
+    const { reason, paymentMethod, accountNumber } = req.body;
+
+    try {
+        const user = await User.findById(req.user._id);
+
+        if (!user.isPro) {
+            return res.status(400).json({ message: 'You are not a Pro member.' });
+        }
+
+        user.cancellationRequest = {
+            requestedAt: new Date(),
+            reason,
+            paymentMethod,
+            accountNumber,
+            status: 'pending'
+        };
+
+        await user.save();
+        res.json({ message: 'Cancellation request submitted successfully.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+// @desc    Approve Cancellation & Refund
+// @route   POST /api/payments/admin/cancel-approve
+// @access  Private/Admin
+router.post('/admin/cancel-approve', protect, admin, async (req, res) => {
+    const { userId } = req.body;
+
+    try {
+        const user = await User.findById(userId);
+
+        if (!user || !user.cancellationRequest || user.cancellationRequest.status !== 'pending') {
+            return res.status(400).json({ message: 'Invalid cancellation request.' });
+        }
+
+        // 1. Downgrade User
+        user.isPro = false;
+        user.plan = 'FREE';
+        user.trialEndDate = undefined;
+        user.subscriptionEndDate = undefined;
+        user.cancellationRequest.status = 'approved';
+
+        // 2. Find the last successful payment to refund (optional, or just create a negative record)
+        // We'll create a new "Refund" record in Payment collection to deduct from revenue
+        const lastPayment = user.paymentHistory.slice().reverse().find(p => p.status === 'approved' && p.type === 'subscription');
+        const refundAmount = lastPayment ? lastPayment.amount : 0;
+
+        if (refundAmount > 0) {
+            await Payment.create({
+                userId: user._id,
+                userName: user.name,
+                userEmail: user.email,
+                transactionId: `REF-${Date.now()}`,
+                method: user.cancellationRequest.paymentMethod,
+                amount: refundAmount, // Store as positive, but mark as refund
+                plan: 'Refund',
+                planType: lastPayment?.planType,
+                status: 'refunded',
+                isRefund: true,
+                date: new Date()
+            });
+        }
+
+        await user.save();
+
+        // Send Email
+        try {
+            const message = `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #6366F1;">Subscription Cancelled</h2>
+                    <p>Hi ${user.name},</p>
+                    <p>Your subscription cancellation request has been approved.</p>
+                    <p>A refund of ৳${refundAmount} has been initiated to your ${user.cancellationRequest.paymentMethod} account (${user.cancellationRequest.accountNumber}).</p>
+                    <p>Your account has been downgraded to the Free plan.</p>
+                    <br>
+                    <p>Best regards,</p>
+                    <p>The LoveDetox Team</p>
+                </div>
+            `;
+            await sendEmail({
+                email: user.email,
+                subject: 'Subscription Cancelled - LoveDetox',
+                message
+            });
+        } catch (emailError) {
+            console.error('Email sending failed:', emailError);
+        }
+
+        res.json({ message: 'Cancellation approved and refund recorded.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
 module.exports = router;

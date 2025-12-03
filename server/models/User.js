@@ -33,7 +33,14 @@ const userSchema = mongoose.Schema({
         status: { type: String, enum: ['pending', 'approved', 'rejected', 'refunded'], default: 'pending' },
         date: { type: Date, default: Date.now },
         refundNumber: String // For refund requests
-    }]
+    }],
+    cancellationRequest: {
+        requestedAt: Date,
+        reason: String,
+        paymentMethod: String, // bkash, nagad, rocket, bank
+        accountNumber: String,
+        status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' }
+    }
 }, {
     timestamps: true
 });

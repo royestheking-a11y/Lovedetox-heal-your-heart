@@ -51,10 +51,21 @@ const clearAllPayments = async () => {
     return response.data;
 };
 
+// Cancellation
+const requestCancellation = async (data: { reason: string; paymentMethod: string; accountNumber: string }) => {
+    const response = await api.post('/payments/cancel-request', data);
+    return response.data;
+};
+
+const approveCancellation = async (userId: string) => {
+    const response = await api.post('/payments/admin/cancel-approve', { userId });
+    return response.data;
+};
+
 const paymentService = {
     startTrial,
     submitPayment,
-    cancelSubscription,
+    cancelSubscription, // Existing cancelSubscription
     getPaymentRequests,
     approvePayment,
     rejectPayment,

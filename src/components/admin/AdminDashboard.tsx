@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, Users, CheckSquare, MessageCircle, Heart, AlertTriangle, DollarSign, Bell, Mail, Settings, LogOut, Lock, Shield, Menu, X, Sparkles, Trophy, Palette } from 'lucide-react';
+import { LayoutDashboard, Users, CheckSquare, MessageCircle, Heart, AlertTriangle, DollarSign, Bell, Mail, Settings, LogOut, Lock, Shield, Menu, X, Sparkles, Trophy, Palette, TrendingUp } from 'lucide-react';
 import { AdminHome } from './AdminHome';
 import { UserManagement } from './UserManagement';
 import { TaskManagement } from './TaskManagement';
@@ -13,6 +13,7 @@ import { SupportInbox } from './SupportInbox';
 import { SystemSettings } from './SystemSettings';
 import { SuccessStoryManagement } from './SuccessStoryManagement';
 import { NoContactMonitor } from './NoContactMonitor';
+import { RevenueAnalytics } from './RevenueAnalytics';
 import { AchievementsManagement } from './AchievementsManagement';
 
 interface AdminDashboardProps {
@@ -20,7 +21,7 @@ interface AdminDashboardProps {
 }
 
 export function AdminDashboard({ onLogout }: AdminDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'tasks' | 'ai' | 'mood' | 'community' | 'payments' | 'notifications' | 'support' | 'settings' | 'stories' | 'nocontact' | 'achievements' | 'mind-canvas'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'tasks' | 'ai' | 'mood' | 'community' | 'payments' | 'revenue' | 'notifications' | 'support' | 'settings' | 'stories' | 'nocontact' | 'achievements' | 'mind-canvas'>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Initialize admin user if doesn't exist
@@ -43,6 +44,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
     { id: 'mood', icon: Heart, label: 'Mood Monitor', color: 'from-[#8B5CF6] to-[#FB7185]' },
     { id: 'community', icon: AlertTriangle, label: 'Moderation', color: 'from-[#6366F1] to-[#8B5CF6]' },
     { id: 'payments', icon: DollarSign, label: 'Payments', color: 'from-[#FB7185] to-[#F472B6]' },
+    { id: 'revenue', icon: TrendingUp, label: 'Revenue Analytics', color: 'from-[#8B5CF6] to-[#FB7185]' },
     { id: 'notifications', icon: Bell, label: 'Notifications', color: 'from-[#8B5CF6] to-[#FB7185]' },
     { id: 'support', icon: Mail, label: 'Support Inbox', color: 'from-[#6366F1] to-[#8B5CF6]' },
     { id: 'settings', icon: Settings, label: 'Settings', color: 'from-[#FB7185] to-[#F472B6]' },
@@ -69,6 +71,8 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
         return <CommunityModeration />;
       case 'payments':
         return <PaymentManagement />;
+      case 'revenue':
+        return <RevenueAnalytics />;
       case 'notifications':
         return <NotificationManagement />;
       case 'support':

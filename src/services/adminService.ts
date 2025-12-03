@@ -91,6 +91,11 @@ export const adminService = {
         return response.data;
     },
 
+    getRevenueStats: async () => {
+        const response = await api.get('/admin/revenue-stats');
+        return response.data;
+    },
+
     // Achievements
     getAchievements: async () => {
         const response = await api.get('/admin/achievements');

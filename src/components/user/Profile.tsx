@@ -5,6 +5,7 @@ import { User, Lock, Bell, Download, Trash2, Crown, Palette } from 'lucide-react
 import { toast } from 'sonner';
 
 import { UpgradeModal } from './UpgradeModal';
+import { CancelSubscriptionModal } from './CancelSubscriptionModal';
 
 export function Profile() {
   const { user, updateUser, logout } = useAuth();
@@ -19,6 +20,7 @@ export function Profile() {
   });
   const [gallery, setGallery] = useState<any[]>([]);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -166,9 +168,17 @@ export function Profile() {
         <div className="bg-gradient-to-r from-[#4B0082] to-[#FF8DAA] p-4 rounded-2xl text-white mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Crown className="w-6 h-6" />
-            <span>Pro Member</span>
+            <div>
+              <div className="font-semibold">Pro Member</div>
+              <div className="text-sm opacity-90">Unlimited Access</div>
+            </div>
           </div>
-          <span className="text-sm">Unlimited Access</span>
+          <button
+            onClick={() => setShowCancelModal(true)}
+            className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm transition-colors"
+          >
+            Cancel Subscription
+          </button>
         </div>
       )}
 
@@ -368,7 +378,10 @@ export function Profile() {
       <UpgradeModal
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}
-        type="payment"
+      />
+      <CancelSubscriptionModal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
       />
     </div>
   );

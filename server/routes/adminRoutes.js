@@ -62,6 +62,50 @@ router.get('/stats', protect, admin, async (req, res) => {
     });
 });
 
+// @desc    Get detailed revenue stats
+// @route   GET /api/admin/revenue-stats
+router.get('/revenue-stats', protect, admin, async (req, res) => {
+    try {
+        const { period, date } = req.query; // period: 'daily', 'monthly', 'yearly'
+        const payments = await Payment.find({ status: { $in: ['completed', 'refunded'] } });
+
+        // Helper to format date key
+        const formatDate = (d) => d.toISOString().split('T')[0];
+        const formatMonth = (d) => d.toISOString().slice(0, 7); // YYYY-MM
+        const formatYear = (d) => d.getFullYear().toString();
+
+        const stats = {
+            daily: {},
+            monthly: {},
+            yearly: {},
+            total: 0
+        };
+
+        payments.forEach(p => {
+            const d = new Date(p.date);
+            const amount = p.isRefund ? -p.amount : p.amount; // Deduct refunds
+
+            // Daily
+            const dayKey = formatDate(d);
+            stats.daily[dayKey] = (stats.daily[dayKey] || 0) + amount;
+
+            // Monthly
+            const monthKey = formatMonth(d);
+            stats.monthly[monthKey] = (stats.monthly[monthKey] || 0) + amount;
+
+            // Yearly
+            const yearKey = formatYear(d);
+            stats.yearly[yearKey] = (stats.yearly[yearKey] || 0) + amount;
+
+            stats.total += amount;
+        });
+
+        res.json(stats);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+});
+
 // --- PAYMENTS ---
 // @desc    Get all payments (history)
 // @route   GET /api/admin/payments
