@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
+import { huggingFaceService } from './huggingFaceService';
 
 // Safety settings for the model
 const safetySettings = [
@@ -132,7 +133,15 @@ export class GeminiService {
                 console.warn('Rate limit hit. The next request will likely use a different key.');
             }
 
-            throw error;
+            // Fallback to Hugging Face
+            console.log('⚠️ Gemini failed, attempting fallback to Hugging Face...');
+            try {
+                const fallbackResponse = await huggingFaceService.generateResponse(message, MODE_PROMPTS[mode] || MODE_PROMPTS.comfort);
+                return fallbackResponse;
+            } catch (fallbackError) {
+                console.error('❌ Both Gemini and Hugging Face failed:', fallbackError);
+                throw error; // Throw original error if both fail
+            }
         }
     }
 }

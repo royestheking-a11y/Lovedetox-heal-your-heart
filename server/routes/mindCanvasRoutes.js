@@ -3,6 +3,7 @@ const router = express.Router();
 const MindCanvasImage = require('../models/MindCanvasImage');
 const User = require('../models/User'); // Assuming you have a User model
 const SystemSettings = require('../models/SystemSettings'); // Assuming you have SystemSettings
+const axios = require('axios');
 
 // Helper function to get system settings
 const getSystemSettings = async () => {
@@ -46,11 +47,47 @@ router.post('/generate', async (req, res) => {
         const encodedPrompt = encodeURIComponent(`${prompt} ${style || ''}`);
         const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true`;
 
+        // Try Pollinations.ai first
+        let finalImageUrl = imageUrl;
+        try {
+            // Check if Pollinations is responsive (HEAD request)
+            await axios.head(imageUrl);
+        } catch (pollinationError) {
+            console.warn('⚠️ Pollinations.ai failed, attempting fallback to Hugging Face...', pollinationError);
+
+            // Fallback to Hugging Face
+            const hfToken = process.env.HUGGING_FACE_API_KEY || process.env.VITE_HUGGING_FACE_API_KEY;
+
+            if (hfToken) {
+                try {
+                    const hfResponse = await axios.post(
+                        "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+                        { inputs: `${prompt} ${style || ''}` },
+                        {
+                            headers: { Authorization: `Bearer ${hfToken}` },
+                            responseType: 'arraybuffer'
+                        }
+                    );
+
+                    if (hfResponse.status === 200) {
+                        const buffer = Buffer.from(hfResponse.data);
+                        const base64Image = `data:image/jpeg;base64,${buffer.toString('base64')}`;
+                        finalImageUrl = base64Image;
+                        console.log('✅ Generated image using Hugging Face fallback');
+                    }
+                } catch (hfError) {
+                    console.error('❌ Hugging Face fallback error:', hfError.message);
+                }
+            } else {
+                console.warn('⚠️ No Hugging Face API Key configured for backend fallback.');
+            }
+        }
+
         // Save metadata to database
         const newImage = new MindCanvasImage({
             user_id,
             text_note: prompt,
-            image_url: imageUrl,
+            image_url: finalImageUrl,
             is_pro_generated: is_pro || false,
             style: style || 'default'
         });
@@ -59,7 +96,7 @@ router.post('/generate', async (req, res) => {
 
         res.json({
             success: true,
-            imageUrl: imageUrl,
+            imageUrl: finalImageUrl,
             imageId: newImage._id
         });
 
