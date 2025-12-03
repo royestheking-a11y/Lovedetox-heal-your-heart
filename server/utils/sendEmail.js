@@ -2,26 +2,36 @@ const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
     // Create transporter
-    // Note: For Gmail, you need to use an App Password if 2FA is on.
-    // If no env vars are set, this will fail gracefully or log error.
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true, // use SSL
         auth: {
-            user: process.env.EMAIL_USER, // e.g., your-email@gmail.com
-            pass: process.env.EMAIL_PASS  // e.g., your-app-password
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
         }
     });
 
+    // Verify connection configuration
+    try {
+        await transporter.verify();
+        console.log('Server is ready to take our messages');
+    } catch (error) {
+        console.error('SMTP Connection Error:', error);
+        throw error;
+    }
+
     // Define email options
     const mailOptions = {
-        from: `LoveDetox Team <${process.env.EMAIL_USER}>`,
+        from: `"LoveDetox Team" <${process.env.EMAIL_USER}>`,
         to: options.email,
         subject: options.subject,
         html: options.message
     };
 
     // Send email
-    await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Message sent: %s', info.messageId);
 };
 
 module.exports = sendEmail;

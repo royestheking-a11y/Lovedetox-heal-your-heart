@@ -213,8 +213,9 @@ router.post('/admin/approve', protect, admin, async (req, res) => {
                 message
             });
         } catch (emailError) {
-            console.error('Email sending failed:', emailError);
-            // Don't fail the request if email fails
+            console.error('FAILED TO SEND EMAIL:', emailError);
+            console.error('Email Error Stack:', emailError.stack);
+            // Don't fail the request if email fails, but log it clearly
         }
 
         res.json({ message: 'Payment approved and user upgraded.' });
