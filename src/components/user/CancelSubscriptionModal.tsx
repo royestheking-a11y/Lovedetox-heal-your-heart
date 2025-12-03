@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { X, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import paymentService from '../../services/paymentService';
-import { useAuth } from '../AuthContext';
+
 
 interface CancelSubscriptionModalProps {
     isOpen: boolean;
@@ -10,7 +10,7 @@ interface CancelSubscriptionModalProps {
 }
 
 export function CancelSubscriptionModal({ isOpen, onClose }: CancelSubscriptionModalProps) {
-    const { user, updateUser } = useAuth();
+
     const [loading, setLoading] = useState(false);
     const [reason, setReason] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('bkash');

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { DollarSign, Calendar as CalendarIcon, TrendingUp, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownLeft, Activity } from 'lucide-react';
+import { DollarSign, Calendar as CalendarIcon, TrendingUp, ChevronLeft, ChevronRight, Activity } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import adminService from '../../services/adminService';
 import { toast } from 'sonner';

@@ -196,8 +196,8 @@ export function PaymentManagement() {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col">
-                                                    <span className="text-sm font-medium text-gray-900 dark:text-white">
-                                                        {req.planType === 'PRO_LIFETIME' ? 'Lifetime Access' : 'Monthly Plan'}
+                                                    <span className={`text-sm font-medium ${req.type === 'refund' ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
+                                                        {req.type === 'refund' ? 'Refund Request (Legacy)' : (req.planType === 'PRO_LIFETIME' ? 'Lifetime Access' : 'Monthly Plan')}
                                                     </span>
                                                     <span className="text-xs text-gray-500">৳{req.amount}</span>
                                                 </div>
@@ -205,9 +205,13 @@ export function PaymentManagement() {
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col">
                                                     <span className="text-sm font-medium capitalize text-gray-900 dark:text-white">{req.method}</span>
-                                                    <code className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded w-fit mt-1">
-                                                        {req.transactionId}
-                                                    </code>
+                                                    {req.type === 'refund' && req.refundNumber ? (
+                                                        <span className="text-xs font-mono text-gray-500 mt-1">To: {req.refundNumber}</span>
+                                                    ) : (
+                                                        <code className="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded w-fit mt-1">
+                                                            {req.transactionId}
+                                                        </code>
+                                                    )}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-500">
