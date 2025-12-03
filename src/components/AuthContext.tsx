@@ -254,6 +254,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const checkSession = async () => {
+    if (!user) return;
+    try {
+      const freshUser = await dataService.getProfile();
+      if (freshUser.isPro !== user.isPro || freshUser.plan !== user.plan) {
+        const token = user.token;
+        const updatedUser = { ...freshUser, id: freshUser._id, token };
+        setUser(updatedUser);
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+
+        if (!freshUser.isPro && user.isPro) {
+          toast.info('Your subscription status has changed.');
+        }
+      }
+    } catch (error) {
+      console.error('Session check failed:', error);
+    }
+  };
+
+  // Periodic session check (every 30 seconds) and on window focus
+  useEffect(() => {
+    if (!user) return;
+
+    const interval = setInterval(checkSession, 30000);
+
+    const handleFocus = () => {
+      checkSession();
+    };
+
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [user]);
+
   return (
     <AuthContext.Provider value={{
       user,

@@ -27,15 +27,20 @@ router.get('/stats', protect, admin, async (req, res) => {
 
     // Revenue
     // Calculate total revenue from Payments collection
-    const payments = await Payment.find({ status: 'completed' });
-    const totalRevenue = payments.reduce((acc, curr) => acc + curr.amount, 0);
+    // Calculate total revenue from Payments collection
+    const payments = await Payment.find({ status: { $in: ['completed', 'refunded'] } });
+    const totalRevenue = payments.reduce((acc, curr) => {
+        return acc + (curr.isRefund ? -curr.amount : curr.amount);
+    }, 0);
 
     // Monthly Revenue (this month)
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
     const monthlyPayments = payments.filter(p => new Date(p.date) >= startOfMonth);
-    const monthlyRevenue = monthlyPayments.reduce((acc, curr) => acc + curr.amount, 0);
+    const monthlyRevenue = monthlyPayments.reduce((acc, curr) => {
+        return acc + (curr.isRefund ? -curr.amount : curr.amount);
+    }, 0);
 
     // Engagement Stats
     const tasksCompleted = await Task.countDocuments({ completed: true });

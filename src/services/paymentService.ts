@@ -72,7 +72,9 @@ const paymentService = {
     confirmRefund,
     getPaymentHistory,
     deletePayment,
-    clearAllPayments
+    clearAllPayments,
+    requestCancellation,
+    approveCancellation
 };
 
 export default paymentService;

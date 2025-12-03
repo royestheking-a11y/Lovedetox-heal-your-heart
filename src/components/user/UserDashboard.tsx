@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { LayoutDashboard, CheckSquare, MessageCircle, Heart, BookOpen, Shield, Users, User, LogOut, Sparkles, Menu, X, Wind, Mail, Trophy, Award, Palette } from 'lucide-react';
+import { toast } from 'sonner';
 import { useAuth } from '../AuthContext';
 import { DashboardHome } from './DashboardHome';
 import { DailyTasks } from './DailyTasks';
@@ -42,7 +43,14 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
         setShowUpgradeModal(true);
       }
     }
-  }, [user]);
+
+    // Auto-redirect if on Pro tab and not Pro
+    const proTabs = ['ai', 'mind-canvas', 'breathing', 'guard'];
+    if (activeTab && proTabs.includes(activeTab) && !user?.isPro) {
+      setActiveTab('dashboard');
+      toast.info('This feature is locked for Pro members.');
+    }
+  }, [user, activeTab]);
 
   const handleLogout = () => {
     logout();
