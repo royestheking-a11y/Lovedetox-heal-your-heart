@@ -131,6 +131,7 @@ export function SoundTherapy() {
                 </div>
 
                 <div style={{ flex: 1, position: 'relative' }}>
+                    {/* BARE MINIMUM PLAYER CONFIG */}
                     <Player
                         url={debugUrl || currentTrack?.url}
                         playing={isPlaying}
@@ -140,30 +141,11 @@ export function SoundTherapy() {
                         height="100%"
                         controls={true}
                         playsinline={true}
-                        onStart={() => {
-                            console.log("Player Started");
-                            toast.success("Audio playing...");
-                        }}
+                        onStart={() => console.log("Player Started")}
                         onEnded={() => setIsPlaying(false)}
                         onError={(e: any) => {
                             console.error("Player Error:", e);
                             toast.error(`Error: ${e?.message || 'Unknown'}`);
-                        }}
-                        config={{
-                            youtube: {
-                                playerVars: {
-                                    showinfo: 0,
-                                    controls: 1, // Enable controls
-                                    playsinline: 1,
-                                    rel: 0,
-                                    modestbranding: 1,
-                                    iv_load_policy: 3,
-                                    disablekb: 0
-                                }
-                            },
-                            vimeo: {
-                                playerOptions: { playsinline: true }
-                            }
                         }}
                     />
                 </div>
