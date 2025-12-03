@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, Play, Pause, Save, X, RefreshCw } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Play, Pause, Save, X, RefreshCw, Music, BarChart3, Sparkles, Headphones } from 'lucide-react';
 import { toast } from 'sonner';
 import dataService from '../../services/dataService';
 
@@ -92,17 +92,25 @@ export function SoundTherapyManagement() {
         sound.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
+    // Stats
+    const totalSounds = sounds.length;
+    const premiumSounds = sounds.filter(s => s.isPremium).length;
+    const categories = Array.from(new Set(sounds.map(s => s.category))).length;
+
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
+            {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Sound Therapy Manager</h2>
-                    <p className="text-gray-500 dark:text-gray-400">Manage healing sounds and music tracks</p>
+                    <h2 className="text-3xl font-bold bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-transparent bg-clip-text">
+                        Sound Therapy Manager
+                    </h2>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">Curate your healing audio library</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                     <button
                         onClick={loadSounds}
-                        className="p-2 text-gray-500 hover:text-[#6366F1] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
+                        className="p-3 text-gray-500 hover:text-[#6366F1] bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-700 transition-all shadow-sm"
                         title="Refresh List"
                     >
                         <RefreshCw className="w-5 h-5" />
@@ -112,7 +120,7 @@ export function SoundTherapyManagement() {
                             setCurrentSound({ category: 'relax', isPremium: false });
                             setIsEditing(true);
                         }}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white rounded-xl hover:bg-[#5558DD] transition-colors"
+                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all font-medium"
                     >
                         <Plus className="w-5 h-5" />
                         Add New Sound
@@ -120,65 +128,130 @@ export function SoundTherapyManagement() {
                 </div>
             </div>
 
-            {/* Search */}
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            {/* Stats Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                        <Music className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Total Tracks</p>
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{totalSounds}</h3>
+                    </div>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                        <Sparkles className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Premium Content</p>
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{premiumSounds}</h3>
+                    </div>
+                </div>
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                        <BarChart3 className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Categories</p>
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{categories}</h3>
+                    </div>
+                </div>
+            </div>
+
+            {/* Search Bar */}
+            <div className="relative max-w-md">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                     type="text"
-                    placeholder="Search sounds..."
+                    placeholder="Search by title or category..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-[#6366F1] focus:border-transparent outline-none transition-all"
+                    className="w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-[#6366F1] focus:border-transparent outline-none transition-all shadow-sm"
                 />
             </div>
 
-            {/* List */}
-            <div className="grid gap-4">
+            {/* Grid Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {loading ? (
-                    <div className="text-center py-12 text-gray-500">Loading sounds...</div>
+                    <div className="col-span-full text-center py-20 text-gray-500">
+                        <div className="animate-spin w-8 h-8 border-4 border-[#6366F1] border-t-transparent rounded-full mx-auto mb-4"></div>
+                        Loading your sound library...
+                    </div>
                 ) : filteredSounds.length === 0 ? (
-                    <div className="text-center py-12 text-gray-500">No sounds found</div>
+                    <div className="col-span-full text-center py-20 bg-gray-50 dark:bg-gray-800/50 rounded-3xl border border-dashed border-gray-300 dark:border-gray-700">
+                        <Headphones className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-500 text-lg">No sounds found</p>
+                        <button
+                            onClick={() => {
+                                setCurrentSound({ category: 'relax', isPremium: false });
+                                setIsEditing(true);
+                            }}
+                            className="mt-4 text-[#6366F1] font-medium hover:underline"
+                        >
+                            Create your first track
+                        </button>
+                    </div>
                 ) : (
                     filteredSounds.map((sound) => (
-                        <div key={sound._id} className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center justify-between group hover:shadow-md transition-all">
-                            <div className="flex items-center gap-4">
-                                <button
-                                    onClick={() => togglePlay(sound.url, sound._id)}
-                                    className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-[#6366F1] hover:bg-[#6366F1] hover:text-white transition-colors"
-                                >
-                                    {playingId === sound._id ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
-                                </button>
-                                <div>
-                                    <h3 className="font-semibold text-gray-900 dark:text-white">{sound.title}</h3>
-                                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                                        <span className="capitalize px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded-full text-xs">
-                                            {sound.category}
-                                        </span>
-                                        {sound.isPremium && (
-                                            <span className="px-2 py-0.5 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-full text-xs">
-                                                Premium
-                                            </span>
-                                        )}
-                                        <span>• {sound.duration}</span>
+                        <div key={sound._id} className="group bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                            <div className="p-6">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br ${sound.category === 'sleep' ? 'from-indigo-400 to-purple-600' :
+                                            sound.category === 'nature' ? 'from-green-400 to-emerald-600' :
+                                                sound.category === 'focus' ? 'from-blue-400 to-cyan-600' :
+                                                    'from-pink-400 to-rose-600'
+                                        } shadow-lg text-white`}>
+                                        <Music className="w-7 h-7" />
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => {
+                                                setCurrentSound(sound);
+                                                setIsEditing(true);
+                                            }}
+                                            className="p-2 text-gray-400 hover:text-[#6366F1] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
+                                        >
+                                            <Edit2 className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => handleDelete(sound._id)}
+                                            className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1 truncate">{sound.title}</h3>
+                                <div className="flex items-center gap-2 mb-6">
+                                    <span className="px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wide">
+                                        {sound.category}
+                                    </span>
+                                    {sound.isPremium && (
+                                        <span className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-200 to-yellow-400 text-yellow-900 text-xs font-bold flex items-center gap-1">
+                                            <Sparkles className="w-3 h-3" /> PRO
+                                        </span>
+                                    )}
+                                    <span className="text-xs text-gray-400">• {sound.duration}</span>
+                                </div>
+
                                 <button
-                                    onClick={() => {
-                                        setCurrentSound(sound);
-                                        setIsEditing(true);
-                                    }}
-                                    className="p-2 text-gray-400 hover:text-[#6366F1] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                                    onClick={() => togglePlay(sound.url, sound._id)}
+                                    className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all ${playingId === sound._id
+                                            ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                                            : 'bg-[#6366F1]/10 text-[#6366F1] hover:bg-[#6366F1] hover:text-white'
+                                        }`}
                                 >
-                                    <Edit2 className="w-5 h-5" />
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(sound._id)}
-                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                                >
-                                    <Trash2 className="w-5 h-5" />
+                                    {playingId === sound._id ? (
+                                        <>
+                                            <Pause className="w-5 h-5" /> Pause
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Play className="w-5 h-5" /> Play Preview
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </div>
@@ -188,47 +261,53 @@ export function SoundTherapyManagement() {
 
             {/* Edit Modal */}
             {isEditing && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg p-6 shadow-xl">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                                {currentSound._id ? 'Edit Sound' : 'Add New Sound'}
-                            </h3>
-                            <button onClick={() => setIsEditing(false)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-lg p-8 shadow-2xl border border-gray-100 dark:border-gray-700 scale-100 animate-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between mb-8">
+                            <div>
+                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                    {currentSound._id ? 'Edit Track' : 'New Track'}
+                                </h3>
+                                <p className="text-gray-500 text-sm mt-1">Enter the details for this sound therapy session</p>
+                            </div>
+                            <button
+                                onClick={() => setIsEditing(false)}
+                                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                            >
                                 <X className="w-6 h-6" />
                             </button>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-5">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Track Title</label>
                                 <input
                                     type="text"
                                     value={currentSound.title || ''}
                                     onChange={(e) => setCurrentSound({ ...currentSound, title: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent focus:ring-2 focus:ring-[#6366F1] outline-none"
-                                    placeholder="e.g., Ocean Waves"
+                                    className="w-full px-5 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700/50 focus:ring-2 focus:ring-[#6366F1] focus:border-transparent outline-none transition-all"
+                                    placeholder="e.g., Midnight Rain"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Audio URL</label>
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Audio URL</label>
                                 <input
                                     type="text"
                                     value={currentSound.url || ''}
                                     onChange={(e) => setCurrentSound({ ...currentSound, url: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent focus:ring-2 focus:ring-[#6366F1] outline-none"
+                                    className="w-full px-5 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700/50 focus:ring-2 focus:ring-[#6366F1] focus:border-transparent outline-none transition-all"
                                     placeholder="https://..."
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-5">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Category</label>
                                     <select
                                         value={currentSound.category || 'relax'}
                                         onChange={(e) => setCurrentSound({ ...currentSound, category: e.target.value as any })}
-                                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent focus:ring-2 focus:ring-[#6366F1] outline-none"
+                                        className="w-full px-5 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700/50 focus:ring-2 focus:ring-[#6366F1] focus:border-transparent outline-none transition-all appearance-none"
                                     >
                                         <option value="relax">Relax</option>
                                         <option value="sleep">Sleep</option>
@@ -238,34 +317,37 @@ export function SoundTherapyManagement() {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Duration</label>
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Duration</label>
                                     <input
                                         type="text"
                                         value={currentSound.duration || ''}
                                         onChange={(e) => setCurrentSound({ ...currentSound, duration: e.target.value })}
-                                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent focus:ring-2 focus:ring-[#6366F1] outline-none"
+                                        className="w-full px-5 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700/50 focus:ring-2 focus:ring-[#6366F1] focus:border-transparent outline-none transition-all"
                                         placeholder="e.g., 10:00"
                                     />
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-100 dark:border-gray-700">
                                 <input
                                     type="checkbox"
                                     id="isPremium"
                                     checked={currentSound.isPremium || false}
                                     onChange={(e) => setCurrentSound({ ...currentSound, isPremium: e.target.checked })}
-                                    className="w-4 h-4 text-[#6366F1] rounded focus:ring-[#6366F1]"
+                                    className="w-5 h-5 text-[#6366F1] rounded focus:ring-[#6366F1] border-gray-300"
                                 />
-                                <label htmlFor="isPremium" className="text-sm font-medium text-gray-700 dark:text-gray-300">Premium Content</label>
+                                <label htmlFor="isPremium" className="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer select-none">
+                                    Mark as Premium Content
+                                </label>
+                                <Sparkles className="w-4 h-4 text-amber-400 ml-auto" />
                             </div>
 
                             <button
                                 onClick={handleSave}
-                                className="w-full mt-4 py-3 bg-[#6366F1] text-white rounded-xl hover:bg-[#5558DD] transition-colors font-medium flex items-center justify-center gap-2"
+                                className="w-full mt-2 py-4 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all font-bold text-lg flex items-center justify-center gap-2"
                             >
                                 <Save className="w-5 h-5" />
-                                Save Sound Track
+                                Save Track
                             </button>
                         </div>
                     </div>
