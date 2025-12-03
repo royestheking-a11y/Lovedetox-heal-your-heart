@@ -50,6 +50,8 @@ export function SoundTherapy() {
     const [loading, setLoading] = useState(true);
 
 
+    const [debugUrl, setDebugUrl] = useState<string | null>(null);
+
     useEffect(() => {
         loadSounds();
     }, []);
@@ -72,6 +74,7 @@ export function SoundTherapy() {
         } else {
             setActiveTrack(trackId);
             setIsPlaying(true);
+            setDebugUrl(null); // Reset debug url when picking real track
         }
     };
 
@@ -97,7 +100,7 @@ export function SoundTherapy() {
                 bottom: '20px',
                 right: '20px',
                 width: '300px', // Wider for text
-                height: '250px', // Taller for more debug info
+                height: '300px', // Taller for buttons
                 opacity: 1,
                 zIndex: 9999,
                 background: '#222',
@@ -113,12 +116,23 @@ export function SoundTherapy() {
                     Active ID: {activeTrack || 'None'} <br />
                     Tracks Loaded: {tracks.length} <br />
                     Current Track Found: {currentTrack ? 'Yes' : 'No'} <br />
-                    URL: {currentTrack?.url || 'No URL'}
+                    URL: {debugUrl || currentTrack?.url || 'No URL'} <br />
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setDebugUrl('https://www.youtube.com/watch?v=jfKfPfyJRdk'); // Lofi Girl (Safe)
+                            setIsPlaying(true);
+                            toast.success("Testing Lofi Girl...");
+                        }}
+                        style={{ marginTop: '5px', padding: '2px 5px', background: '#6366F1', border: 'none', borderRadius: '3px', cursor: 'pointer', color: 'white' }}
+                    >
+                        Test Lofi Girl (Safe URL)
+                    </button>
                 </div>
 
                 <div style={{ flex: 1, position: 'relative' }}>
                     <Player
-                        url={currentTrack?.url}
+                        url={debugUrl || currentTrack?.url}
                         playing={isPlaying}
                         volume={volume}
                         muted={false}
