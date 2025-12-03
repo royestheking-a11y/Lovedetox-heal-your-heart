@@ -92,13 +92,13 @@ export function SoundTherapy() {
             </div>
 
             {/* Hidden Player for YouTube/External Links */}
-            <div className="hidden">
+            <div style={{ position: 'fixed', bottom: 0, opacity: 0, pointerEvents: 'none', zIndex: -1 }}>
                 <Player
                     url={currentTrack?.url}
                     playing={isPlaying}
                     volume={volume}
-                    width="0"
-                    height="0"
+                    width="1px"
+                    height="1px"
                     playsinline={true}
                     onBuffer={() => setIsBuffering(true)}
                     onBufferEnd={() => setIsBuffering(false)}
@@ -110,7 +110,7 @@ export function SoundTherapy() {
                     }}
                     config={{
                         youtube: {
-                            playerVars: { showinfo: 0, controls: 0, playsinline: 1 }
+                            playerVars: { showinfo: 0, controls: 0, playsinline: 1, origin: window.location.origin }
                         },
                         vimeo: {
                             playerOptions: { playsinline: true }

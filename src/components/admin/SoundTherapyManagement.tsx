@@ -99,12 +99,12 @@ export function SoundTherapyManagement() {
     return (
         <div className="space-y-8">
             {/* Hidden Player for Preview */}
-            <div className="hidden">
+            <div style={{ position: 'fixed', bottom: 0, opacity: 0, pointerEvents: 'none', zIndex: -1 }}>
                 <Player
                     url={playingUrl || ''}
                     playing={!!playingId}
-                    width="0"
-                    height="0"
+                    width="1px"
+                    height="1px"
                     playsinline={true}
                     onEnded={() => {
                         setPlayingId(null);
@@ -117,7 +117,7 @@ export function SoundTherapyManagement() {
                     }}
                     config={{
                         youtube: {
-                            playerVars: { showinfo: 0, controls: 0, playsinline: 1 }
+                            playerVars: { showinfo: 0, controls: 0, playsinline: 1, origin: window.location.origin }
                         }
                     }}
                 />
