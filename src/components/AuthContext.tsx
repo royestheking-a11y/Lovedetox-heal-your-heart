@@ -18,6 +18,15 @@ interface User {
   streak: number;
   recoveryProgress: number;
   hasSeenTutorial?: boolean;
+
+  // No Contact Fields
+  breakupDate?: Date;
+  noContactStartDate?: Date;
+  relapseCount?: number;
+  relapseHistory?: { date: Date; reason: string }[];
+  noContactActive?: boolean;
+
+  googleId?: string;
   plan?: 'FREE' | 'PRO_TRIAL' | 'PRO_MONTHLY' | 'PRO_LIFETIME';
   trialStartDate?: string;
   trialEndDate?: string;

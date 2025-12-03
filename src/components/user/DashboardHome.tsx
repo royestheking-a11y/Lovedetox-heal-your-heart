@@ -1,8 +1,9 @@
 import { useAuth } from '../AuthContext';
-import { TrendingUp, Flame, Target, Calendar, MessageCircle, CheckCircle, Sparkles, Award, Heart, ArrowRight, Zap, BookOpen, Check, Clock, AlertTriangle } from 'lucide-react';
+import { TrendingUp, Flame, Target, MessageCircle, CheckCircle, Sparkles, Award, Heart, ArrowRight, Zap, BookOpen, Check, Clock, AlertTriangle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { PremiumIcon } from '../PremiumIcon';
 import { MindCanvasWidget } from './MindCanvasWidget';
+import { NoContactWidget } from './NoContactWidget';
 import { SoundEffects } from '../SoundEffects';
 import { addNotification } from '../NotificationSystem';
 import { UpgradeModal } from './UpgradeModal';
@@ -195,21 +196,10 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
           </div>
         </button>
 
-        <button
-          onClick={() => handleNavigation('guard')}
-          className="card-3d p-6 rounded-2xl text-left group cursor-pointer"
-        >
-          <div className="flex items-start justify-between mb-4">
-            <PremiumIcon Icon={Calendar} size="sm" variant="3d" gradient="from-[#8B5CF6] to-[#FB7185]" />
-            <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">Days</span>
-          </div>
-          <div className="text-2xl font-bold gradient-text mb-1">{user?.noContactDays || 0}</div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Days No Contact</p>
-          <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-            <span className="text-xs text-[#8B5CF6] font-medium">Track Progress</span>
-            <ArrowRight className="w-4 h-4 text-[#8B5CF6] group-hover:translate-x-1 transition-transform" />
-          </div>
-        </button>
+        <NoContactWidget
+          days={user?.noContactStartDate ? Math.floor((new Date().getTime() - new Date(user.noContactStartDate).getTime()) / (1000 * 60 * 60 * 24)) : 0}
+          onNavigate={() => handleNavigation('guard')}
+        />
 
         <button
           onClick={() => handleNavigation('tasks')}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, CheckSquare, MessageCircle, Heart, BookOpen, Shield, Users, User, LogOut, Sparkles, Menu, X, Wind, Mail, Trophy, Award, Palette } from 'lucide-react';
+import { LayoutDashboard, CheckSquare, MessageCircle, Heart, BookOpen, Shield, Users, User, LogOut, Sparkles, Menu, X, Wind, Mail, Trophy, Award, Palette, Music } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '../AuthContext';
 import { DashboardHome } from './DashboardHome';
@@ -7,7 +7,9 @@ import { DailyTasks } from './DailyTasks';
 import { AIChat } from './AIChat';
 import { MoodTracker } from './MoodTracker';
 import { Journal } from './Journal';
-import { NoContactGuard } from './NoContactGuard';
+import { SoundTherapy } from './SoundTherapy';
+import { NoContactJourney } from './NoContactJourney';
+
 import { Community } from './Community';
 import { Profile } from './Profile';
 import { BreathingExercise } from './BreathingExercise';
@@ -16,16 +18,15 @@ import { Achievements } from './Achievements';
 import { SuccessStories } from './SuccessStories';
 import { MindCanvas } from './MindCanvas';
 import { UpgradeModal } from './UpgradeModal';
-
 import { NotificationSystem } from '../NotificationSystem';
-
 
 interface UserDashboardProps {
   onLogout: () => void;
 }
 
 export function UserDashboard({ onLogout }: UserDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'tasks' | 'ai' | 'mood' | 'journal' | 'guard' | 'community' | 'profile' | 'breathing' | 'letters' | 'achievements' | 'stories' | 'mind-canvas'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'tasks' | 'ai' | 'mood' | 'journal' | 'guard' | 'community' | 'profile' | 'breathing' | 'letters' | 'achievements' | 'stories' | 'mind-canvas' | 'sound'>('dashboard');
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, logout, updateUser } = useAuth();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -45,7 +46,7 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
     }
 
     // Auto-redirect if on Pro tab and not Pro
-    const proTabs = ['ai', 'mind-canvas', 'breathing', 'guard'];
+    const proTabs = ['ai', 'mind-canvas', 'breathing', 'guard', 'sound'];
     if (activeTab && proTabs.includes(activeTab) && !user?.isPro) {
       setActiveTab('dashboard');
       toast.info('This feature is locked for Pro members.');
@@ -67,6 +68,7 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
     { id: 'tasks', icon: CheckSquare, label: 'Daily Tasks', color: 'from-[#8B5CF6] to-[#FB7185]' },
     { id: 'ai', icon: MessageCircle, label: 'AI Support', color: 'from-[#6366F1] to-[#8B5CF6]', pro: true },
     { id: 'mind-canvas', icon: Palette, label: 'Mind Canvas', color: 'from-[#FB7185] to-[#F472B6]', pro: true },
+    { id: 'sound', icon: Music, label: 'Sound Therapy', color: 'from-[#6366F1] to-[#8B5CF6]' }, // New
     { id: 'mood', icon: Heart, label: 'Mood Tracker', color: 'from-[#FB7185] to-[#F472B6]' },
     { id: 'journal', icon: BookOpen, label: 'Journal', color: 'from-[#8B5CF6] to-[#FB7185]' },
     { id: 'breathing', icon: Wind, label: 'Breathing', color: 'from-[#6366F1] to-[#8B5CF6]', pro: true },
@@ -86,18 +88,20 @@ export function UserDashboard({ onLogout }: UserDashboardProps) {
         return <DailyTasks />;
       case 'ai':
         return <AIChat />;
+      case 'mind-canvas':
+        return <MindCanvas />;
+      case 'sound':
+        return <SoundTherapy />;
       case 'mood':
         return <MoodTracker onNavigate={(tab) => setActiveTab(tab)} />;
       case 'journal':
         return <Journal onNavigate={(tab) => setActiveTab(tab)} />;
-      case 'mind-canvas':
-        return <MindCanvas />;
       case 'breathing':
         return <BreathingExercise />;
       case 'letters':
         return <LetterTherapy />;
       case 'guard':
-        return <NoContactGuard />;
+        return <NoContactJourney />; // Replaced NoContactGuard
       case 'achievements':
         return <Achievements />;
       case 'stories':

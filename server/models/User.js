@@ -15,6 +15,16 @@ const userSchema = mongoose.Schema({
     recoveryProgress: { type: Number, default: 0 },
     hasSeenTutorial: { type: Boolean, default: false },
 
+    // No Contact Healing Engine Fields
+    breakupDate: { type: Date },
+    noContactStartDate: { type: Date },
+    relapseCount: { type: Number, default: 0 },
+    relapseHistory: [{
+        date: { type: Date, default: Date.now },
+        reason: String
+    }],
+    noContactActive: { type: Boolean, default: true },
+
     googleId: { type: String },
     plan: {
         type: String,
