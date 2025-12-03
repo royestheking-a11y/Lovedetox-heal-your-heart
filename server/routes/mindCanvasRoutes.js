@@ -42,45 +42,44 @@ router.post('/generate', async (req, res) => {
             }
         }
 
-        // Construct Pollinations.ai URL
-        // Pollinations.ai format: https://image.pollinations.ai/prompt/{prompt}?width={width}&height={height}&seed={seed}&nologo=true
-        const encodedPrompt = encodeURIComponent(`${prompt} ${style || ''}`);
-        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true`;
+        // Logic: If style is 'Magic', use Hugging Face. Otherwise, use Pollinations.ai.
+        let finalImageUrl = '';
 
-        // Try Pollinations.ai first
-        let finalImageUrl = imageUrl;
-        try {
-            // Check if Pollinations is responsive (HEAD request)
-            await axios.head(imageUrl);
-        } catch (pollinationError) {
-            console.warn('⚠️ Pollinations.ai failed, attempting fallback to Hugging Face...', pollinationError);
-
-            // Fallback to Hugging Face
+        if (style === 'Magic') {
+            console.log('✨ Magic style selected, using Hugging Face...');
             const hfToken = process.env.HUGGING_FACE_API_KEY || process.env.VITE_HUGGING_FACE_API_KEY;
 
-            if (hfToken) {
-                try {
-                    const hfResponse = await axios.post(
-                        "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
-                        { inputs: `${prompt} ${style || ''}` },
-                        {
-                            headers: { Authorization: `Bearer ${hfToken}` },
-                            responseType: 'arraybuffer'
-                        }
-                    );
-
-                    if (hfResponse.status === 200) {
-                        const buffer = Buffer.from(hfResponse.data);
-                        const base64Image = `data:image/jpeg;base64,${buffer.toString('base64')}`;
-                        finalImageUrl = base64Image;
-                        console.log('✅ Generated image using Hugging Face fallback');
-                    }
-                } catch (hfError) {
-                    console.error('❌ Hugging Face fallback error:', hfError.message);
-                }
-            } else {
-                console.warn('⚠️ No Hugging Face API Key configured for backend fallback.');
+            if (!hfToken) {
+                throw new Error('Hugging Face API Key missing for Magic style');
             }
+
+            try {
+                const hfResponse = await axios.post(
+                    "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+                    { inputs: `${prompt} (masterpiece, best quality, magic, fantasy, ethereal)` },
+                    {
+                        headers: { Authorization: `Bearer ${hfToken}` },
+                        responseType: 'arraybuffer'
+                    }
+                );
+
+                if (hfResponse.status === 200) {
+                    const buffer = Buffer.from(hfResponse.data);
+                    finalImageUrl = `data:image/jpeg;base64,${buffer.toString('base64')}`;
+                    console.log('✅ Generated Magic image using Hugging Face');
+                } else {
+                    throw new Error(`Hugging Face API returned status ${hfResponse.status}`);
+                }
+            } catch (hfError) {
+                console.error('❌ Hugging Face generation failed:', hfError.message);
+                throw new Error('Failed to generate Magic image');
+            }
+        } else {
+            // Use Pollinations.ai for all other styles
+            // We removed the strict axios.head() check as it was causing false negatives
+            const encodedPrompt = encodeURIComponent(`${prompt} ${style || ''}`);
+            finalImageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true`;
+            console.log(`🎨 Using Pollinations.ai for style: ${style}`);
         }
 
         // Save metadata to database

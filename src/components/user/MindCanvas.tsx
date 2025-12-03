@@ -26,7 +26,7 @@ export function MindCanvas() {
 
     const styles = [
         'Cinematic', 'Soft Watercolor', 'Dreamy', 'Minimalist',
-        'Abstract Expressionism', 'Cyberpunk', 'Oil Painting', 'Surrealist'
+        'Abstract Expressionism', 'Cyberpunk', 'Magic', 'Surrealist'
     ];
 
     const quotes = [
