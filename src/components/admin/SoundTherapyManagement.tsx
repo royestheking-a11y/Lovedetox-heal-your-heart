@@ -96,13 +96,6 @@ export function SoundTherapyManagement() {
     const premiumSounds = sounds.filter(s => s.isPremium).length;
     const categories = Array.from(new Set(sounds.map(s => s.category))).length;
 
-    const [isReady, setIsReady] = useState(false);
-
-    // Reset ready state when track changes
-    useEffect(() => {
-        setIsReady(false);
-    }, [playingUrl]);
-
     return (
         <div className="space-y-8">
             {/* Hidden Player for Preview */}
@@ -118,29 +111,25 @@ export function SoundTherapyManagement() {
                 overflow: 'hidden'
             }}>
                 <Player
-                    key={playingUrl || 'no-preview'}
                     url={playingUrl || ''}
-                    playing={!!playingId && isReady}
+                    playing={!!playingId}
                     volume={1}
                     muted={false}
                     width="100%"
                     height="100%"
                     playsinline={true}
-                    onReady={() => {
-                        if (!isReady) {
-                            setIsReady(true);
-                        }
-                    }}
                     onEnded={() => {
                         setPlayingId(null);
                         setPlayingUrl(null);
                     }}
-                    onError={() => {
-                        if (playingId) {
-                            toast.error("Could not play this track. Check URL.");
-                            setPlayingId(null);
-                            setPlayingUrl(null);
+                    onError={(e: any) => {
+                        console.error("Player Error:", e);
+                        if (e && (e.name === 'AbortError' || e.name === 'NotSupportedError')) {
+                            return;
                         }
+                        toast.error("Playback issue. Check URL.");
+                        setPlayingId(null);
+                        setPlayingUrl(null);
                     }}
                     config={{
                         youtube: {
