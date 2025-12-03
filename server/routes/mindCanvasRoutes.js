@@ -54,14 +54,28 @@ router.post('/generate', async (req, res) => {
             }
 
             try {
-                const hfResponse = await axios.post(
-                    "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
-                    { inputs: `${prompt} (masterpiece, best quality, magic, fantasy, ethereal)` },
-                    {
-                        headers: { Authorization: `Bearer ${hfToken}` },
-                        responseType: 'arraybuffer'
+                const makeRequest = async (retries = 3, delay = 3000) => {
+                    try {
+                        return await axios.post(
+                            "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+                            { inputs: `${prompt} (masterpiece, best quality, magic, fantasy, ethereal)` },
+                            {
+                                headers: { Authorization: `Bearer ${hfToken}` },
+                                responseType: 'arraybuffer'
+                            }
+                        );
+                    } catch (err) {
+                        // If model is loading (503), retry
+                        if (err.response && err.response.status === 503 && retries > 0) {
+                            console.log(`⏳ Model loading, retrying in ${delay / 1000}s... (${retries} retries left)`);
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            return makeRequest(retries - 1, delay * 2); // Exponential backoff
+                        }
+                        throw err;
                     }
-                );
+                };
+
+                const hfResponse = await makeRequest();
 
                 if (hfResponse.status === 200) {
                     const buffer = Buffer.from(hfResponse.data);
