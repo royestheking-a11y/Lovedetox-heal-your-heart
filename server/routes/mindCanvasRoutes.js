@@ -72,7 +72,11 @@ router.post('/generate', async (req, res) => {
                 }
             } catch (hfError) {
                 console.error('❌ Hugging Face generation failed:', hfError.message);
-                throw new Error('Failed to generate Magic image');
+                if (hfError.response) {
+                    console.error('HF Response Data:', hfError.response.data.toString());
+                    console.error('HF Status:', hfError.response.status);
+                }
+                throw new Error(`Failed to generate Magic image: ${hfError.response?.data?.toString() || hfError.message}`);
             }
         } else {
             // Use Pollinations.ai for all other styles
@@ -101,7 +105,7 @@ router.post('/generate', async (req, res) => {
 
     } catch (error) {
         console.error('Error generating image:', error);
-        res.status(500).json({ message: 'Server error generating image' });
+        res.status(500).json({ message: error.message || 'Server error generating image' });
     }
 });
 
