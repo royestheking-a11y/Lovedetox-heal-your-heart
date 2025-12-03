@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Play, Pause, Save, X, RefreshCw, Music, BarChart3, Sparkles, Headphones } from 'lucide-react';
 import { toast } from 'sonner';
 import dataService from '../../services/dataService';
+import ReactPlayer from 'react-player';
 
 interface SoundTrack {
     _id: string;
@@ -20,14 +21,10 @@ export function SoundTherapyManagement() {
     const [isEditing, setIsEditing] = useState(false);
     const [currentSound, setCurrentSound] = useState<Partial<SoundTrack>>({});
     const [playingId, setPlayingId] = useState<string | null>(null);
-    const [audio] = useState(new Audio());
+    const [playingUrl, setPlayingUrl] = useState<string | null>(null);
 
     useEffect(() => {
         loadSounds();
-        return () => {
-            audio.pause();
-            audio.src = '';
-        };
     }, []);
 
     const loadSounds = async () => {
@@ -78,11 +75,10 @@ export function SoundTherapyManagement() {
 
     const togglePlay = (url: string, id: string) => {
         if (playingId === id) {
-            audio.pause();
             setPlayingId(null);
+            setPlayingUrl(null);
         } else {
-            audio.src = url;
-            audio.play();
+            setPlayingUrl(url);
             setPlayingId(id);
         }
     };
@@ -97,8 +93,36 @@ export function SoundTherapyManagement() {
     const premiumSounds = sounds.filter(s => s.isPremium).length;
     const categories = Array.from(new Set(sounds.map(s => s.category))).length;
 
+    // Cast to any to avoid missing type definition error
+    const Player = ReactPlayer as any;
+
     return (
         <div className="space-y-8">
+            {/* Hidden Player for Preview */}
+            <div className="hidden">
+                <Player
+                    url={playingUrl || ''}
+                    playing={!!playingId}
+                    width="0"
+                    height="0"
+                    playsinline={true}
+                    onEnded={() => {
+                        setPlayingId(null);
+                        setPlayingUrl(null);
+                    }}
+                    onError={() => {
+                        toast.error("Could not play this track. Check URL.");
+                        setPlayingId(null);
+                        setPlayingUrl(null);
+                    }}
+                    config={{
+                        youtube: {
+                            playerVars: { showinfo: 0, controls: 0, playsinline: 1 }
+                        }
+                    }}
+                />
+            </div>
+
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
@@ -198,9 +222,9 @@ export function SoundTherapyManagement() {
                             <div className="p-6">
                                 <div className="flex justify-between items-start mb-4">
                                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-gradient-to-br ${sound.category === 'sleep' ? 'from-indigo-400 to-purple-600' :
-                                            sound.category === 'nature' ? 'from-green-400 to-emerald-600' :
-                                                sound.category === 'focus' ? 'from-blue-400 to-cyan-600' :
-                                                    'from-pink-400 to-rose-600'
+                                        sound.category === 'nature' ? 'from-green-400 to-emerald-600' :
+                                            sound.category === 'focus' ? 'from-blue-400 to-cyan-600' :
+                                                'from-pink-400 to-rose-600'
                                         } shadow-lg text-white`}>
                                         <Music className="w-7 h-7" />
                                     </div>
@@ -239,8 +263,8 @@ export function SoundTherapyManagement() {
                                 <button
                                     onClick={() => togglePlay(sound.url, sound._id)}
                                     className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all ${playingId === sound._id
-                                            ? 'bg-red-50 text-red-600 hover:bg-red-100'
-                                            : 'bg-[#6366F1]/10 text-[#6366F1] hover:bg-[#6366F1] hover:text-white'
+                                        ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                                        : 'bg-[#6366F1]/10 text-[#6366F1] hover:bg-[#6366F1] hover:text-white'
                                         }`}
                                 >
                                     {playingId === sound._id ? (

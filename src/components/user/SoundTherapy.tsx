@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Play, Pause, Volume2, CloudRain, Waves, Trees, Wind, Moon, Coffee, Music } from 'lucide-react';
 import dataService from '../../services/dataService';
 import { toast } from 'sonner';
+import ReactPlayer from 'react-player';
 
 interface SoundTrack {
     _id: string;
@@ -44,7 +45,7 @@ export function SoundTherapy() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(0.5);
     const [loading, setLoading] = useState(true);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [isBuffering, setIsBuffering] = useState(false);
 
     useEffect(() => {
         loadSounds();
@@ -62,53 +63,20 @@ export function SoundTherapy() {
         }
     };
 
-    useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.volume = volume;
-        }
-    }, [volume]);
-
     const togglePlay = (trackId: string) => {
         if (activeTrack === trackId) {
-            if (isPlaying) {
-                audioRef.current?.pause();
-                setIsPlaying(false);
-            } else {
-                audioRef.current?.play();
-                setIsPlaying(true);
-            }
+            setIsPlaying(!isPlaying);
         } else {
             setActiveTrack(trackId);
             setIsPlaying(true);
         }
     };
 
-    // Effect to handle source change and playing
-    useEffect(() => {
-        if (activeTrack && audioRef.current) {
-            const track = tracks.find(t => t._id === activeTrack);
-            if (track) {
-                audioRef.current.src = track.url;
-                if (isPlaying) {
-                    audioRef.current.play().catch(e => console.error("Audio play failed:", e));
-                }
-            }
-        }
-    }, [activeTrack, tracks]);
-
-    // Effect to handle play/pause toggle without source change
-    useEffect(() => {
-        if (audioRef.current) {
-            if (isPlaying) {
-                audioRef.current.play().catch(e => console.error("Audio play failed:", e));
-            } else {
-                audioRef.current.pause();
-            }
-        }
-    }, [isPlaying]);
-
     const currentTrack = tracks.find(t => t._id === activeTrack);
     const CurrentIcon = currentTrack ? getIconForCategory(currentTrack.category) : Music;
+
+    // Cast to any to avoid missing type definition error
+    const Player = ReactPlayer as any;
 
     if (loading) {
         return <div className="text-center py-12 text-gray-500">Loading sound library...</div>;
@@ -123,6 +91,34 @@ export function SoundTherapy() {
                 </p>
             </div>
 
+            {/* Hidden Player for YouTube/External Links */}
+            <div className="hidden">
+                <Player
+                    url={currentTrack?.url}
+                    playing={isPlaying}
+                    volume={volume}
+                    width="0"
+                    height="0"
+                    playsinline={true}
+                    onBuffer={() => setIsBuffering(true)}
+                    onBufferEnd={() => setIsBuffering(false)}
+                    onEnded={() => setIsPlaying(false)}
+                    onError={(e: any) => {
+                        console.error("Player Error:", e);
+                        toast.error("Could not play this track. Check the URL.");
+                        setIsPlaying(false);
+                    }}
+                    config={{
+                        youtube: {
+                            playerVars: { showinfo: 0, controls: 0, playsinline: 1 }
+                        },
+                        vimeo: {
+                            playerOptions: { playsinline: true }
+                        }
+                    }}
+                />
+            </div>
+
             {/* Now Playing Card (Sticky or Prominent) */}
             <div className={`bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-500 ${activeTrack ? 'opacity-100 translate-y-0' : 'opacity-50 translate-y-4 pointer-events-none'}`}>
                 <div className="flex items-center justify-between gap-6">
@@ -131,7 +127,9 @@ export function SoundTherapy() {
                             <CurrentIcon className="w-8 h-8 text-white animate-pulse" />
                         </div>
                         <div>
-                            <div className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Now Playing</div>
+                            <div className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                {isBuffering ? 'Loading Audio...' : 'Now Playing'}
+                            </div>
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white">{currentTrack?.title || 'Select a sound'}</h3>
                         </div>
                     </div>
@@ -159,7 +157,6 @@ export function SoundTherapy() {
                         </button>
                     </div>
                 </div>
-                <audio ref={audioRef} loop className="hidden" />
             </div>
 
             {/* Track Grid */}
