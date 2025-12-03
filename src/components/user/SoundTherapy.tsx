@@ -119,6 +119,7 @@ export function SoundTherapy() {
                 overflow: 'hidden'
             }}>
                 <Player
+                    key={currentTrack?.url || 'no-track'}
                     url={currentTrack?.url}
                     playing={isPlaying && isReady}
                     volume={volume}
@@ -127,16 +128,15 @@ export function SoundTherapy() {
                     height="100%"
                     playsinline={true}
                     onReady={() => {
-                        console.log("Player Ready");
-                        setIsReady(true);
+                        if (!isReady) {
+                            console.log("Player Ready");
+                            setIsReady(true);
+                        }
                     }}
                     onStart={() => {
                         console.log("Player Started");
-                        toast.success("Audio started playing");
                     }}
                     onPlay={() => console.log("Player Playing")}
-                    onBuffer={() => setIsBuffering(true)}
-                    onBufferEnd={() => setIsBuffering(false)}
                     onEnded={() => setIsPlaying(false)}
                     onError={(e: any) => {
                         console.error("Player Error:", e);

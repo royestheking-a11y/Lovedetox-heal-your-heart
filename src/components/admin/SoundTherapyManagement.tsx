@@ -118,6 +118,7 @@ export function SoundTherapyManagement() {
                 overflow: 'hidden'
             }}>
                 <Player
+                    key={playingUrl || 'no-preview'}
                     url={playingUrl || ''}
                     playing={!!playingId && isReady}
                     volume={1}
@@ -125,7 +126,11 @@ export function SoundTherapyManagement() {
                     width="100%"
                     height="100%"
                     playsinline={true}
-                    onReady={() => setIsReady(true)}
+                    onReady={() => {
+                        if (!isReady) {
+                            setIsReady(true);
+                        }
+                    }}
                     onEnded={() => {
                         setPlayingId(null);
                         setPlayingUrl(null);
@@ -143,7 +148,6 @@ export function SoundTherapyManagement() {
                                 showinfo: 0,
                                 controls: 0,
                                 playsinline: 1,
-                                origin: window.location.origin,
                                 rel: 0,
                                 modestbranding: 1,
                                 iv_load_policy: 3,
