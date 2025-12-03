@@ -130,24 +130,18 @@ export function SoundTherapy() {
                     </button>
                 </div>
 
-                <div style={{ flex: 1, position: 'relative' }}>
-                    {/* BARE MINIMUM PLAYER CONFIG */}
-                    <Player
-                        url={debugUrl || currentTrack?.url}
-                        playing={isPlaying}
-                        volume={volume}
-                        muted={false}
+                <div style={{ flex: 1, position: 'relative', background: 'red' }}>
+                    {/* NATIVE IFRAME TEST - NO LIBRARIES */}
+                    <iframe
                         width="100%"
                         height="100%"
-                        controls={true}
-                        playsinline={true}
-                        onStart={() => console.log("Player Started")}
-                        onEnded={() => setIsPlaying(false)}
-                        onError={(e: any) => {
-                            console.error("Player Error:", e);
-                            toast.error(`Error: ${e?.message || 'Unknown'}`);
-                        }}
-                    />
+                        src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1"
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        style={{ pointerEvents: 'auto' }} // Force interaction
+                    ></iframe>
                 </div>
             </div>
 
