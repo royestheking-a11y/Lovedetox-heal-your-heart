@@ -49,9 +49,6 @@ export function SoundTherapy() {
     const [volume, setVolume] = useState(0.5);
     const [loading, setLoading] = useState(true);
 
-
-    const [debugUrl, setDebugUrl] = useState<string | null>(null);
-
     useEffect(() => {
         loadSounds();
     }, []);
@@ -68,13 +65,13 @@ export function SoundTherapy() {
         }
     };
 
+
     const togglePlay = (trackId: string) => {
         if (activeTrack === trackId) {
             setIsPlaying(!isPlaying);
         } else {
             setActiveTrack(trackId);
             setIsPlaying(true);
-            setDebugUrl(null); // Reset debug url when picking real track
         }
     };
 
@@ -94,55 +91,51 @@ export function SoundTherapy() {
                 </p>
             </div>
 
-            {/* DEBUG MODE: Player is visible to check for errors/mute status */}
+            {/* Hidden Player (Functional) */}
             <div style={{
                 position: 'fixed',
                 bottom: '20px',
                 right: '20px',
-                width: '300px', // Wider for text
-                height: '300px', // Taller for buttons
-                opacity: 1,
-                zIndex: 9999,
-                background: '#222',
-                borderRadius: '8px',
-                overflow: 'hidden',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
-                display: 'flex',
-                flexDirection: 'column'
+                width: '1px',
+                height: '1px',
+                opacity: 0.01, // Almost invisible but technically "visible" to browser
+                zIndex: -1,
+                pointerEvents: 'none',
+                overflow: 'hidden'
             }}>
-                <div style={{ padding: '10px', color: '#fff', fontSize: '11px', background: '#000', fontFamily: 'monospace' }}>
-                    <strong>DEBUG INFO:</strong><br />
-                    Status: {isPlaying ? 'Playing' : 'Paused'} <br />
-                    Active ID: {activeTrack || 'None'} <br />
-                    Tracks Loaded: {tracks.length} <br />
-                    Current Track Found: {currentTrack ? 'Yes' : 'No'} <br />
-                    URL: {debugUrl || currentTrack?.url || 'No URL'} <br />
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setDebugUrl('https://www.youtube.com/watch?v=jfKfPfyJRdk'); // Lofi Girl (Safe)
-                            setIsPlaying(true);
-                            toast.success("Testing Lofi Girl...");
-                        }}
-                        style={{ marginTop: '5px', padding: '2px 5px', background: '#6366F1', border: 'none', borderRadius: '3px', cursor: 'pointer', color: 'white' }}
-                    >
-                        Test Lofi Girl (Safe URL)
-                    </button>
-                </div>
-
-                <div style={{ flex: 1, position: 'relative', background: 'red' }}>
-                    {/* NATIVE IFRAME TEST - NO LIBRARIES */}
-                    <iframe
-                        width="100%"
-                        height="100%"
-                        src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1"
-                        title="YouTube video player"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        style={{ pointerEvents: 'auto' }} // Force interaction
-                    ></iframe>
-                </div>
+                <Player
+                    key={currentTrack?._id || 'empty'} // FORCE REMOUNT on track change
+                    url={currentTrack?.url}
+                    playing={isPlaying}
+                    volume={volume}
+                    muted={false}
+                    width="100%"
+                    height="100%"
+                    playsinline={true}
+                    onStart={() => console.log("Player Started")}
+                    onEnded={() => setIsPlaying(false)}
+                    onError={(e: any) => {
+                        console.error("Player Error:", e);
+                        // Only show toast for real errors, ignore transient ones
+                        if (e && (e.name !== 'AbortError' && e.name !== 'NotSupportedError')) {
+                            toast.error("Playback issue. Trying to recover...");
+                        }
+                    }}
+                    config={{
+                        youtube: {
+                            playerVars: {
+                                showinfo: 0,
+                                controls: 0,
+                                playsinline: 1,
+                                rel: 0,
+                                modestbranding: 1,
+                                iv_load_policy: 3,
+                                disablekb: 1,
+                                origin: window.location.origin
+                            }
+                        }
+                    }}
+                />
             </div>
 
             {/* Now Playing Card (Sticky or Prominent) */}
