@@ -60,7 +60,11 @@ router.post('/generate', async (req, res) => {
                             "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0",
                             { inputs: `${prompt} (masterpiece, best quality, magic, fantasy, ethereal)` },
                             {
-                                headers: { Authorization: `Bearer ${hfToken}` },
+                                headers: {
+                                    Authorization: `Bearer ${hfToken}`,
+                                    Accept: 'image/jpeg',
+                                    'Content-Type': 'application/json'
+                                },
                                 responseType: 'arraybuffer'
                             }
                         );
