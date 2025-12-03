@@ -57,7 +57,7 @@ router.post('/generate', async (req, res) => {
                 const makeRequest = async (retries = 3, delay = 3000) => {
                     try {
                         return await axios.post(
-                            "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+                            "https://router.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
                             { inputs: `${prompt} (masterpiece, best quality, magic, fantasy, ethereal)` },
                             {
                                 headers: { Authorization: `Bearer ${hfToken}` },
