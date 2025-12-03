@@ -98,17 +98,19 @@ export function SoundTherapyManagement() {
 
     return (
         <div className="space-y-8">
-            {/* Hidden Player for Preview */}
+            {/* DEBUG MODE: Player is visible to check for errors/mute status */}
             <div style={{
                 position: 'fixed',
-                bottom: '10px',
-                right: '10px',
-                width: '1px',
-                height: '1px',
+                bottom: '20px',
+                right: '20px',
+                width: '200px',
+                height: '150px',
                 opacity: 1,
-                pointerEvents: 'none',
                 zIndex: 9999,
-                overflow: 'hidden'
+                background: '#000',
+                borderRadius: '8px',
+                overflow: 'hidden',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
             }}>
                 <Player
                     url={playingUrl || ''}
@@ -117,6 +119,7 @@ export function SoundTherapyManagement() {
                     muted={false}
                     width="100%"
                     height="100%"
+                    controls={true} // Enable controls for debugging
                     playsinline={true}
                     onEnded={() => {
                         setPlayingId(null);
