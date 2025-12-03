@@ -92,13 +92,23 @@ export function SoundTherapy() {
             </div>
 
             {/* Hidden Player for YouTube/External Links */}
-            <div style={{ position: 'fixed', bottom: 0, opacity: 0, pointerEvents: 'none', zIndex: -1 }}>
+            <div style={{
+                position: 'absolute',
+                width: '1px',
+                height: '1px',
+                padding: 0,
+                margin: '-1px',
+                overflow: 'hidden',
+                clip: 'rect(0, 0, 0, 0)',
+                whiteSpace: 'nowrap',
+                border: 0
+            }}>
                 <Player
                     url={currentTrack?.url}
                     playing={isPlaying}
                     volume={volume}
-                    width="1px"
-                    height="1px"
+                    width="640px"
+                    height="360px"
                     playsinline={true}
                     onBuffer={() => setIsBuffering(true)}
                     onBufferEnd={() => setIsBuffering(false)}

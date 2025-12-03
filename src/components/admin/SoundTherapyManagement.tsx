@@ -99,12 +99,22 @@ export function SoundTherapyManagement() {
     return (
         <div className="space-y-8">
             {/* Hidden Player for Preview */}
-            <div style={{ position: 'fixed', bottom: 0, opacity: 0, pointerEvents: 'none', zIndex: -1 }}>
+            <div style={{
+                position: 'absolute',
+                width: '1px',
+                height: '1px',
+                padding: 0,
+                margin: '-1px',
+                overflow: 'hidden',
+                clip: 'rect(0, 0, 0, 0)',
+                whiteSpace: 'nowrap',
+                border: 0
+            }}>
                 <Player
                     url={playingUrl || ''}
                     playing={!!playingId}
-                    width="1px"
-                    height="1px"
+                    width="640px"
+                    height="360px"
                     playsinline={true}
                     onEnded={() => {
                         setPlayingId(null);
