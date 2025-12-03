@@ -211,6 +211,18 @@ router.post('/no-contact', protect, async (req, res) => {
     res.status(201).json(createdMessage);
 });
 
+router.delete('/no-contact/:id', protect, async (req, res) => {
+    const NoContactMessage = require('../models/NoContactMessage');
+    const message = await NoContactMessage.findById(req.params.id);
+
+    if (message && message.userId.toString() === req.user._id.toString()) {
+        await message.deleteOne();
+        res.json({ message: 'Message removed' });
+    } else {
+        res.status(404).json({ message: 'Message not found' });
+    }
+});
+
 // --- COMMUNITY ---
 router.get('/community', protect, async (req, res) => {
     const CommunityPost = require('../models/CommunityPost');

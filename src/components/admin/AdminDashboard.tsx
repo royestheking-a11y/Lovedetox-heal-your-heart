@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, Users, CheckSquare, MessageCircle, Heart, AlertTriangle, DollarSign, Bell, Mail, Settings, LogOut, Lock, Shield, Menu, X, Sparkles, Trophy, Palette, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, Users, CheckSquare, MessageCircle, Heart, AlertTriangle, DollarSign, Bell, Mail, Settings, LogOut, Lock, Shield, Menu, X, Sparkles, Trophy, Palette, TrendingUp, Music } from 'lucide-react';
 import { AdminHome } from './AdminHome';
 import { UserManagement } from './UserManagement';
 import { TaskManagement } from './TaskManagement';
@@ -15,13 +15,14 @@ import { SuccessStoryManagement } from './SuccessStoryManagement';
 import { NoContactMonitor } from './NoContactMonitor';
 import { RevenueAnalytics } from './RevenueAnalytics';
 import { AchievementsManagement } from './AchievementsManagement';
+import { SoundTherapyManagement } from './SoundTherapyManagement';
 
 interface AdminDashboardProps {
   onLogout: () => void;
 }
 
 export function AdminDashboard({ onLogout }: AdminDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'tasks' | 'ai' | 'mood' | 'community' | 'payments' | 'revenue' | 'notifications' | 'support' | 'settings' | 'stories' | 'nocontact' | 'achievements' | 'mind-canvas'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'tasks' | 'ai' | 'mood' | 'community' | 'payments' | 'revenue' | 'notifications' | 'support' | 'settings' | 'stories' | 'nocontact' | 'achievements' | 'mind-canvas' | 'sound-therapy'>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Initialize admin user if doesn't exist
@@ -50,6 +51,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
     { id: 'settings', icon: Settings, label: 'Settings', color: 'from-[#FB7185] to-[#F472B6]' },
     { id: 'stories', icon: Sparkles, label: 'Success Stories', color: 'from-[#FB7185] to-[#F472B6]' },
     { id: 'nocontact', icon: Trophy, label: 'No Contact Monitor', color: 'from-[#FB7185] to-[#F472B6]' },
+    { id: 'sound-therapy', icon: Music, label: 'Sound Therapy', color: 'from-[#6366F1] to-[#8B5CF6]' },
     { id: 'achievements', icon: Trophy, label: 'Achievements', color: 'from-[#FB7185] to-[#F472B6]' },
   ];
 
@@ -83,6 +85,8 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
         return <SuccessStoryManagement />;
       case 'nocontact':
         return <NoContactMonitor />;
+      case 'sound-therapy':
+        return <SoundTherapyManagement />;
       case 'achievements':
         return <AchievementsManagement />;
       default:

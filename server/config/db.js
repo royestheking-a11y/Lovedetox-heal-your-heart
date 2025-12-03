@@ -16,10 +16,10 @@ const connectDB = async () => {
             bufferCommands: false,
         };
 
-        const uri = process.env.MONGO_URI || process.env.MONGODB_URI;
+        const uri = 'mongodb+srv://lovedetoxorg_db_user:VkdK98MB5X45TfyB@lovedetox.ihwfmw7.mongodb.net/test?appName=lovedetox';
 
         if (!uri) {
-            throw new Error('Database connection string is missing. Please set "MONGO_URI" in Vercel Environment Variables.');
+            throw new Error('Database connection string is missing.');
         }
 
         cached.promise = mongoose.connect(uri, opts).then((mongoose) => {

@@ -150,6 +150,11 @@ const dataService = {
         return response.data;
     },
 
+    deleteNoContactMessage: async (id: string) => {
+        const response = await api.delete(`/data/no-contact/${id}`);
+        return response.data;
+    },
+
     // Community
     getCommunityPosts: async () => {
         const response = await api.get('/data/community');
@@ -184,6 +189,27 @@ const dataService = {
 
     getMindCanvasGallery: async (userId: string) => {
         const response = await api.get(`/mind-canvas/my-art/${userId}`);
+        return response.data;
+    },
+
+    // Sound Therapy
+    getSounds: async () => {
+        const response = await api.get('/sounds');
+        return response.data;
+    },
+
+    createSound: async (data: any) => {
+        const response = await api.post('/sounds', data);
+        return response.data;
+    },
+
+    updateSound: async (id: string, data: any) => {
+        const response = await api.put(`/sounds/${id}`, data);
+        return response.data;
+    },
+
+    deleteSound: async (id: string) => {
+        const response = await api.delete(`/sounds/${id}`);
         return response.data;
     }
 };

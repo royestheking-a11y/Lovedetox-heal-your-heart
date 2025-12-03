@@ -11,6 +11,7 @@ const User = require('./models/User');
 const Task = require('./models/Task');
 const Mood = require('./models/Mood');
 const Journal = require('./models/Journal');
+const SoundTrack = require('./models/SoundTrack');
 
 const seedData = async () => {
     try {
@@ -21,7 +22,7 @@ const seedData = async () => {
             const adminUser = await User.create({
                 name: 'Admin',
                 email: 'admin@lovedetox.com',
-                password: 'lovedetox009', // Will be hashed by pre-save hook
+                password: 'lovedetox009',
                 isAdmin: true,
                 isPro: true
             });
@@ -30,6 +31,92 @@ const seedData = async () => {
         } else {
             adminId = adminExists._id;
         }
+
+        // NUCLEAR OPTION: Native Driver Seeding
+        console.log(`\n--- ADVANCED DIAGNOSTIC & SEEDING ---`);
+
+        // 1. List all databases to see where we are
+        const adminDb = mongoose.connection.db.admin();
+        const dbs = await adminDb.listDatabases();
+        console.log('Available Databases:', dbs.databases.map(d => d.name).join(', '));
+
+        // 2. Explicitly target 'test' database
+        const targetDb = mongoose.connection.useDb('test');
+        console.log(`Switched to target database: ${targetDb.name}`);
+
+        // 3. Check if collection exists in 'test'
+        const collections = await targetDb.db.listCollections({ name: 'soundtracks' }).toArray();
+        console.log(`Collection 'soundtracks' exists? ${collections.length > 0 ? 'YES' : 'NO'}`);
+
+        if (collections.length === 0) {
+            console.log('>>> FORCE CREATING COLLECTION: soundtracks');
+            await targetDb.db.createCollection('soundtracks');
+            console.log('Collection created.');
+        }
+
+        // 4. Check for data using the model bound to this specific DB
+        const SoundTrackModel = targetDb.model('SoundTrack', require('./models/SoundTrack').schema);
+        const count = await SoundTrackModel.countDocuments();
+        console.log(`Document count in 'soundtracks': ${count}`);
+
+        if (count === 0) {
+            console.log('>>> INSERTING DATA...');
+            const initialSounds = [
+                {
+                    title: 'Heavy Rain',
+                    category: 'nature',
+                    url: 'https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg',
+                    isPremium: false,
+                    duration: '10:00',
+                    imageUrl: 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?auto=format&fit=crop&q=80'
+                },
+                {
+                    title: 'Ocean Waves',
+                    category: 'anxiety',
+                    url: 'https://actions.google.com/sounds/v1/water/waves_crashing.ogg',
+                    isPremium: false,
+                    duration: '15:00',
+                    imageUrl: 'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&q=80'
+                },
+                {
+                    title: 'Morning Forest',
+                    category: 'nature',
+                    url: 'https://actions.google.com/sounds/v1/ambiences/forest_morning.ogg',
+                    isPremium: true,
+                    duration: '08:00',
+                    imageUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80'
+                },
+                {
+                    title: 'Calm White Noise',
+                    category: 'focus',
+                    url: 'https://actions.google.com/sounds/v1/ambiences/humming_fan.ogg',
+                    isPremium: false,
+                    duration: '30:00',
+                    imageUrl: 'https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?auto=format&fit=crop&q=80'
+                },
+                {
+                    title: 'Night Ambience',
+                    category: 'sleep',
+                    url: 'https://actions.google.com/sounds/v1/nature/crickets_chirping.ogg',
+                    isPremium: true,
+                    duration: '20:00',
+                    imageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80'
+                },
+                {
+                    title: 'Gentle Stream',
+                    category: 'relax',
+                    url: 'https://actions.google.com/sounds/v1/water/stream_water.ogg',
+                    isPremium: false,
+                    duration: '12:00',
+                    imageUrl: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&q=80'
+                }
+            ];
+            await SoundTrackModel.insertMany(initialSounds);
+            console.log('>>> DATA INSERTED SUCCESSFULLY.');
+        } else {
+            console.log('Data already exists. Skipping insertion.');
+        }
+
 
         // Seed Tasks
         const taskCount = await Task.countDocuments();
@@ -69,7 +156,6 @@ const seedData = async () => {
 
 const app = express();
 
-// Allow all origins for development to avoid CORS issues
 // Allow all origins for development
 app.use(cors());
 
@@ -91,6 +177,7 @@ app.use('/api/data', require('./routes/dataRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
 app.use('/api/mind-canvas', require('./routes/mindCanvasRoutes'));
+app.use('/api/sounds', require('./routes/soundRoutes'));
 
 const PORT = process.env.PORT || 5001;
 if (require.main === module) {

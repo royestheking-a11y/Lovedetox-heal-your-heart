@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../AuthContext';
-import { Shield, AlertTriangle, RefreshCw, Heart, Brain, CheckCircle, X } from 'lucide-react';
+import { Shield, AlertTriangle, RefreshCw, Heart, Brain, CheckCircle, X, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { addNotification } from '../NotificationSystem';
 import { PremiumIcon } from '../PremiumIcon';
@@ -11,6 +11,62 @@ export function NoContactJourney() {
     const [setupDate, setSetupDate] = useState('');
     const [setupReason, setSetupReason] = useState('');
     const [loading, setLoading] = useState(false);
+    const [messageText, setMessageText] = useState('');
+    const [unsentMessages, setUnsentMessages] = useState<any[]>([]);
+
+    useEffect(() => {
+        loadMessages();
+    }, [user]);
+
+    const loadMessages = async () => {
+        if (!user) return;
+        try {
+            const { default: dataService } = await import('../../services/dataService');
+            const messages = await dataService.getNoContactMessages();
+            setUnsentMessages(messages);
+        } catch (error) {
+            console.error('Failed to load messages:', error);
+        }
+    };
+
+    const handleSaveMessage = async () => {
+        if (!messageText.trim()) {
+            toast.error('Please write a message first');
+            return;
+        }
+
+        try {
+            const { default: dataService } = await import('../../services/dataService');
+            const newMessage = await dataService.createNoContactMessage({
+                message: messageText,
+                exName: 'Ex', // Optional, can be added to settings later
+                sentiment: 'neutral'
+            });
+
+            setUnsentMessages([newMessage, ...unsentMessages]);
+            setMessageText('');
+            toast.success('Message saved. You did the right thing! 🛡️');
+
+            addNotification(user!.id, {
+                type: 'success',
+                title: 'Strong Decision! 💪',
+                message: 'You saved this message instead of sending it. That is real progress!'
+            });
+        } catch (error) {
+            toast.error('Failed to save message');
+        }
+    };
+
+    const deleteMessage = async (id: string) => {
+        try {
+            const { default: dataService } = await import('../../services/dataService');
+            await dataService.deleteNoContactMessage(id);
+            setUnsentMessages(unsentMessages.filter(m => m._id !== id));
+            toast.success('Message deleted');
+        } catch (error) {
+            toast.error('Failed to delete message');
+        }
+    };
 
     // Calculate stats
     const getDaysPassed = () => {
@@ -252,6 +308,49 @@ export function NoContactJourney() {
                     <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
                         You might feel waves of sadness followed by moments of clarity. This "emotional rollercoaster" is normal. Your identity is detaching from "us" and returning to "me".
                     </p>
+                </div>
+            </div>
+
+            {/* Unsent Messages Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Unsent Messages</h3>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
+                    Write what you want to say here instead of sending it. Get it out of your system safely.
+                </p>
+
+                <div className="flex gap-3 mb-6">
+                    <input
+                        type="text"
+                        value={messageText}
+                        onChange={(e) => setMessageText(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSaveMessage()}
+                        placeholder="Type your message here..."
+                        className="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:ring-2 focus:ring-[#6366F1] outline-none transition-all"
+                    />
+                    <button
+                        onClick={handleSaveMessage}
+                        className="px-6 py-3 bg-[#6366F1] hover:bg-[#5558DD] text-white rounded-xl font-medium transition-colors shadow-lg shadow-indigo-200 dark:shadow-none"
+                    >
+                        Save
+                    </button>
+                </div>
+
+                <div className="space-y-3">
+                    {unsentMessages.length === 0 ? (
+                        <p className="text-center text-gray-400 py-8 text-sm">No unsent messages yet. Stay strong.</p>
+                    ) : (
+                        unsentMessages.map((msg) => (
+                            <div key={msg._id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-700">
+                                <p className="text-gray-700 dark:text-gray-300">{msg.message}</p>
+                                <button
+                                    onClick={() => deleteMessage(msg._id)}
+                                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
 
