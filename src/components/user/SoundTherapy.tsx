@@ -96,55 +96,59 @@ export function SoundTherapy() {
                 position: 'fixed',
                 bottom: '20px',
                 right: '20px',
-                width: '200px',
-                height: '150px',
+                width: '300px', // Wider for text
+                height: '200px', // Taller for controls
                 opacity: 1,
                 zIndex: 9999,
-                background: '#000',
+                background: '#222',
                 borderRadius: '8px',
                 overflow: 'hidden',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+                display: 'flex',
+                flexDirection: 'column'
             }}>
-                <Player
-                    url={currentTrack?.url}
-                    playing={isPlaying}
-                    volume={volume}
-                    muted={false}
-                    width="100%"
-                    height="100%"
-                    controls={true} // Enable controls for debugging
-                    playsinline={true}
-                    onStart={() => {
-                        console.log("Player Started");
-                        toast.success("Audio playing...");
-                    }}
-                    onEnded={() => setIsPlaying(false)}
-                    onError={(e: any) => {
-                        console.error("Player Error:", e);
-                        // Ignore AbortError and NotSupportedError as they are often transient
-                        if (e && (e.name === 'AbortError' || e.name === 'NotSupportedError')) {
-                            return;
-                        }
-                        // Only show toast for real errors
-                        toast.error("Playback issue. Trying to recover...");
-                    }}
-                    config={{
-                        youtube: {
-                            playerVars: {
-                                showinfo: 0,
-                                controls: 0,
-                                playsinline: 1,
-                                rel: 0,
-                                modestbranding: 1,
-                                iv_load_policy: 3,
-                                disablekb: 1
+                <div style={{ padding: '5px', color: '#fff', fontSize: '10px', background: '#000' }}>
+                    Status: {isPlaying ? 'Playing' : 'Paused'} <br />
+                    URL: {currentTrack?.url || 'No URL'}
+                </div>
+
+                <div style={{ flex: 1, position: 'relative' }}>
+                    <Player
+                        url={currentTrack?.url}
+                        playing={isPlaying}
+                        volume={volume}
+                        muted={false}
+                        width="100%"
+                        height="100%"
+                        controls={true}
+                        playsinline={true}
+                        onStart={() => {
+                            console.log("Player Started");
+                            toast.success("Audio playing...");
+                        }}
+                        onEnded={() => setIsPlaying(false)}
+                        onError={(e: any) => {
+                            console.error("Player Error:", e);
+                            toast.error(`Error: ${e?.message || 'Unknown'}`);
+                        }}
+                        config={{
+                            youtube: {
+                                playerVars: {
+                                    showinfo: 0,
+                                    controls: 1, // Enable controls
+                                    playsinline: 1,
+                                    rel: 0,
+                                    modestbranding: 1,
+                                    iv_load_policy: 3,
+                                    disablekb: 0
+                                }
+                            },
+                            vimeo: {
+                                playerOptions: { playsinline: true }
                             }
-                        },
-                        vimeo: {
-                            playerOptions: { playsinline: true }
-                        }
-                    }}
-                />
+                        }}
+                    />
+                </div>
             </div>
 
             {/* Now Playing Card (Sticky or Prominent) */}
