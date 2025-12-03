@@ -96,38 +96,57 @@ export function SoundTherapyManagement() {
     // Cast to any to avoid missing type definition error
     const Player = ReactPlayer as any;
 
+    const [isReady, setIsReady] = useState(false);
+
+    // Reset ready state when track changes
+    useEffect(() => {
+        setIsReady(false);
+    }, [playingUrl]);
+
     return (
         <div className="space-y-8">
             {/* Hidden Player for Preview */}
             <div style={{
-                position: 'absolute',
+                position: 'fixed',
+                top: 0,
+                left: 0,
                 width: '1px',
                 height: '1px',
-                padding: 0,
-                margin: '-1px',
-                overflow: 'hidden',
-                clip: 'rect(0, 0, 0, 0)',
-                whiteSpace: 'nowrap',
-                border: 0
+                opacity: 0.01,
+                pointerEvents: 'none',
+                zIndex: -1,
+                overflow: 'hidden'
             }}>
                 <Player
                     url={playingUrl || ''}
-                    playing={!!playingId}
-                    width="640px"
-                    height="360px"
+                    playing={!!playingId && isReady}
+                    width="100%"
+                    height="100%"
                     playsinline={true}
+                    onReady={() => setIsReady(true)}
                     onEnded={() => {
                         setPlayingId(null);
                         setPlayingUrl(null);
                     }}
                     onError={() => {
-                        toast.error("Could not play this track. Check URL.");
-                        setPlayingId(null);
-                        setPlayingUrl(null);
+                        // Only show error if we actually tried to play and failed
+                        if (playingId) {
+                            toast.error("Could not play this track. Check URL.");
+                            setPlayingId(null);
+                            setPlayingUrl(null);
+                        }
                     }}
                     config={{
                         youtube: {
-                            playerVars: { showinfo: 0, controls: 0, playsinline: 1, origin: window.location.origin }
+                            playerVars: {
+                                showinfo: 0,
+                                controls: 0,
+                                playsinline: 1,
+                                origin: window.location.origin,
+                                rel: 0,
+                                modestbranding: 1,
+                                iv_load_policy: 3
+                            }
                         }
                     }}
                 />

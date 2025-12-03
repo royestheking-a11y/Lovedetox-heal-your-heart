@@ -82,6 +82,14 @@ export function SoundTherapy() {
         return <div className="text-center py-12 text-gray-500">Loading sound library...</div>;
     }
 
+    const [isReady, setIsReady] = useState(false);
+
+    // Reset ready state when track changes
+    useEffect(() => {
+        setIsReady(false);
+        setIsBuffering(true);
+    }, [activeTrack]);
+
     return (
         <div className="max-w-4xl mx-auto space-y-8">
             <div className="text-center mb-8">
@@ -93,34 +101,46 @@ export function SoundTherapy() {
 
             {/* Hidden Player for YouTube/External Links */}
             <div style={{
-                position: 'absolute',
+                position: 'fixed',
+                top: 0,
+                left: 0,
                 width: '1px',
                 height: '1px',
-                padding: 0,
-                margin: '-1px',
-                overflow: 'hidden',
-                clip: 'rect(0, 0, 0, 0)',
-                whiteSpace: 'nowrap',
-                border: 0
+                opacity: 0.01,
+                pointerEvents: 'none',
+                zIndex: -1,
+                overflow: 'hidden'
             }}>
                 <Player
                     url={currentTrack?.url}
-                    playing={isPlaying}
+                    playing={isPlaying && isReady}
                     volume={volume}
-                    width="640px"
-                    height="360px"
+                    width="100%"
+                    height="100%"
                     playsinline={true}
+                    onReady={() => setIsReady(true)}
                     onBuffer={() => setIsBuffering(true)}
                     onBufferEnd={() => setIsBuffering(false)}
                     onEnded={() => setIsPlaying(false)}
                     onError={(e: any) => {
                         console.error("Player Error:", e);
-                        toast.error("Could not play this track. Check the URL.");
-                        setIsPlaying(false);
+                        // Only show error if we actually tried to play and failed
+                        if (isPlaying) {
+                            toast.error("Could not play this track. Check the URL.");
+                            setIsPlaying(false);
+                        }
                     }}
                     config={{
                         youtube: {
-                            playerVars: { showinfo: 0, controls: 0, playsinline: 1, origin: window.location.origin }
+                            playerVars: {
+                                showinfo: 0,
+                                controls: 0,
+                                playsinline: 1,
+                                origin: window.location.origin,
+                                rel: 0,             // Don't show related videos
+                                modestbranding: 1,  // Minimal YouTube branding
+                                iv_load_policy: 3   // Hide video annotations
+                            }
                         },
                         vimeo: {
                             playerOptions: { playsinline: true }
