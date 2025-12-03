@@ -354,7 +354,7 @@ router.post('/admin/cancel-approve', protect, admin, async (req, res) => {
                 method: user.cancellationRequest.paymentMethod,
                 amount: refundAmount, // Store as positive, but mark as refund
                 plan: 'Refund',
-                planType: lastPayment?.planType,
+                planType: lastPayment?.planType || 'PRO_MONTHLY', // Fallback if planType missing
                 status: 'refunded',
                 isRefund: true,
                 date: new Date()

@@ -25,7 +25,7 @@ export function CancelSubscriptionModal({ isOpen, onClose }: CancelSubscriptionM
 
         setLoading(true);
         try {
-            await paymentService.cancelSubscription({
+            await paymentService.requestCancellation({
                 reason,
                 paymentMethod,
                 accountNumber
@@ -93,8 +93,8 @@ export function CancelSubscriptionModal({ isOpen, onClose }: CancelSubscriptionM
                                         type="button"
                                         onClick={() => setPaymentMethod(m)}
                                         className={`p-2 rounded-lg border capitalize text-sm ${paymentMethod === m
-                                                ? 'border-red-500 bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300'
-                                                : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
+                                            ? 'border-red-500 bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300'
+                                            : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400'
                                             }`}
                                     >
                                         {m}
