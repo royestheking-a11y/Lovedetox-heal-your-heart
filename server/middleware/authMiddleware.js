@@ -19,6 +19,25 @@ const protect = async (req, res, next) => {
                 return res.status(401).json({ message: 'Not authorized, user not found' });
             }
 
+            // Check for expiration (Trial or Monthly)
+            const now = new Date();
+            let expired = false;
+
+            if (req.user.plan === 'PRO_TRIAL' && req.user.trialEndDate && now > req.user.trialEndDate) {
+                expired = true;
+            } else if (req.user.plan === 'PRO_MONTHLY' && req.user.subscriptionEndDate && now > req.user.subscriptionEndDate) {
+                expired = true;
+            }
+
+            if (expired) {
+                console.log(`User ${req.user.email} subscription expired. Downgrading to FREE.`);
+                req.user.isPro = false;
+                req.user.plan = 'FREE';
+                req.user.trialEndDate = undefined;
+                req.user.subscriptionEndDate = undefined;
+                await req.user.save();
+            }
+
             next();
         } catch (error) {
             console.error(error);

@@ -126,23 +126,17 @@ export function DashboardHome({ onNavigate }: DashboardHomeProps) {
         </div>
 
         {/* Trial Progress / Warning */}
-        {isTrialActive && (
+        {isTrialActive && trialDaysLeft <= 7 && (
           <div className="mt-2">
-            <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-[#6366F1]" />
-              Pro Trial: Day {30 - trialDaysLeft + 1} of 30
-            </p>
-            {trialDaysLeft <= 7 && (
-              <div className={`mt-2 p-3 rounded-lg flex items-center gap-2 text-sm ${trialDaysLeft <= 3
-                ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300'
-                : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300'
-                }`}>
-                <AlertTriangle className="w-4 h-4" />
-                {trialDaysLeft <= 3
-                  ? '⚠️ Trial ending soon. Don’t lose your progress.'
-                  : '⏳ Your Pro trial ends in 7 days. Continue without interruption.'}
-              </div>
-            )}
+            <div className={`p-3 rounded-lg flex items-center gap-2 text-sm ${trialDaysLeft <= 3
+              ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300'
+              : 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-300'
+              }`}>
+              <AlertTriangle className="w-4 h-4" />
+              {trialDaysLeft <= 3
+                ? '⚠️ Trial ending soon. Don’t lose your progress.'
+                : '⏳ Your Pro trial ends in 7 days. Continue without interruption.'}
+            </div>
           </div>
         )}
 

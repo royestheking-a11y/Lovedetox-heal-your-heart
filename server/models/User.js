@@ -23,6 +23,7 @@ const userSchema = mongoose.Schema({
     },
     trialStartDate: { type: Date },
     trialEndDate: { type: Date },
+    subscriptionEndDate: { type: Date },
     paymentHistory: [{
         transactionId: String,
         method: String, // 'bkash', 'nagad', 'rocket'

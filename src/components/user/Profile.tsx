@@ -4,6 +4,8 @@ import { useAuth } from '../AuthContext';
 import { User, Lock, Bell, Download, Trash2, Crown, Palette } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { UpgradeModal } from './UpgradeModal';
+
 export function Profile() {
   const { user, updateUser, logout } = useAuth();
   const [name, setName] = useState(user?.name || '');
@@ -16,6 +18,7 @@ export function Profile() {
     dailyReminders: true
   });
   const [gallery, setGallery] = useState<any[]>([]);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -113,24 +116,6 @@ export function Profile() {
     }
   };
 
-  const upgradeToPro = async () => {
-    if (!user) return;
-    try {
-      // Create payment record
-      await import('../../services/dataService').then(m => m.default.createPayment({
-        amount: 19,
-        plan: 'Pro',
-        status: 'completed'
-      }));
-
-      updateUser({ isPro: true });
-      toast.success('Upgraded to Pro! Enjoy unlimited features. 🎉');
-    } catch (error) {
-      console.error('Upgrade failed:', error);
-      toast.error('Upgrade failed. Please try again.');
-    }
-  };
-
   const downloadImage = async (url: string, filename: string) => {
     try {
       const response = await fetch(url);
@@ -154,19 +139,21 @@ export function Profile() {
         <p className="text-gray-600">Manage your account and preferences.</p>
       </div>
 
-      {/* Pro Status */}
-      {!user?.isPro && (
+      {/* Pro Status / Upgrade Banner */}
+      {(!user?.isPro || user?.plan === 'PRO_TRIAL') && (
         <div className="bg-gradient-to-r from-[#4B0082] to-[#FF8DAA] p-6 rounded-2xl text-white mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Crown className="w-12 h-12" />
               <div>
-                <h4 className="text-white mb-1">Upgrade to Pro</h4>
+                <h4 className="text-white mb-1">
+                  {user?.plan === 'PRO_TRIAL' ? 'Upgrade to Lifetime Pro' : 'Upgrade to Pro'}
+                </h4>
                 <p className="text-white/90 text-sm">Unlock all features for unlimited healing support</p>
               </div>
             </div>
             <button
-              onClick={upgradeToPro}
+              onClick={() => setShowUpgradeModal(true)}
               className="px-6 py-3 bg-white text-[#4B0082] rounded-full hover:scale-105 transition-transform whitespace-nowrap"
             >
               Upgrade Now
@@ -175,7 +162,7 @@ export function Profile() {
         </div>
       )}
 
-      {user?.isPro && (
+      {user?.isPro && user?.plan !== 'PRO_TRIAL' && (
         <div className="bg-gradient-to-r from-[#4B0082] to-[#FF8DAA] p-4 rounded-2xl text-white mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Crown className="w-6 h-6" />
@@ -377,6 +364,12 @@ export function Profile() {
           </div>
         </div>
       </div>
+
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        type="payment"
+      />
     </div>
   );
 }

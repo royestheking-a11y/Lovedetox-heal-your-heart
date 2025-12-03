@@ -8,9 +8,17 @@ import { OnboardingTutorial } from './components/OnboardingTutorial';
 import { Toaster } from 'sonner';
 
 function AppContent() {
-  const { user, isAdmin, updateUser } = useAuth();
+  const { user, isAdmin, updateUser, loading } = useAuth();
   const [currentPage, setCurrentPage] = useState<'home' | 'user' | 'admin'>('home');
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] dark:bg-gray-900 transition-colors duration-300">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#6366F1]"></div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     console.log('📄 Page check - User:', user?.email, 'isAdmin:', isAdmin);

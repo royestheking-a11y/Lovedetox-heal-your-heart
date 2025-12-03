@@ -26,6 +26,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  loading: boolean; // Add loading state
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   register: (email: string, password: string, name: string) => Promise<boolean>;
@@ -42,6 +43,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true); // Initialize loading to true
   const [otpState, setOtpState] = useState<{
     code: string;
     email: string;
@@ -56,25 +58,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Check for logged in user on mount and fetch fresh data
   useEffect(() => {
-    const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
+    const initAuth = async () => {
+      const storedUser = localStorage.getItem('currentUser');
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
 
-      // Fetch fresh data from API
-      dataService.getProfile()
-        .then(freshUser => {
+          // Fetch fresh data from API
+          const freshUser = await dataService.getProfile();
           // Preserve the token from local storage
           const token = parsedUser.token;
           const userWithId = { ...freshUser, id: freshUser._id, token };
           setUser(userWithId);
           localStorage.setItem('currentUser', JSON.stringify(userWithId));
-        })
-        .catch(err => {
+        } catch (err) {
           console.error('Failed to fetch fresh profile:', err);
           // If 401, maybe logout? For now just log error.
-        });
-    }
+        }
+      }
+      setLoading(false); // Set loading to false after check
+    };
+
+    initAuth();
   }, []);
 
   const migrateLocalData = async (user: User) => {
@@ -251,6 +257,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{
       user,
+      loading, // Add loading here
       isAdmin: user?.isAdmin || false,
       login,
       register,

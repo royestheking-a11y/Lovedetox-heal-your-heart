@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const Payment = require('../models/Payment');
 const { protect, admin } = require('../middleware/authMiddleware');
+const sendEmail = require('../utils/sendEmail');
 
 // @desc    Start 30-Day Pro Trial
 // @route   POST /api/payments/start-trial
@@ -168,9 +169,19 @@ router.post('/admin/approve', protect, admin, async (req, res) => {
         if (payment.type === 'subscription') {
             user.isPro = true;
             user.plan = payment.planType || planType || 'PRO_MONTHLY'; // Use saved planType first
+
             // Reset trial dates if moving to paid
             user.trialStartDate = undefined;
             user.trialEndDate = undefined;
+
+            // Set subscription end date for monthly
+            if (user.plan === 'PRO_MONTHLY') {
+                const nextMonth = new Date();
+                nextMonth.setDate(nextMonth.getDate() + 30);
+                user.subscriptionEndDate = nextMonth;
+            } else {
+                user.subscriptionEndDate = undefined; // Lifetime
+            }
         }
 
         await user.save();
@@ -180,6 +191,30 @@ router.post('/admin/approve', protect, admin, async (req, res) => {
         if (paymentDoc) {
             paymentDoc.status = 'completed';
             await paymentDoc.save();
+        }
+
+        // Send Email Notification
+        try {
+            const message = `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #6366F1;">Payment Received! 🎉</h2>
+                    <p>Hi ${user.name},</p>
+                    <p>Thank you for your payment. Your account has been upgraded to <strong>${user.plan === 'PRO_LIFETIME' ? 'Lifetime Pro' : 'Monthly Pro'}</strong>.</p>
+                    <p>You now have unlimited access to all premium features, including AI Support, Mind Canvas, and more.</p>
+                    <br>
+                    <p>Best regards,</p>
+                    <p>The LoveDetox Team</p>
+                </div>
+            `;
+
+            await sendEmail({
+                email: user.email,
+                subject: 'Payment Approved - LoveDetox Pro',
+                message
+            });
+        } catch (emailError) {
+            console.error('Email sending failed:', emailError);
+            // Don't fail the request if email fails
         }
 
         res.json({ message: 'Payment approved and user upgraded.' });
