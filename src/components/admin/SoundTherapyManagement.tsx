@@ -14,6 +14,9 @@ interface SoundTrack {
     imageUrl: string;
 }
 
+// Cast to any to avoid missing type definition error
+const Player = ReactPlayer as any;
+
 export function SoundTherapyManagement() {
     const [sounds, setSounds] = useState<SoundTrack[]>([]);
     const [loading, setLoading] = useState(true);
@@ -93,9 +96,6 @@ export function SoundTherapyManagement() {
     const premiumSounds = sounds.filter(s => s.isPremium).length;
     const categories = Array.from(new Set(sounds.map(s => s.category))).length;
 
-    // Cast to any to avoid missing type definition error
-    const Player = ReactPlayer as any;
-
     const [isReady, setIsReady] = useState(false);
 
     // Reset ready state when track changes
@@ -108,18 +108,20 @@ export function SoundTherapyManagement() {
             {/* Hidden Player for Preview */}
             <div style={{
                 position: 'fixed',
-                bottom: '20px',
-                right: '20px',
+                bottom: '10px',
+                right: '10px',
                 width: '1px',
                 height: '1px',
-                opacity: 0.01,
+                opacity: 1,
                 pointerEvents: 'none',
-                zIndex: 100,
+                zIndex: 9999,
                 overflow: 'hidden'
             }}>
                 <Player
                     url={playingUrl || ''}
                     playing={!!playingId && isReady}
+                    volume={1}
+                    muted={false}
                     width="100%"
                     height="100%"
                     playsinline={true}
@@ -129,7 +131,6 @@ export function SoundTherapyManagement() {
                         setPlayingUrl(null);
                     }}
                     onError={() => {
-                        // Only show error if we actually tried to play and failed
                         if (playingId) {
                             toast.error("Could not play this track. Check URL.");
                             setPlayingId(null);
@@ -145,7 +146,8 @@ export function SoundTherapyManagement() {
                                 origin: window.location.origin,
                                 rel: 0,
                                 modestbranding: 1,
-                                iv_load_policy: 3
+                                iv_load_policy: 3,
+                                disablekb: 1
                             }
                         }
                     }}

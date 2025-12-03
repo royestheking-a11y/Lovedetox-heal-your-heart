@@ -39,6 +39,9 @@ const getColorForCategory = (category: string) => {
     }
 };
 
+// Cast to any to avoid missing type definition error
+const Player = ReactPlayer as any;
+
 export function SoundTherapy() {
     const [tracks, setTracks] = useState<SoundTrack[]>([]);
     const [activeTrack, setActiveTrack] = useState<string | null>(null);
@@ -75,9 +78,6 @@ export function SoundTherapy() {
     const currentTrack = tracks.find(t => t._id === activeTrack);
     const CurrentIcon = currentTrack ? getIconForCategory(currentTrack.category) : Music;
 
-    // Cast to any to avoid missing type definition error
-    const Player = ReactPlayer as any;
-
     if (loading) {
         return <div className="text-center py-12 text-gray-500">Loading sound library...</div>;
     }
@@ -100,22 +100,29 @@ export function SoundTherapy() {
             </div>
 
             {/* Hidden Player for YouTube/External Links */}
-            {/* We place it in the viewport with opacity > 0 to satisfy browser visibility checks */}
+            {/* 
+                CRITICAL FIX: 
+                1. Opacity 1 (Fully visible to browser)
+                2. Z-Index 9999 (On top of everything)
+                3. 1px size (Tiny but exists)
+                4. Bottom Right (In viewport)
+            */}
             <div style={{
                 position: 'fixed',
-                bottom: '20px',
-                right: '20px',
+                bottom: '10px',
+                right: '10px',
                 width: '1px',
                 height: '1px',
-                opacity: 0.01,
+                opacity: 1,
                 pointerEvents: 'none',
-                zIndex: 100, // Ensure it's "on top" of other elements
+                zIndex: 9999,
                 overflow: 'hidden'
             }}>
                 <Player
                     url={currentTrack?.url}
                     playing={isPlaying && isReady}
                     volume={volume}
+                    muted={false}
                     width="100%"
                     height="100%"
                     playsinline={true}
@@ -123,16 +130,18 @@ export function SoundTherapy() {
                         console.log("Player Ready");
                         setIsReady(true);
                     }}
-                    onStart={() => console.log("Player Started")}
+                    onStart={() => {
+                        console.log("Player Started");
+                        toast.success("Audio started playing");
+                    }}
                     onPlay={() => console.log("Player Playing")}
                     onBuffer={() => setIsBuffering(true)}
                     onBufferEnd={() => setIsBuffering(false)}
                     onEnded={() => setIsPlaying(false)}
                     onError={(e: any) => {
                         console.error("Player Error:", e);
-                        // Only show error if we actually tried to play and failed
                         if (isPlaying) {
-                            toast.error("Could not play this track. Check the URL.");
+                            toast.error("Playback error. Check URL.");
                             setIsPlaying(false);
                         }
                     }}
@@ -142,10 +151,10 @@ export function SoundTherapy() {
                                 showinfo: 0,
                                 controls: 0,
                                 playsinline: 1,
-                                origin: window.location.origin,
-                                rel: 0,             // Don't show related videos
-                                modestbranding: 1,  // Minimal YouTube branding
-                                iv_load_policy: 3   // Hide video annotations
+                                rel: 0,
+                                modestbranding: 1,
+                                iv_load_policy: 3,
+                                disablekb: 1
                             }
                         },
                         vimeo: {
