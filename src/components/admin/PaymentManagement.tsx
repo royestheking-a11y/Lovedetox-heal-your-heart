@@ -366,16 +366,16 @@ export function PaymentManagement() {
                                                             Refund: ৳{refundAmount}
                                                         </span>
                                                         <div className="text-xs text-gray-500">
-                                                            <span className="capitalize">{user.cancellationRequest.paymentMethod}</span>
+                                                            <span className="capitalize">{user.cancellationRequest.paymentMethod || 'Unknown Method'}</span>
                                                             <span className="mx-1">•</span>
-                                                            <span className="font-mono">{user.cancellationRequest.accountNumber}</span>
+                                                            <span className="font-mono">{user.cancellationRequest.accountNumber || 'No Account #'}</span>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="max-w-xs">
                                                         <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2" title={user.cancellationRequest.reason}>
-                                                            {user.cancellationRequest.reason}
+                                                            {user.cancellationRequest.reason || 'No reason provided'}
                                                         </p>
                                                     </div>
                                                 </td>

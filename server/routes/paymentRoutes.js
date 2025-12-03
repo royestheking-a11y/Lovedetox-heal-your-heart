@@ -351,7 +351,7 @@ router.post('/admin/cancel-approve', protect, admin, async (req, res) => {
                 userName: user.name,
                 userEmail: user.email,
                 transactionId: `REF-${Date.now()}`,
-                method: user.cancellationRequest.paymentMethod,
+                method: user.cancellationRequest.paymentMethod || 'Manual', // Fallback
                 amount: refundAmount, // Store as positive, but mark as refund
                 plan: 'Refund',
                 planType: lastPayment?.planType || 'PRO_MONTHLY', // Fallback if planType missing
@@ -370,7 +370,7 @@ router.post('/admin/cancel-approve', protect, admin, async (req, res) => {
                     <h2 style="color: #6366F1;">Subscription Cancelled</h2>
                     <p>Hi ${user.name},</p>
                     <p>Your subscription cancellation request has been approved.</p>
-                    <p>A refund of ৳${refundAmount} has been initiated to your ${user.cancellationRequest.paymentMethod} account (${user.cancellationRequest.accountNumber}).</p>
+                    <p>A refund of ৳${refundAmount} has been initiated to your ${user.cancellationRequest.paymentMethod || 'account'} account (${user.cancellationRequest.accountNumber || 'N/A'}).</p>
                     <p>Your account has been downgraded to the Free plan.</p>
                     <br>
                     <p>Best regards,</p>
