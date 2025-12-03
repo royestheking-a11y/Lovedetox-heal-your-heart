@@ -97,7 +97,7 @@ export function SoundTherapy() {
                 bottom: '20px',
                 right: '20px',
                 width: '300px', // Wider for text
-                height: '200px', // Taller for controls
+                height: '250px', // Taller for more debug info
                 opacity: 1,
                 zIndex: 9999,
                 background: '#222',
@@ -107,8 +107,12 @@ export function SoundTherapy() {
                 display: 'flex',
                 flexDirection: 'column'
             }}>
-                <div style={{ padding: '5px', color: '#fff', fontSize: '10px', background: '#000' }}>
+                <div style={{ padding: '10px', color: '#fff', fontSize: '11px', background: '#000', fontFamily: 'monospace' }}>
+                    <strong>DEBUG INFO:</strong><br />
                     Status: {isPlaying ? 'Playing' : 'Paused'} <br />
+                    Active ID: {activeTrack || 'None'} <br />
+                    Tracks Loaded: {tracks.length} <br />
+                    Current Track Found: {currentTrack ? 'Yes' : 'No'} <br />
                     URL: {currentTrack?.url || 'No URL'}
                 </div>
 

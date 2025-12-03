@@ -103,51 +103,60 @@ export function SoundTherapyManagement() {
                 position: 'fixed',
                 bottom: '20px',
                 right: '20px',
-                width: '200px',
-                height: '150px',
+                width: '300px',
+                height: '200px',
                 opacity: 1,
                 zIndex: 9999,
-                background: '#000',
+                background: '#222',
                 borderRadius: '8px',
                 overflow: 'hidden',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+                display: 'flex',
+                flexDirection: 'column'
             }}>
-                <Player
-                    url={playingUrl || ''}
-                    playing={!!playingId}
-                    volume={1}
-                    muted={false}
-                    width="100%"
-                    height="100%"
-                    controls={true} // Enable controls for debugging
-                    playsinline={true}
-                    onEnded={() => {
-                        setPlayingId(null);
-                        setPlayingUrl(null);
-                    }}
-                    onError={(e: any) => {
-                        console.error("Player Error:", e);
-                        if (e && (e.name === 'AbortError' || e.name === 'NotSupportedError')) {
-                            return;
-                        }
-                        toast.error("Playback issue. Check URL.");
-                        setPlayingId(null);
-                        setPlayingUrl(null);
-                    }}
-                    config={{
-                        youtube: {
-                            playerVars: {
-                                showinfo: 0,
-                                controls: 0,
-                                playsinline: 1,
-                                rel: 0,
-                                modestbranding: 1,
-                                iv_load_policy: 3,
-                                disablekb: 1
+                <div style={{ padding: '5px', color: '#fff', fontSize: '10px', background: '#000' }}>
+                    Status: {playingId ? 'Playing' : 'Idle'} <br />
+                    URL: {playingUrl || 'No URL'}
+                </div>
+
+                <div style={{ flex: 1, position: 'relative' }}>
+                    <Player
+                        url={playingUrl || ''}
+                        playing={!!playingId}
+                        volume={1}
+                        muted={false}
+                        width="100%"
+                        height="100%"
+                        controls={true} // Enable controls for debugging
+                        playsinline={true}
+                        onEnded={() => {
+                            setPlayingId(null);
+                            setPlayingUrl(null);
+                        }}
+                        onError={(e: any) => {
+                            console.error("Player Error:", e);
+                            if (e && (e.name === 'AbortError' || e.name === 'NotSupportedError')) {
+                                return;
                             }
-                        }
-                    }}
-                />
+                            toast.error("Playback issue. Check URL.");
+                            setPlayingId(null);
+                            setPlayingUrl(null);
+                        }}
+                        config={{
+                            youtube: {
+                                playerVars: {
+                                    showinfo: 0,
+                                    controls: 0,
+                                    playsinline: 1,
+                                    rel: 0,
+                                    modestbranding: 1,
+                                    iv_load_policy: 3,
+                                    disablekb: 1
+                                }
+                            }
+                        }}
+                    />
+                </div>
             </div>
 
             {/* Header Section */}
