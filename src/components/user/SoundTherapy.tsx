@@ -100,15 +100,16 @@ export function SoundTherapy() {
             </div>
 
             {/* Hidden Player for YouTube/External Links */}
+            {/* We place it in the viewport with opacity > 0 to satisfy browser visibility checks */}
             <div style={{
                 position: 'fixed',
-                top: 0,
-                left: 0,
+                bottom: '20px',
+                right: '20px',
                 width: '1px',
                 height: '1px',
                 opacity: 0.01,
                 pointerEvents: 'none',
-                zIndex: -1,
+                zIndex: 100, // Ensure it's "on top" of other elements
                 overflow: 'hidden'
             }}>
                 <Player
@@ -118,7 +119,12 @@ export function SoundTherapy() {
                     width="100%"
                     height="100%"
                     playsinline={true}
-                    onReady={() => setIsReady(true)}
+                    onReady={() => {
+                        console.log("Player Ready");
+                        setIsReady(true);
+                    }}
+                    onStart={() => console.log("Player Started")}
+                    onPlay={() => console.log("Player Playing")}
                     onBuffer={() => setIsBuffering(true)}
                     onBufferEnd={() => setIsBuffering(false)}
                     onEnded={() => setIsPlaying(false)}

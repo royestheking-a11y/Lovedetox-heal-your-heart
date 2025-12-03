@@ -108,13 +108,13 @@ export function SoundTherapyManagement() {
             {/* Hidden Player for Preview */}
             <div style={{
                 position: 'fixed',
-                top: 0,
-                left: 0,
+                bottom: '20px',
+                right: '20px',
                 width: '1px',
                 height: '1px',
                 opacity: 0.01,
                 pointerEvents: 'none',
-                zIndex: -1,
+                zIndex: 100,
                 overflow: 'hidden'
             }}>
                 <Player
