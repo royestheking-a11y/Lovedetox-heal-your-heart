@@ -79,7 +79,12 @@ export function SoundTherapy() {
     const CurrentIcon = currentTrack ? getIconForCategory(currentTrack.category) : Music;
 
     if (loading) {
-        return <div className="text-center py-12 text-gray-500">Loading sound library...</div>;
+        return (
+            <div className="text-center py-12 text-gray-500">
+                <div className="animate-spin w-8 h-8 border-4 border-[#6366F1] border-t-transparent rounded-full mx-auto mb-4"></div>
+                Loading sound library...
+            </div>
+        );
     }
 
     return (
@@ -94,14 +99,16 @@ export function SoundTherapy() {
             {/* Hidden Player (Functional) */}
             <div style={{
                 position: 'fixed',
-                bottom: '20px',
-                right: '20px',
-                width: '1px',
-                height: '1px',
-                opacity: 0.01, // Almost invisible but technically "visible" to browser
-                zIndex: -1,
-                pointerEvents: 'none',
-                overflow: 'hidden'
+                bottom: '10px',
+                right: '10px',
+                width: '120px', // Must be visible enough for YouTube API
+                height: '70px',
+                opacity: 1, // Fully visible to avoid browser throttling
+                zIndex: 50, // Above background but small
+                borderRadius: '8px',
+                overflow: 'hidden',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                background: '#000'
             }}>
                 <Player
                     key={currentTrack?._id || 'empty'} // FORCE REMOUNT on track change
@@ -180,47 +187,59 @@ export function SoundTherapy() {
 
             {/* Track Grid */}
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {tracks.map((track) => {
-                    const Icon = getIconForCategory(track.category);
-                    const color = getColorForCategory(track.category);
-
-                    return (
+                {tracks.length === 0 ? (
+                    <div className="col-span-full text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
+                        <p className="text-gray-500 mb-4">No sounds found in the library.</p>
                         <button
-                            key={track._id}
-                            onClick={() => togglePlay(track._id)}
-                            className={`group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 border-2 ${activeTrack === track._id
-                                ? 'border-[#6366F1] bg-[#6366F1]/5 shadow-md scale-[1.02]'
-                                : 'border-transparent bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-lg'
-                                }`}
+                            onClick={loadSounds}
+                            className="px-4 py-2 bg-[#6366F1] text-white rounded-lg hover:bg-[#5558DD] transition-colors"
                         >
-                            <div className={`absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity`}>
-                                <Icon className="w-24 h-24" />
-                            </div>
-
-                            <div className="relative z-10">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${color} mb-4 shadow-md group-hover:scale-110 transition-transform`}>
-                                    <Icon className="w-6 h-6 text-white" />
-                                </div>
-
-                                <h4 className="font-bold text-gray-900 dark:text-white mb-1">{track.title}</h4>
-                                <div className="flex items-center gap-2">
-                                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{track.category}</p>
-                                    {track.isPremium && (
-                                        <span className="px-1.5 py-0.5 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded text-[10px] font-bold">PRO</span>
-                                    )}
-                                </div>
-                            </div>
-
-                            {activeTrack === track._id && isPlaying && (
-                                <div className="absolute bottom-4 right-4 flex gap-1">
-                                    <div className="w-1 h-3 bg-[#6366F1] rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-                                    <div className="w-1 h-3 bg-[#6366F1] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                    <div className="w-1 h-3 bg-[#6366F1] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                                </div>
-                            )}
+                            Refresh Library
                         </button>
-                    );
-                })}
+                    </div>
+                ) : (
+                    tracks.map((track) => {
+                        const Icon = getIconForCategory(track.category);
+                        const color = getColorForCategory(track.category);
+
+                        return (
+                            <button
+                                key={track._id}
+                                onClick={() => togglePlay(track._id)}
+                                className={`group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 border-2 ${activeTrack === track._id
+                                    ? 'border-[#6366F1] bg-[#6366F1]/5 shadow-md scale-[1.02]'
+                                    : 'border-transparent bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-lg'
+                                    }`}
+                            >
+                                <div className={`absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity`}>
+                                    <Icon className="w-24 h-24" />
+                                </div>
+
+                                <div className="relative z-10">
+                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${color} mb-4 shadow-md group-hover:scale-110 transition-transform`}>
+                                        <Icon className="w-6 h-6 text-white" />
+                                    </div>
+
+                                    <h4 className="font-bold text-gray-900 dark:text-white mb-1">{track.title}</h4>
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{track.category}</p>
+                                        {track.isPremium && (
+                                            <span className="px-1.5 py-0.5 bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] text-white rounded text-[10px] font-bold">PRO</span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {activeTrack === track._id && isPlaying && (
+                                    <div className="absolute bottom-4 right-4 flex gap-1">
+                                        <div className="w-1 h-3 bg-[#6366F1] rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+                                        <div className="w-1 h-3 bg-[#6366F1] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                                        <div className="w-1 h-3 bg-[#6366F1] rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                    </div>
+                                )}
+                            </button>
+                        );
+                    })
+                )}
             </div>
         </div >
     );

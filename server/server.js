@@ -32,35 +32,11 @@ const seedData = async () => {
             adminId = adminExists._id;
         }
 
-        // NUCLEAR OPTION: Native Driver Seeding
-        console.log(`\n--- ADVANCED DIAGNOSTIC & SEEDING ---`);
+        // Check if sounds exist
+        const soundCount = await SoundTrack.countDocuments();
 
-        // 1. List all databases to see where we are
-        const adminDb = mongoose.connection.db.admin();
-        const dbs = await adminDb.listDatabases();
-        console.log('Available Databases:', dbs.databases.map(d => d.name).join(', '));
-
-        // 2. Explicitly target 'test' database
-        const targetDb = mongoose.connection.useDb('test');
-        console.log(`Switched to target database: ${targetDb.name}`);
-
-        // 3. Check if collection exists in 'test'
-        const collections = await targetDb.db.listCollections({ name: 'soundtracks' }).toArray();
-        console.log(`Collection 'soundtracks' exists? ${collections.length > 0 ? 'YES' : 'NO'}`);
-
-        if (collections.length === 0) {
-            console.log('>>> FORCE CREATING COLLECTION: soundtracks');
-            await targetDb.db.createCollection('soundtracks');
-            console.log('Collection created.');
-        }
-
-        // 4. Check for data using the model bound to this specific DB
-        const SoundTrackModel = targetDb.model('SoundTrack', require('./models/SoundTrack').schema);
-        const count = await SoundTrackModel.countDocuments();
-        console.log(`Document count in 'soundtracks': ${count}`);
-
-        if (count === 0) {
-            console.log('>>> INSERTING DATA...');
+        if (soundCount === 0) {
+            console.log('>>> SEEDING SOUND THERAPY DATA...');
             const initialSounds = [
                 {
                     title: 'Heavy Rain',
@@ -111,10 +87,11 @@ const seedData = async () => {
                     imageUrl: 'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&q=80'
                 }
             ];
-            await SoundTrackModel.insertMany(initialSounds);
-            console.log('>>> DATA INSERTED SUCCESSFULLY.');
+
+            await SoundTrack.insertMany(initialSounds);
+            console.log('>>> SOUNDS SEEDED SUCCESSFULLY.');
         } else {
-            console.log('Data already exists. Skipping insertion.');
+            console.log('Sound data already exists.');
         }
 
 
