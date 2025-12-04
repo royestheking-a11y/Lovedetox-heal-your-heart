@@ -36,58 +36,41 @@ const seedData = async () => {
         if (soundCount === 0) {
             console.log('Seeding sound library...');
             const soundLibrary = [
-                // --- NATURE & RAIN ---
-                { title: "Heavy Rain", category: "rain", url: "https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg", isPremium: false, duration: "10:00" },
-                { title: "Gentle Rain", category: "rain", url: "https://actions.google.com/sounds/v1/weather/rain_on_roof.ogg", isPremium: false, duration: "10:00" },
-                { title: "Thunderstorm", category: "rain", url: "https://actions.google.com/sounds/v1/weather/thunderstorm.ogg", isPremium: true, duration: "10:00" },
-                { title: "Rain on Window", category: "rain", url: "https://actions.google.com/sounds/v1/weather/rain_on_windows.ogg", isPremium: false, duration: "10:00" },
-                { title: "Distant Thunder", category: "rain", url: "https://actions.google.com/sounds/v1/weather/rolling_thunder.ogg", isPremium: false, duration: "10:00" },
+                // --- NATURE & RAIN (Using 'animalsounds1' collection from Archive.org) ---
+                { title: "Heavy Rain", category: "rain", url: "https://archive.org/download/animalsounds1/23rainonwoodstorks.mp3", isPremium: false, duration: "10:00" },
+                { title: "Gentle Rain", category: "rain", url: "https://archive.org/download/animalsounds1/23rainonwoodstorks.mp3", isPremium: false, duration: "10:00" }, // Reusing rain sound
+                { title: "Forest Rain", category: "rain", url: "https://archive.org/download/animalsounds1/23rainonwoodstorks.mp3", isPremium: true, duration: "10:00" },
 
                 // --- WATER & OCEAN ---
-                { title: "Ocean Waves", category: "water", url: "https://actions.google.com/sounds/v1/water/waves_crashing_on_rock_beach.ogg", isPremium: false, duration: "10:00" },
-                { title: "River Flow", category: "water", url: "https://actions.google.com/sounds/v1/water/river_flow.ogg", isPremium: false, duration: "10:00" },
-                { title: "Babbling Brook", category: "water", url: "https://actions.google.com/sounds/v1/water/stream_water.ogg", isPremium: true, duration: "10:00" },
-                { title: "Waterfall", category: "water", url: "https://actions.google.com/sounds/v1/water/waterfall.ogg", isPremium: false, duration: "10:00" },
-                { title: "Fountain", category: "water", url: "https://actions.google.com/sounds/v1/water/fountain.ogg", isPremium: false, duration: "10:00" },
+                { title: "Loon Lake", category: "water", url: "https://archive.org/download/animalsounds1/44loons.mp3", isPremium: false, duration: "10:00" },
+                { title: "River Birds", category: "water", url: "https://archive.org/download/animalsounds1/13shorebirdsnest.mp3", isPremium: false, duration: "10:00" },
+                { title: "Marshland", category: "water", url: "https://archive.org/download/animalsounds1/09littleblueheronfishes.mp3", isPremium: true, duration: "10:00" },
 
                 // --- FOREST & BIRDS ---
-                { title: "Forest Morning", category: "nature", url: "https://actions.google.com/sounds/v1/ambiences/forest_morning.ogg", isPremium: false, duration: "10:00" },
-                { title: "Birds Chirping", category: "nature", url: "https://actions.google.com/sounds/v1/animals/birds_chirping.ogg", isPremium: false, duration: "10:00" },
-                { title: "Jungle Atmosphere", category: "nature", url: "https://actions.google.com/sounds/v1/ambiences/jungle_atmosphere.ogg", isPremium: true, duration: "10:00" },
-                { title: "Crickets at Night", category: "nature", url: "https://actions.google.com/sounds/v1/animals/crickets.ogg", isPremium: false, duration: "10:00" },
-                { title: "Wind in Trees", category: "nature", url: "https://actions.google.com/sounds/v1/weather/wind_blowing_through_trees.ogg", isPremium: false, duration: "10:00" },
+                { title: "Forest Morning", category: "nature", url: "https://archive.org/download/animalsounds1/30goldfinch.mp3", isPremium: false, duration: "10:00" },
+                { title: "Birds Chirping", category: "nature", url: "https://archive.org/download/animalsounds1/31chirpygreybird.mp3", isPremium: false, duration: "10:00" },
+                { title: "Woodpecker", category: "nature", url: "https://archive.org/download/animalsounds1/41woodpecker.mp3", isPremium: false, duration: "10:00" },
+                { title: "Frogs Chorus", category: "nature", url: "https://archive.org/download/animalsounds1/19frogsandsuch.mp3", isPremium: false, duration: "10:00" },
+                { title: "Peepers", category: "nature", url: "https://archive.org/download/animalsounds1/20peepers.mp3", isPremium: true, duration: "10:00" },
 
                 // --- FOCUS & AMBIENCE ---
-                { title: "White Noise", category: "focus", url: "https://actions.google.com/sounds/v1/ambiences/white_noise.ogg", isPremium: false, duration: "10:00" },
-                { title: "Coffee Shop", category: "focus", url: "https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg", isPremium: true, duration: "10:00" },
-                { title: "Library Silence", category: "focus", url: "https://actions.google.com/sounds/v1/ambiences/library_ambience.ogg", isPremium: false, duration: "10:00" },
-                { title: "Clock Ticking", category: "focus", url: "https://actions.google.com/sounds/v1/household/clock_ticking.ogg", isPremium: false, duration: "10:00" },
-                { title: "Keyboard Typing", category: "focus", url: "https://actions.google.com/sounds/v1/office/typing.ogg", isPremium: false, duration: "10:00" },
+                { title: "Humming Focus", category: "focus", url: "https://archive.org/download/animalsounds1/28hummingbirdeats.mp3", isPremium: false, duration: "10:00" },
+                { title: "Rattlesnake Hiss", category: "focus", url: "https://archive.org/download/animalsounds1/22rattlesnake.mp3", isPremium: true, duration: "10:00" }, // White noise-ish
+                { title: "Cicadas", category: "focus", url: "https://archive.org/download/animalsounds1/21singers.mp3", isPremium: false, duration: "10:00" },
 
                 // --- SLEEP & RELAX ---
-                { title: "Campfire", category: "sleep", url: "https://actions.google.com/sounds/v1/ambiences/campfire.ogg", isPremium: false, duration: "10:00" },
-                { title: "Night Ambience", category: "sleep", url: "https://actions.google.com/sounds/v1/ambiences/night_camp.ogg", isPremium: false, duration: "10:00" },
-                { title: "Wind Chimes", category: "relax", url: "https://actions.google.com/sounds/v1/household/wind_chimes.ogg", isPremium: true, duration: "10:00" },
-                { title: "Tibetan Bowl", category: "relax", url: "https://actions.google.com/sounds/v1/foley/glasses_clinking.ogg", isPremium: false, duration: "10:00" },
-                { title: "Deep Space", category: "sleep", url: "https://actions.google.com/sounds/v1/science_fiction/space_ambience.ogg", isPremium: true, duration: "10:00" },
-
-                // --- MORE VARIETY ---
-                { title: "City Rain", category: "rain", url: "https://actions.google.com/sounds/v1/weather/rain_on_pavement.ogg", isPremium: false, duration: "10:00" },
-                { title: "Stormy Sea", category: "water", url: "https://actions.google.com/sounds/v1/water/waves_crashing_on_rocks.ogg", isPremium: true, duration: "10:00" },
-                { title: "Meadow", category: "nature", url: "https://actions.google.com/sounds/v1/ambiences/meadow.ogg", isPremium: false, duration: "10:00" },
-                { title: "Fan Noise", category: "sleep", url: "https://actions.google.com/sounds/v1/household/air_conditioner_hum.ogg", isPremium: false, duration: "10:00" },
-                { title: "Train Ride", category: "focus", url: "https://actions.google.com/sounds/v1/transportation/train_moving.ogg", isPremium: false, duration: "10:00" },
-                { title: "Airplane Cabin", category: "focus", url: "https://actions.google.com/sounds/v1/transportation/airplane_cabin.ogg", isPremium: true, duration: "10:00" },
-                { title: "Underwater", category: "relax", url: "https://actions.google.com/sounds/v1/water/underwater.ogg", isPremium: false, duration: "10:00" },
-                { title: "Cave Drops", category: "relax", url: "https://actions.google.com/sounds/v1/water/water_dripping_in_cave.ogg", isPremium: false, duration: "10:00" },
-                { title: "Fireplace", category: "sleep", url: "https://actions.google.com/sounds/v1/ambiences/fireplace.ogg", isPremium: false, duration: "10:00" },
-                { title: "Pink Noise", category: "focus", url: "https://actions.google.com/sounds/v1/ambiences/pink_noise.ogg", isPremium: false, duration: "10:00" }
+                { title: "Night Wolves", category: "sleep", url: "https://archive.org/download/animalsounds1/11wolfhowls.mp3", isPremium: false, duration: "10:00" },
+                { title: "Distant Howl", category: "sleep", url: "https://archive.org/download/animalsounds1/12wolveshowlfar.mp3", isPremium: false, duration: "10:00" },
+                { title: "Crickets", category: "sleep", url: "https://archive.org/download/animalsounds1/18bats.mp3", isPremium: true, duration: "10:00" }, // Bats sound like clicks/crickets
+                { title: "Swamp Night", category: "relax", url: "https://archive.org/download/animalsounds1/25alligatorhiss.mp3", isPremium: false, duration: "10:00" },
+                { title: "Deep Bellow", category: "relax", url: "https://archive.org/download/animalsounds1/26alligator1bellow.mp3", isPremium: true, duration: "10:00" }
             ];
 
-            // Double the list to reach ~60 items
+            // Triple the list to reach ~60 items
             const expandedLibrary = [
                 ...soundLibrary,
-                ...soundLibrary.map(s => ({ ...s, title: s.title + " II" }))
+                ...soundLibrary.map(s => ({ ...s, title: s.title + " II" })),
+                ...soundLibrary.map(s => ({ ...s, title: s.title + " III" }))
             ];
 
             await SoundTrack.insertMany(expandedLibrary);
