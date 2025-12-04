@@ -97,36 +97,33 @@ export function SoundTherapy() {
             </div>
 
             {/* Hidden Player (Functional) */}
+            {/* Hidden Player (Functional) */}
             <div style={{
                 position: 'fixed',
-                bottom: '10px',
-                right: '10px',
-                width: '120px', // Must be visible enough for YouTube API
-                height: '70px',
-                opacity: 1, // Fully visible to avoid browser throttling
-                zIndex: 50, // Above background but small
-                borderRadius: '8px',
+                width: '0px',
+                height: '0px',
+                opacity: 0,
                 overflow: 'hidden',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-                background: '#000'
+                pointerEvents: 'none',
+                zIndex: -1
             }}>
                 <Player
-                    key={currentTrack?._id || 'empty'} // FORCE REMOUNT on track change
                     url={currentTrack?.url}
                     playing={isPlaying}
                     volume={volume}
                     muted={false}
-                    width="100%"
-                    height="100%"
+                    width="0"
+                    height="0"
                     playsinline={true}
                     onStart={() => console.log("Player Started")}
                     onEnded={() => setIsPlaying(false)}
                     onError={(e: any) => {
                         console.error("Player Error:", e);
-                        // Only show toast for real errors, ignore transient ones
-                        if (e && (e.name !== 'AbortError' && e.name !== 'NotSupportedError')) {
-                            toast.error("Playback issue. Trying to recover...");
-                        }
+                        // Ignore AbortError as it happens when switching tracks quickly
+                        if (e && e.name === 'AbortError') return;
+
+                        setIsPlaying(false);
+                        toast.error("Playback issue. Please try another track.");
                     }}
                     config={{
                         youtube: {
@@ -139,6 +136,12 @@ export function SoundTherapy() {
                                 iv_load_policy: 3,
                                 disablekb: 1,
                                 origin: window.location.origin
+                            }
+                        },
+                        file: {
+                            forceAudio: true,
+                            attributes: {
+                                controlsList: 'nodownload'
                             }
                         }
                     }}
