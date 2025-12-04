@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../AuthContext';
 import { Shield, AlertTriangle, RefreshCw, Heart, Brain, CheckCircle, X, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
