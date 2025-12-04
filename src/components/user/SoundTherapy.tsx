@@ -97,12 +97,13 @@ export function SoundTherapy() {
             </div>
 
             {/* Hidden Player (Functional) */}
-            {/* Hidden Player (Functional) */}
             <div style={{
                 position: 'fixed',
-                width: '0px',
-                height: '0px',
-                opacity: 0,
+                bottom: 0,
+                right: 0,
+                width: '1px', // 1px to satisfy "visible" requirement for some players
+                height: '1px',
+                opacity: 0.01, // Almost invisible but technically "visible"
                 overflow: 'hidden',
                 pointerEvents: 'none',
                 zIndex: -1
@@ -112,10 +113,10 @@ export function SoundTherapy() {
                     playing={isPlaying}
                     volume={volume}
                     muted={false}
-                    width="0"
-                    height="0"
+                    width="100%" // Fill the 1px container
+                    height="100%"
                     playsinline={true}
-                    onStart={() => console.log("Player Started")}
+                    onStart={() => console.log("Player Started playing:", currentTrack?.title)}
                     onEnded={() => setIsPlaying(false)}
                     onError={(e: any) => {
                         console.error("Player Error:", e);
