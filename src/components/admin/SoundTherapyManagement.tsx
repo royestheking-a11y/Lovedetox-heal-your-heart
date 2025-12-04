@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Play, Pause, Save, X, RefreshCw, Music, BarChart3, Sparkles, Headphones } from 'lucide-react';
 import { toast } from 'sonner';
 import dataService from '../../services/dataService';
-import ReactPlayer from 'react-player';
+import { useAudio } from '../../hooks/useAudio';
 
 interface SoundTrack {
     _id: string;
@@ -14,9 +14,6 @@ interface SoundTrack {
     imageUrl: string;
 }
 
-// Cast to any to avoid missing type definition error
-const Player = ReactPlayer as any;
-
 export function SoundTherapyManagement() {
     const [sounds, setSounds] = useState<SoundTrack[]>([]);
     const [loading, setLoading] = useState(true);
@@ -24,11 +21,19 @@ export function SoundTherapyManagement() {
     const [isEditing, setIsEditing] = useState(false);
     const [currentSound, setCurrentSound] = useState<Partial<SoundTrack>>({});
     const [playingId, setPlayingId] = useState<string | null>(null);
-    const [playingUrl, setPlayingUrl] = useState<string | null>(null);
+
+    const { playing, toggle, pause } = useAudio();
 
     useEffect(() => {
         loadSounds();
     }, []);
+
+    // Sync local playing state with hook state
+    useEffect(() => {
+        if (!playing) {
+            setPlayingId(null);
+        }
+    }, [playing]);
 
     const loadSounds = async () => {
         try {
@@ -76,13 +81,13 @@ export function SoundTherapyManagement() {
         }
     };
 
-    const togglePlay = (url: string, id: string) => {
+    const handleTogglePlay = (url: string, id: string) => {
         if (playingId === id) {
+            pause();
             setPlayingId(null);
-            setPlayingUrl(null);
         } else {
-            setPlayingUrl(url);
             setPlayingId(id);
+            toggle(url);
         }
     };
 
@@ -98,56 +103,6 @@ export function SoundTherapyManagement() {
 
     return (
         <div className="space-y-8">
-            {/* Hidden Player for Preview */}
-            <div style={{
-                position: 'fixed',
-                bottom: '20px',
-                right: '20px',
-                width: '1px',
-                height: '1px',
-                opacity: 0.01,
-                zIndex: -1,
-                pointerEvents: 'none',
-                overflow: 'hidden'
-            }}>
-                <Player
-                    key={playingId || 'empty'} // FORCE REMOUNT
-                    url={playingUrl || ''}
-                    playing={!!playingId}
-                    volume={1}
-                    muted={false}
-                    width="100%"
-                    height="100%"
-                    playsinline={true}
-                    onEnded={() => {
-                        setPlayingId(null);
-                        setPlayingUrl(null);
-                    }}
-                    onError={(e: any) => {
-                        console.error("Player Error:", e);
-                        if (e && (e.name === 'AbortError' || e.name === 'NotSupportedError')) {
-                            return;
-                        }
-                        toast.error("Playback issue. Check URL.");
-                        setPlayingId(null);
-                        setPlayingUrl(null);
-                    }}
-                    config={{
-                        youtube: {
-                            playerVars: {
-                                showinfo: 0,
-                                controls: 0,
-                                playsinline: 1,
-                                rel: 0,
-                                modestbranding: 1,
-                                iv_load_policy: 3,
-                                disablekb: 1
-                            }
-                        }
-                    }}
-                />
-            </div>
-
             {/* Header Section */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
@@ -286,7 +241,7 @@ export function SoundTherapyManagement() {
                                 </div>
 
                                 <button
-                                    onClick={() => togglePlay(sound.url, sound._id)}
+                                    onClick={() => handleTogglePlay(sound.url, sound._id)}
                                     className={`w-full py-3 rounded-xl flex items-center justify-center gap-2 font-medium transition-all ${playingId === sound._id
                                         ? 'bg-red-50 text-red-600 hover:bg-red-100'
                                         : 'bg-[#6366F1]/10 text-[#6366F1] hover:bg-[#6366F1] hover:text-white'

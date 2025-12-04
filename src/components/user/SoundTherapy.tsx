@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Play, Pause, Volume2, CloudRain, Waves, Trees, Wind, Moon, Coffee, Music } from 'lucide-react';
 import dataService from '../../services/dataService';
 import { toast } from 'sonner';
-import ReactPlayer from 'react-player';
+import { useAudio } from '../../hooks/useAudio';
 
 interface SoundTrack {
     _id: string;
@@ -39,19 +39,22 @@ const getColorForCategory = (category: string) => {
     }
 };
 
-// Cast to any to avoid missing type definition error
-const Player = ReactPlayer as any;
-
 export function SoundTherapy() {
     const [tracks, setTracks] = useState<SoundTrack[]>([]);
-    const [activeTrack, setActiveTrack] = useState<string | null>(null);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [volume, setVolume] = useState(0.5);
+    const [activeTrackId, setActiveTrackId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+
+    const { playing, toggle, volume, setVolume, error } = useAudio();
 
     useEffect(() => {
         loadSounds();
     }, []);
+
+    useEffect(() => {
+        if (error) {
+            toast.error(error);
+        }
+    }, [error]);
 
     const loadSounds = async () => {
         try {
@@ -65,17 +68,12 @@ export function SoundTherapy() {
         }
     };
 
-
-    const togglePlay = (trackId: string) => {
-        if (activeTrack === trackId) {
-            setIsPlaying(!isPlaying);
-        } else {
-            setActiveTrack(trackId);
-            setIsPlaying(true);
-        }
+    const handleTogglePlay = (track: SoundTrack) => {
+        setActiveTrackId(track._id);
+        toggle(track.url);
     };
 
-    const currentTrack = tracks.find(t => t._id === activeTrack);
+    const currentTrack = tracks.find(t => t._id === activeTrackId);
     const CurrentIcon = currentTrack ? getIconForCategory(currentTrack.category) : Music;
 
     if (loading) {
@@ -96,61 +94,8 @@ export function SoundTherapy() {
                 </p>
             </div>
 
-            {/* Hidden Player (Functional) */}
-            <div style={{
-                position: 'fixed',
-                bottom: 0,
-                right: 0,
-                width: '1px', // 1px to satisfy "visible" requirement for some players
-                height: '1px',
-                opacity: 0.01, // Almost invisible but technically "visible"
-                overflow: 'hidden',
-                pointerEvents: 'none',
-                zIndex: -1
-            }}>
-                <Player
-                    url={currentTrack?.url}
-                    playing={isPlaying}
-                    volume={volume}
-                    muted={false}
-                    width="100%" // Fill the 1px container
-                    height="100%"
-                    playsinline={true}
-                    onStart={() => console.log("Player Started playing:", currentTrack?.title)}
-                    onEnded={() => setIsPlaying(false)}
-                    onError={(e: any) => {
-                        console.error("Player Error:", e);
-                        // Ignore AbortError as it happens when switching tracks quickly
-                        if (e && e.name === 'AbortError') return;
-
-                        setIsPlaying(false);
-                        toast.error("Playback issue. Please try another track.");
-                    }}
-                    config={{
-                        youtube: {
-                            playerVars: {
-                                showinfo: 0,
-                                controls: 0,
-                                playsinline: 1,
-                                rel: 0,
-                                modestbranding: 1,
-                                iv_load_policy: 3,
-                                disablekb: 1,
-                                origin: window.location.origin
-                            }
-                        },
-                        file: {
-                            forceAudio: true,
-                            attributes: {
-                                controlsList: 'nodownload'
-                            }
-                        }
-                    }}
-                />
-            </div>
-
             {/* Now Playing Card (Sticky or Prominent) */}
-            <div className={`bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-500 ${activeTrack ? 'opacity-100 translate-y-0' : 'opacity-50 translate-y-4 pointer-events-none'}`}>
+            <div className={`bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-500 ${activeTrackId ? 'opacity-100 translate-y-0' : 'opacity-50 translate-y-4 pointer-events-none'}`}>
                 <div className="flex items-center justify-between gap-6">
                     <div className="flex items-center gap-4">
                         <div className={`w-16 h-16 rounded-2xl flex items-center justify-center bg-gradient-to-br ${currentTrack ? getColorForCategory(currentTrack.category) : 'from-gray-200 to-gray-300'} shadow-lg`}>
@@ -180,10 +125,10 @@ export function SoundTherapy() {
                         </div>
 
                         <button
-                            onClick={() => setIsPlaying(!isPlaying)}
+                            onClick={() => currentTrack && toggle(currentTrack.url)}
                             className="w-14 h-14 rounded-full bg-gradient-to-r from-[#6366F1] to-[#8B5CF6] flex items-center justify-center text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all"
                         >
-                            {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
+                            {playing ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
                         </button>
                     </div>
                 </div>
@@ -205,12 +150,13 @@ export function SoundTherapy() {
                     tracks.map((track) => {
                         const Icon = getIconForCategory(track.category);
                         const color = getColorForCategory(track.category);
+                        const isActive = activeTrackId === track._id;
 
                         return (
                             <button
                                 key={track._id}
-                                onClick={() => togglePlay(track._id)}
-                                className={`group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 border-2 ${activeTrack === track._id
+                                onClick={() => handleTogglePlay(track)}
+                                className={`group relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 border-2 ${isActive
                                     ? 'border-[#6366F1] bg-[#6366F1]/5 shadow-md scale-[1.02]'
                                     : 'border-transparent bg-white dark:bg-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-lg'
                                     }`}
@@ -233,7 +179,7 @@ export function SoundTherapy() {
                                     </div>
                                 </div>
 
-                                {activeTrack === track._id && isPlaying && (
+                                {isActive && playing && (
                                     <div className="absolute bottom-4 right-4 flex gap-1">
                                         <div className="w-1 h-3 bg-[#6366F1] rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
                                         <div className="w-1 h-3 bg-[#6366F1] rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
