@@ -12,7 +12,7 @@ const soundTrackSchema = mongoose.Schema({
     category: {
         type: String,
         required: true,
-        enum: ['sleep', 'focus', 'anxiety', 'nature', 'relax']
+        enum: ['sleep', 'focus', 'anxiety', 'nature', 'relax', 'rain', 'water']
     },
     isPremium: {
         type: Boolean,

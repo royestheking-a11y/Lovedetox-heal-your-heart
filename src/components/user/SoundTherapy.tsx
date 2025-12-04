@@ -57,12 +57,32 @@ export function SoundTherapy() {
     }, [error]);
 
     const loadSounds = async () => {
+        // 1. Instant Load from Cache
+        const cachedData = localStorage.getItem('sound_library_cache');
+        if (cachedData) {
+            try {
+                const parsed = JSON.parse(cachedData);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    setTracks(parsed);
+                    setLoading(false); // Show content immediately
+                }
+            } catch (e) {
+                console.error('Cache parse error', e);
+            }
+        }
+
+        // 2. Background Fetch (Stale-While-Revalidate)
         try {
             const data = await dataService.getSounds();
             setTracks(data);
+            localStorage.setItem('sound_library_cache', JSON.stringify(data));
+            setLoading(false);
         } catch (error) {
             console.error('Failed to load sounds:', error);
-            toast.error('Failed to load sound library');
+            // Only show error toast if we have no data at all
+            if (!cachedData) {
+                toast.error('Failed to load sound library');
+            }
         } finally {
             setLoading(false);
         }
